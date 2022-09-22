@@ -1,0 +1,16 @@
+{
+  "name": "physicsdiscordbot",
+  "version": "1.0.0",
+  "description": "Physics Discord bot solver",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thanatoslayer6",
+  "license": "ISC",
+  "dependencies": {
+      "discord.js": "^14.4.0",
+      "dotenv": "^16.0.2"
+  }
+}
