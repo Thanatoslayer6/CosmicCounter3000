@@ -13,7 +13,7 @@ class AccuracyPrecision {
         this.percentError = 0; // |av - xmean|/av * 100 for accuracy
         this.relativeDeviation = 0; // |aveAd|xmean * 100 for precision
         this.conclusion; // string
-        this.data; // string (the one to send as a table)
+        this.data; // array (the one to send as a table)
     }
 
     getAverage() {

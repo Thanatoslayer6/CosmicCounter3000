@@ -1,4 +1,5 @@
 const { Routes, REST, Client, GatewayIntentBits } = require('discord.js');
+const { evaluate, print } = require('mathjs')
 const { table, getBorderCharacters } = require('table');
 const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
@@ -55,7 +56,21 @@ const ListOfCommands = [{
         description: 'The fifth vector',
         type: 3, // string
     }]
+}, {
+    name: 'eval',
+    description: 'Tries to convert/evaluate an expression',
+    options: [{
+        name: 'exp',
+        description: 'Convert like (12km/h to m/s) (12 feet to inches) or evaluate (100000 N / m^2) (50m/s * 5s)',
+        type: 3, // string
+        required: true
+    }]
 }];
+
+// {
+
+//     }
+
 
 // Env variables
 const TOKEN = process.env.TOKEN;
@@ -88,25 +103,39 @@ client.on('interactionCreate', async (interaction) => {
         let actualValue = interaction.options.getNumber('actual-value');
         let temp = new AccuracyPrecision(values, actualValue);
         temp.main(); // Evaluate every method in the class
+
         await interaction.reply(`
-            \`\`\` ${table(temp.data, { border: getBorderCharacters('ramac') })}\`\`\`
-            **Actual value/Accepted value** = ${temp.actualValue}\n
-            **Percent Error (%)** = ${temp.percentError}\n
-            **Relative Deviation (%)** = ${temp.relativeDeviation}\n
+            Input: _${values}_ \`\`\` ${table(temp.data, { border: getBorderCharacters('ramac') })}\`\`\`
+            **Actual value/Accepted value** = ${temp.actualValue}
+            **Percent Error (%)** = ${temp.percentError}
+            **Relative Deviation (%)** = ${temp.relativeDeviation}
             As a result, the conclusion is **${temp.conclusion}**
         `)
     } else if (interaction.commandName == 'foxy') {
         let vectors = [
-            interaction.options.getString('v1') || null,
-            interaction.options.getString('v2') || null,
-            interaction.options.getString('v3') || null,
-            interaction.options.getString('v4') || null,
-            interaction.options.getString('v5') || null,
+            interaction.options.getString('v1'),
+            interaction.options.getString('v2'),
+            interaction.options.getString('v3'),
+            interaction.options.getString('v4'),
+            interaction.options.getString('v5'),
         ]
-
-        let temp = new FoxyMethod(vectors)
-
-        
+        // Filter method removes all null entries from the array
+        let filteredVectors = vectors.filter(i => i);
+        let temp = new FoxyMethod(filteredVectors)
+        temp.main()
+        await interaction.reply(`
+            Input: _${filteredVectors.join(', ')}_ \`\`\` ${table(temp.data, { border: getBorderCharacters('ramac') })}\`\`\`
+            **θ₁** = ${temp.theta1}
+            **θ₂** = ${temp.theta2}\n
+            **RV** = ${temp.rv[0]}
+                      ${temp.rv[1]}\n
+            **RE** = ${temp.re[0]}
+                      ${temp.re[1]}
+        `)
+    } else if (interaction.commandName == 'eval') {
+        // Doesn't fully work...
+        let temp = evaluate(interaction.options.getString('exp'))
+        await interaction.reply(temp.value) 
     }
 
 });

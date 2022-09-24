@@ -1,16 +1,17 @@
 // const { Bearing } = require('./bearing');
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 const { FoxyMethod } = require('./commands/foxy')
-const { sin, cos } = require('mathjs');
+const math = require('mathjs');
 // let into = new Bearing(179)
 
 // new FoxyMethod(["30N 20 Degrees East of West", "50N 10 DEGREES N of E", "203.12km/s 50 degrees W of E"])
-// let temp = new FoxyMethod(["3m 30 Degrees N of east", "5m 45 degrees south of east"])
-// temp.xComponent()
-// temp.yComponent()
+// let temp = new FoxyMethod(["3m 30 Degrees N of West", "5m 45 degrees south of west"])
+// temp.main()
 // console.log(temp)
-console.log(sin(90))
-console.log(cos(90))
+// DOESNT WORK llol?!??!
+const s = math.unit('1 ft')
+console.log(s.to('inch'))
+// console.log(math.evaluate('1feet to inch').units);
 
 // let ad = into.actualDirection();
 // console.log(ad);
