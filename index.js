@@ -2,6 +2,7 @@ const { Routes, REST, Client, GatewayIntentBits } = require('discord.js');
 const { table, getBorderCharacters } = require('table');
 const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
+const { FoxyMethod } = require('./commands/foxy');
 require('dotenv').config();
 
 // List of all commands
@@ -32,11 +33,27 @@ const ListOfCommands = [{
     name: 'foxy',
     description: 'Solves for the RESULTANT VECTOR and EQUILIBRIUM VECTOR',
     options: [{
-        name: 'vectors',
-        description: 'The vectors separated by a comma e.g (35N 30 W of N, 10N 20 Degrees West of South)',
+        name: 'v1',
+        description: 'The first vector e.g format (35N 30 W of N)',
         type: 3, // string
         required: true
     }, {
+        name: 'v2',
+        description: 'The second vector e.g format (10N 20 Degrees West of South)',
+        type: 3, // string
+        required: true
+    }, {
+        name: 'v3',
+        description: 'The third vector',
+        type: 3, // string
+    }, {
+        name: 'v4',
+        description: 'The fourth vector',
+        type: 3, // string
+    }, {
+        name: 'v5',
+        description: 'The fifth vector',
+        type: 3, // string
     }]
 }];
 
@@ -79,8 +96,17 @@ client.on('interactionCreate', async (interaction) => {
             As a result, the conclusion is **${temp.conclusion}**
         `)
     } else if (interaction.commandName == 'foxy') {
+        let vectors = [
+            interaction.options.getString('v1') || null,
+            interaction.options.getString('v2') || null,
+            interaction.options.getString('v3') || null,
+            interaction.options.getString('v4') || null,
+            interaction.options.getString('v5') || null,
+        ]
 
+        let temp = new FoxyMethod(vectors)
 
+        
     }
 
 });
