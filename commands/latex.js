@@ -1,7 +1,6 @@
 const texsvg = require('texsvg');
 const sharp = require('sharp');
 
-
 class Latex {
     constructor(latexString) {
         this.latexString = latexString;
@@ -9,7 +8,20 @@ class Latex {
         this.pngBuffer;
     }
 
-    async stringToSvg() {
+    async stringToSvgSecondary() {
+        let temp = await texsvg(this.latexString)
+        // Only change the color, don't scale
+        temp = temp.replace('<svg ', '<svg fill="#fff" transform="scale(1) translate(0, 0)" ');
+
+        while(temp.includes('currentColor')) {
+            temp = temp.replace('currentColor', "#fff");
+        }
+        
+        // Save
+        this.svgString = temp;
+    }
+
+    async stringToSvgMain() {
         let temp = await texsvg(this.latexString)
         temp = temp.replace('<svg ', '<svg fill="#fff" transform="scale(1) translate(0, 0)" ');
 
@@ -52,8 +64,13 @@ class Latex {
     }
 
     async main() {
-        await this.stringToSvg()
+        await this.stringToSvgMain()
         await this.svgToPngBuffer() 
+    }
+
+    async secondary() {
+        await this.stringToSvgSecondary()
+        await this.svgToPngBuffer()
     }
 }
 
