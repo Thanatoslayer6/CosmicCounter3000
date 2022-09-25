@@ -1,5 +1,5 @@
 const { Routes, REST, Client, GatewayIntentBits } = require('discord.js');
-const { evaluate, print } = require('mathjs')
+const { print } = require('mathjs')
 const { table, getBorderCharacters } = require('table');
 const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
@@ -57,20 +57,8 @@ const ListOfCommands = [{
         type: 3, // string
     }]
 }, {
-    name: 'eval',
-    description: 'Tries to convert/evaluate an expression',
-    options: [{
-        name: 'exp',
-        description: 'Convert like (12km/h to m/s) (12 feet to inches) or evaluate (100000 N / m^2) (50m/s * 5s)',
-        type: 3, // string
-        required: true
-    }]
+    // TODO: latex command here
 }];
-
-// {
-
-//     }
-
 
 // Env variables
 const TOKEN = process.env.TOKEN;
@@ -132,10 +120,8 @@ client.on('interactionCreate', async (interaction) => {
             **RE** = ${temp.re[0]}
                       ${temp.re[1]}
         `)
-    } else if (interaction.commandName == 'eval') {
-        // Doesn't fully work...
-        let temp = evaluate(interaction.options.getString('exp'))
-        await interaction.reply(temp.value) 
+    } else if (interaction.commandName == 'latex') {
+
     }
 
 });

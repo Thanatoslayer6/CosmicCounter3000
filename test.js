@@ -9,9 +9,11 @@ const math = require('mathjs');
 // temp.main()
 // console.log(temp)
 // DOESNT WORK llol?!??!
-const s = math.unit('1 ft')
-console.log(s.to('inch'))
-// console.log(math.evaluate('1feet to inch').units);
+// const s = math.unit('1 ft')
+// console.log(s.to('inch'))
+// let temp = math.evaluate('20m to cm')
+// console.log(temp);
+// console.log(temp.units[0].unit.name)
 
 // let ad = into.actualDirection();
 // console.log(ad);
