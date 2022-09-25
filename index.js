@@ -1,4 +1,4 @@
-const { Routes, REST, Client, GatewayIntentBits } = require('discord.js');
+const { Routes, REST, Client, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
 const { table, getBorderCharacters } = require('table');
 const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
@@ -58,10 +58,24 @@ const ListOfCommands = [{
     }]
 }, {
     name: 'latex',
-    description: 'Write latex',
+    description: 'Write and output an equation into fancy LaTex',
     options: [{
         name: 'command',
-        description: 'Write latex commands like \\pi, \\rightarrow, \\neq, etc...',
+        description: 'Write LaTex commands like \\pi, \\rightarrow, \\neq, etc...',
+        type: 3, // string
+        required: true
+    }]
+}, {
+    name: 'kinematics',
+    description: 'Tries to solve distance/time/velocity (initial or final)/acceleration',
+    options: [{
+        name: 'known-values',
+        description: 'Values such as a, vf, vi, t, or d (separate by a comma or spaces) e.g (vf = 2km/s t=2s)',
+        type: 3, // string
+        required: true
+    }, {
+        name: 'solve-for',
+        description: 'Can only be a, vf, vi, t, or d',
         type: 3, // string
         required: true
     }]
@@ -128,9 +142,22 @@ client.on('interactionCreate', async (interaction) => {
                       ${temp.re[1]}
         `)
     } else if (interaction.commandName == 'latex') {
-        let temp = new Latex(interaction.options.getString('command'))
-        await temp.main()
-        await interaction.reply({ files: [{ attachment: temp.pngBuffer, name: 'latex_equation.png' }] })
+        let cmd = interaction.options.getString('command');
+        let temp = new Latex(cmd)
+        await temp.main() // Evaluate all methods (main)
+        
+        let attc = new AttachmentBuilder(temp.pngBuffer, { name: `latex_eq.png` })
+        await interaction.reply({ 
+            embeds: [{ // Send embedded latex command
+                description: `**LaTex Command:** \`${cmd}\``,
+                image: {
+                    url: 'attachment://latex_eq.png'
+                }
+            }], 
+            files: [attc]
+        })
+    } else if (interaction.commandName == 'kinematics') {
+        
     }
 
 });
