@@ -1,9 +1,9 @@
 const { Routes, REST, Client, GatewayIntentBits } = require('discord.js');
-const { print } = require('mathjs')
 const { table, getBorderCharacters } = require('table');
 const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
 const { FoxyMethod } = require('./commands/foxy');
+const { Latex } = require('./commands/latex');
 require('dotenv').config();
 
 // List of all commands
@@ -57,7 +57,14 @@ const ListOfCommands = [{
         type: 3, // string
     }]
 }, {
-    // TODO: latex command here
+    name: 'latex',
+    description: 'Write latex',
+    options: [{
+        name: 'command',
+        description: 'Write latex commands like \\pi, \\rightarrow, \\neq, etc...',
+        type: 3, // string
+        required: true
+    }]
 }];
 
 // Env variables
@@ -121,7 +128,9 @@ client.on('interactionCreate', async (interaction) => {
                       ${temp.re[1]}
         `)
     } else if (interaction.commandName == 'latex') {
-
+        let temp = new Latex(interaction.options.getString('command'))
+        await temp.main()
+        await interaction.reply({ files: [{ attachment: temp.pngBuffer, name: 'latex_equation.png' }] })
     }
 
 });
