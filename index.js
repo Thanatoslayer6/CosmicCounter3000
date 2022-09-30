@@ -180,6 +180,9 @@ client.on('interactionCreate', async (interaction) => {
     } else if (interaction.commandName == 'weq') {
         let wordEqForm = interaction.options.getString('word-equation')
         let temp = new WordToChem(wordEqForm)
+        await interaction.reply(`
+            The answer to **${wordEqForm}** is converted as: \`\`\`${temp.equation}\`\`\`
+        `)
     }
 
 });

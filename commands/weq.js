@@ -134,27 +134,134 @@ const Ions = [
 
 class WordToChem {
     constructor(stringWordEq) {
+        this.stringWordEq = stringWordEq;
+        this.equation = "";
         this.parseString(stringWordEq);
     }
 
-    // Tries to return an array with the right elements
-    parseString(s) {
+    // Tries to get all info from the string
+    parseString(stringEq) {
         // First split the equation into two (reactant, product)
-        let temp = s.split(/\s\=\s/g)
-        let Reactant, Product;
+        let temp = stringEq.split(/\s\=\s/g)
         // Validate 
         if (temp.length != 2) {
             console.log("errror no equal sign or something")
         }
-        // Split the elements into its own array 
-        Reactant = temp[0].split(/\s\+\s/g); // Hydrogen + water => ["Hydrogen", "water"]
-        Product = temp[1].split(/\s\+\s/g);
-        // TODO: Locate elements through biglist, get symbol and get charge, get gcd method
-        // and just do it...
-        console.log(Reactant);
-        console.log(Product);
+        let rt = temp[0].split(/\s\+\s/g); // Reactant side
+        let pt = temp[1].split(/\s\+\s/g); // Product side
+
+        let Info = {
+            Reactant: rt.map(k => {
+                return this.getIonIndex(k)
+            }),
+            Product: pt.map(k => {
+                return this.getIonIndex(k)
+            })
+        }
+        // Reactant
+		for (let i = 0; i < Info.Reactant.length; i++) {
+			this.equation += Info.Reactant[i].symbol;
+			if (i < Info.Reactant.length - 1) {
+				this.equation += " + ";
+			}
+		}
+		// Add equal sign
+		this.equation += " = ";
+		// Product
+		for (let i = 0; i < Info.Product.length; i++) {
+			this.equation += Info.Product[i].symbol;
+			if (i < Info.Product.length - 1) {
+				this.equation += " + ";
+			}
+		}
+
     }
     
+    getIonIndex(s) {
+        let t = Ions.find(i => {
+            return i[0].toLowerCase() == s.toLowerCase();
+        })
+        if (t == undefined) {
+            let t1 = s.split(/\s/g) // "Sodium Chloride" -> ["Sodium", "Chloride"]
+            let t2 = t1.map(k => {
+                return this.getIonIndex(k) // Recursive
+            })
+            return {
+                name: s,
+                symbol: this.crissCross(t2),
+                charge: 0 // Just make this neutral
+            }
+        } else {
+            return {
+                name: t[0],
+                symbol: t[1],
+                charge: t[2]
+            }
+        }
+    }
+    // Get the gcd/hcf of two numbers
+    getGcd(num1, num2) {
+        let gcd = 1;
+        // looping from 1 to number1 and number2
+        for (let i = 1; i <= num1 && i <= num2; i++) {
+            // check if is factor of both integers
+            if( num1 % i == 0 && num2 % i == 0) {
+                gcd = i;
+            }
+        }
+        return gcd
+    }
+    // Criss-cross method
+    crissCross(i) {
+        // Crisscross method
+        let leftIonCharge = Number(i[0].charge);
+        let rightIonCharge = Math.abs(Number(i[1].charge));
+
+        let gcd = this.getGcd(leftIonCharge, rightIonCharge);
+        // Divide the gcd by the left and right charges
+        leftIonCharge /= gcd;
+        rightIonCharge /= gcd;
+        // Check if ions end with a number
+        // let leftIonEndsWithNum = Character.isDigit(leftIon.charAt(leftIon.length() - 1));
+        let leftIonEndsWithNum = /\d$/.test(i[0].symbol)
+        // let rightIonEndsWithNum = Character.isDigit(rightIon.charAt(rightIon.length() - 1));
+        let rightIonEndsWithNum = /\d$/.test(i[1].symbol)
+
+        if (rightIonCharge == 1 && leftIonCharge == 1) {
+            return `${i[0].symbol}${i[1].symbol}`
+        } else if (rightIonCharge == 1 && leftIonCharge != 1) {
+            if (rightIonEndsWithNum) {
+                // leftIon + "(" + rightIon + ")" + leftIonCharge;
+                return `${i[0].symbol}(${i[1].symbol})${leftIonCharge}`
+            } else {
+                // side[i] = leftIon + rightIon + leftIonCharge;
+                return `${i[0].symbol}${i[1].symbol}${leftIonCharge}`
+            }
+        } else if (leftIonCharge == 1 && rightIonCharge != 1) {	
+            if (leftIonEndsWithNum) {
+                // side[i] = "(" + leftIon + ")" + rightIonCharge + rightIon;
+                return `(${i[0].symbol})${rightIonCharge}${i[1].symbol}`
+            } else {
+                // side[i] = leftIon + rightIonCharge + rightIon;
+                return `${i[0].symbol}${rightIonCharge}${i[1].symbol}`
+            }
+        } else { 
+            if (leftIonEndsWithNum && rightIonEndsWithNum) {
+                // If for example the two ions have charges > 1 like Sb2Cr2O75
+                // side[i] = "(" + leftIon + ")" + rightIonCharge + "(" + rightIon + ")" + leftIonCharge;
+                return `(${i[0].symbol})${rightIonCharge}(${i[1].symbol})${leftIonCharge}`
+            } else if (leftIonEndsWithNum && !rightIonEndsWithNum) {
+                // side[i] = "(" + leftIon + ")" + rightIonCharge +  rightIon + leftIonCharge;
+                return `(${i[0].symbol})${rightIonCharge}${i[1].symbol}${leftIonCharge}`
+            } else if (!leftIonEndsWithNum && rightIonEndsWithNum) {
+                // side[i] = leftIon + rightIonCharge + "(" +  rightIon + ")" + leftIonCharge;
+                return `${i[0].symbol}${rightIonCharge}(${i[1].symbol})${leftIonCharge}`
+            } else {
+                // side[i] = leftIon + rightIonCharge + rightIon + leftIonCharge;
+                return `${i[0].symbol}${rightIonCharge}${i[1].symbol}${leftIonCharge}`
+            }
+        }	
+    }
 }
 
-module.exports = { WordToChem };
+module.exports = { Ions, WordToChem };
