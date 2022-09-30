@@ -4,6 +4,7 @@ const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
 const { FoxyMethod } = require('./commands/foxy');
 const { Latex } = require('./commands/latex');
+const { WordToChem } = require('./commands/weq')
 require('dotenv').config();
 
 // List of all commands
@@ -77,6 +78,24 @@ const ListOfCommands = [{
         name: 'solve-for',
         description: 'Can only be a, vf, vi, t, or d',
         type: 3, // string
+        required: true
+    }]
+}, {
+    name: 'weq',
+    description: 'Converts a chemical word equation to its formula form',
+    options: [{
+        name: 'word-equation',
+        description: 'The word equation string e.g (Glucose + oxygen = carbon dioxide + Water)',
+        type: 3,
+        required: true
+    }]
+}, { 
+    name: 'balance',
+    description: 'Balances a chemical equation',
+    options: [{
+        name: 'equation',
+        description: 'The given chemical equation e.g (H2 + O2 = H2O)',
+        type: 3, 
         required: true
     }]
 }];
@@ -157,7 +176,10 @@ client.on('interactionCreate', async (interaction) => {
             files: [attc]
         })
     } else if (interaction.commandName == 'kinematics') {
-        
+        // TODO: To be continued   
+    } else if (interaction.commandName == 'weq') {
+        let wordEqForm = interaction.options.getString('word-equation')
+        let temp = new WordToChem(wordEqForm)
     }
 
 });

@@ -20,6 +20,7 @@ class Kinematics {
     acceleration() {
         // a = (vf - vi )/ t
         // a = (vf^{2} - vi^{2}) / 2d 
+        // TODO: Find a way for this
     }
 
     main() {
