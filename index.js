@@ -6,6 +6,7 @@ const { FoxyMethod } = require('./commands/foxy');
 const { Latex } = require('./commands/latex');
 const { WordToChem } = require('./commands/weq')
 const { Balancer } = require('./commands/balance')
+const { Kinematics } = require('./commands/kinematics')
 require('dotenv').config();
 
 // List of all commands
@@ -72,7 +73,7 @@ const ListOfCommands = [{
     description: 'Tries to solve distance/time/velocity (initial or final)/acceleration',
     options: [{
         name: 'known-values',
-        description: 'Values such as a, vf, vi, t, or d (separate by a comma or spaces) e.g (vf = 2km/s t=2s)',
+        description: 'Can be a, vf, vi, t, or d (separate by a comma or spaces) e.g (vf = 2km/s t=2s)',
         type: 3, // string
         required: true
     }, {
@@ -177,7 +178,33 @@ client.on('interactionCreate', async (interaction) => {
             files: [attc]
         })
     } else if (interaction.commandName == 'kinematics') {
+        let variables = interaction.options.getString('known-values')
+        let toSolveFor = interaction.options.getString('solve-for')
+        try {
+            // KINEMATICS
+            let temp1 = new Kinematics(variables, toSolveFor)
+            // LATEX
+            let temp2 = new Latex(temp1.equationInLatex)
+            await temp2.main() // Evaluate all methods (main)
+            
+            let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
+
+            // SEND!!!!!!!!
+            await interaction.reply({ 
+                embeds: [{ // Send embedded latex command
+                    description: `**Known Values:** \`${temp1.knownValuesToString()}\`\n**Solve For:** \`${temp1.solveFor}\``,
+                    image: {
+                        url: 'attachment://latex_eq.png'
+                    }
+                }], 
+                files: [attc]
+            })
+
+        } catch (exception) {
+            await interaction.reply(`Something went wrong o_O`)
+        }
         // TODO: To be continued   
+        
     } else if (interaction.commandName == 'weq') {
         let wordEqForm = interaction.options.getString('word-equation')
         try { 
