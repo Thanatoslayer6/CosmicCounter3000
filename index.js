@@ -180,16 +180,25 @@ client.on('interactionCreate', async (interaction) => {
         // TODO: To be continued   
     } else if (interaction.commandName == 'weq') {
         let wordEqForm = interaction.options.getString('word-equation')
-        let temp = new WordToChem(wordEqForm)
-        await interaction.reply(`
+        try { 
+            let temp = new WordToChem(wordEqForm)
+            await interaction.reply(`
             The answer to **${wordEqForm}** is converted as: \`\`\`${temp.equation}\`\`\`
-        `)
+            `)
+        } catch (exception) {
+            // Just incase the user inputs a non-existent element in the list
+            await interaction.reply(`Error! can't convert the word equation **${wordEqForm}, please check the elements`) 
+        }
     } else if (interaction.commandName == 'balance') {
         let unbalancedChemFormula = interaction.options.getString('equation');
-        let temp = new Balancer(unbalancedChemFormula)
-        await interaction.reply(`
+        try {
+            let temp = new Balancer(unbalancedChemFormula)
+            await interaction.reply(`
             The balanced chemical formula for **${unbalancedChemFormula}** is: \`\`\`${temp.equation}\`\`\`
-        `)
+            `)
+        } catch (exception) {
+            await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
+        }
     }
 
 });
