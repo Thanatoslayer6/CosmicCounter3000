@@ -3,6 +3,9 @@
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
 const { WordToChem } = require('./commands/weq')
+const { Balancer } = require('./commands/balance')
+
+let te = new Balancer("H2 + O2 = H2O")
 // const math = require('mathjs');
 // let into = new Bearing(179)
 // let temp = new Kinematics("vf=20km/s vi=0km/s t = 8s", "a")

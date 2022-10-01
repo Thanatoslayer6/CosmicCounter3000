@@ -1,3 +1,5 @@
+const { gcd } = require('mathjs')
+
 const Ions = [
     ["Sodium", "Na", "+1" ], 
     ["Potassium", "K", "+1"],
@@ -199,28 +201,17 @@ class WordToChem {
             }
         }
     }
-    // Get the gcd/hcf of two numbers
-    getGcd(num1, num2) {
-        let gcd = 1;
-        // looping from 1 to number1 and number2
-        for (let i = 1; i <= num1 && i <= num2; i++) {
-            // check if is factor of both integers
-            if( num1 % i == 0 && num2 % i == 0) {
-                gcd = i;
-            }
-        }
-        return gcd
-    }
+
     // Criss-cross method
     crissCross(i) {
         // Crisscross method
         let leftIonCharge = Number(i[0].charge);
         let rightIonCharge = Math.abs(Number(i[1].charge));
 
-        let gcd = this.getGcd(leftIonCharge, rightIonCharge);
+        let properGcd = gcd(leftIonCharge, rightIonCharge);
         // Divide the gcd by the left and right charges
-        leftIonCharge /= gcd;
-        rightIonCharge /= gcd;
+        leftIonCharge /= properGcd;
+        rightIonCharge /= properGcd;
         // Check if ions end with a number
         // let leftIonEndsWithNum = Character.isDigit(leftIon.charAt(leftIon.length() - 1));
         let leftIonEndsWithNum = /\d$/.test(i[0].symbol)

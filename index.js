@@ -5,6 +5,7 @@ const { AccuracyPrecision } = require('./commands/accuracyprecision');
 const { FoxyMethod } = require('./commands/foxy');
 const { Latex } = require('./commands/latex');
 const { WordToChem } = require('./commands/weq')
+const { Balancer } = require('./commands/balance')
 require('dotenv').config();
 
 // List of all commands
@@ -182,6 +183,12 @@ client.on('interactionCreate', async (interaction) => {
         let temp = new WordToChem(wordEqForm)
         await interaction.reply(`
             The answer to **${wordEqForm}** is converted as: \`\`\`${temp.equation}\`\`\`
+        `)
+    } else if (interaction.commandName == 'balance') {
+        let unbalancedChemFormula = interaction.options.getString('equation');
+        let temp = new Balancer(unbalancedChemFormula)
+        await interaction.reply(`
+            The balanced chemical formula for **${unbalancedChemFormula}** is: \`\`\`${temp.equation}\`\`\`
         `)
     }
 

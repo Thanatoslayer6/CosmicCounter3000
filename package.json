@@ -10,6 +10,7 @@
   "author": "Thanatoslayer6",
   "license": "ISC",
   "dependencies": {
+    "compound-parser": "^1.0.5",
     "discord.js": "^14.4.0",
     "dotenv": "^16.0.2",
     "mathjs": "^11.2.1",
