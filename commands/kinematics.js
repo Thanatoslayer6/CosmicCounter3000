@@ -1,4 +1,5 @@
 const math = require('mathjs')
+let vf, vi, t, a, d; // Initialize needed global variables 
 
 class Kinematics {
 
@@ -8,19 +9,20 @@ class Kinematics {
         this.equationInLatex;
         this.result;
         // Solve and do the needful sirs
+        this.assignKnownValues()
         this.validateSolveFor()
     }
 
     parseAndValidateKnownValues(kv) {
         // Split by the spaces or the units
         let info = []
-        let sp, val, temp = kv.split(/(?![0-9a-z])[,\s]+(?=[a-zA-Z])/gm);
+        let variable, temp = kv.split(/(?![0-9a-z])[,\s]+(?=[a-zA-Z])/gm);
         temp.forEach(i => {
             // First split every element in the array by the equal sign
-            sp = i.split(/\=/g);
+            variable = i.split(/\=/g);
             info.push({
-                given: sp[0].trim(),
-                value: sp[1].trim()
+                given: variable[0].trim(),
+                value: variable[1].trim()
             })
         })
         return info;
@@ -35,6 +37,23 @@ class Kinematics {
             }
         })
         return ss;
+    }
+
+    assignKnownValues() {
+        // First we grab the values from the 'knownValues' array
+        this.knownValues.forEach(i => {
+            if (i.given == "vf") {
+                vf = i;
+            } else if (i.given == "vi") {
+                vi = i;
+            } else if (i.given == "t") {
+                t = i;
+            } else if (i.given == "d") {
+                d = i;
+            } else if (i.given == "a") {
+                a = i;
+            }
+        })
     }
 
     validateSolveFor() {
@@ -58,19 +77,6 @@ class Kinematics {
     }
 
     acceleration(gv) {
-        let vf, vi, t, d;
-        // First we grab the values from the 'knownValues' array
-        this.knownValues.forEach(i => {
-            if (i.given == "vf") {
-                vf = i;
-            } else if (i.given == "vi") {
-                vi = i;
-            } else if (i.given == "t") {
-                t = i;
-            } else if (i.given == "d") {
-                d = i;
-            }
-        })
         // Check the variables inputted by the user
         if (this.checkArrayEquality(gv, ["vf", "vi", "t"]))  {
             // a = (vf - vi )/ t
@@ -109,30 +115,17 @@ class Kinematics {
     }
 
     distance(gv) {
-        let vi, vf, t, a;  
-        // First we grab the values from the 'knownValues' array
-        this.knownValues.forEach(i => {
-            if (i.given == "vf") {
-                vf = i;
-            } else if (i.given == "vi") {
-                vi = i;
-            } else if (i.given == "t") {
-                t = i;
-            } else if (i.given == "a") {
-                a = i;
-            }
-        })
         // Check the variables inputted by the user
         if (this.checkArrayEquality(gv, ["vi", "a", "t"]))  {
             // d = vit + at^{2}/ 2
             // Write the needed equation in latex
-            this.equationInLatex = `d = \\frac{v_{i}t + at^{2}}{2} \\implies \\frac{(${vi.value})(${t.value}) + (${a.value})(${t.value})^{2}}{2}`
+            this.equationInLatex = `d = v_{i}t + \\frac{at^{2}}{2} \\implies (${vi.value})(${t.value}) + \\frac{(${a.value})(${t.value})^{2}}{2}`
             // Change the variables into units so that mathjs can work with it
             vi = math.unit(vi.value);
             a = math.unit(a.value); 
             t = math.unit(t.value);
             // Get the result based on the formula
-            this.result = (math.divide(math.add(math.multiply(vi, t), math.multiply(a, math.square(t))), 2)).toString()
+            this.result = (math.add(math.multiply(vi, t), math.divide(math.multiply(a, math.square(t)), 2))).toString()
             // Append the result in the needed latex equation
             this.equationInLatex += ` = ${this.result}`
         } else if (this.checkArrayEquality(gv, ["vf", "vi", "a"])) {
@@ -150,24 +143,11 @@ class Kinematics {
     }
 
     initialVelocity(gv) {
-        let vf, a, t, d;
-        // First we grab the values from the 'knownValues' array
-        this.knownValues.forEach(i => {
-            if (i.given == "vf") {
-                vf = i;
-            } else if (i.given == "a") {
-                a = i;
-            } else if (i.given == "t") {
-                t = i;
-            } else if (i.given == "d") {
-                d = i;
-            }
-        })
         // Check the variables inputted by the user
         if (this.checkArrayEquality(gv, ["vf", "a", "t"]))  {
             // vi = vf - at
             // Write the needed equation in latex
-            this.equationInLatex = `v_{i} = v_{f} - at \\implies (${vf.value}) - (${a.value})(${t.value})`
+            this.equationInLatex = `v_{i} = v_{f} - at \\implies ${vf.value} - (${a.value})(${t.value})`
             // Change the variables into units so that mathjs can work with it
             vf = math.unit(vf.value);
             a = math.unit(a.value); 
@@ -178,7 +158,7 @@ class Kinematics {
             this.equationInLatex += ` = ${this.result}`
         } else if (this.checkArrayEquality(gv, ["t", "d", "a"])) {
             // vi = (d - (at^{2})/2)/t
-            this.equationInLatex = `v_{i} = \\frac{d - \\frac{at^{2}}{2}}{t} \\implies \\frac{(${d.value}) - \\frac{(${a.value})(${t.value})^{2}}{2}}{${t.value}}` 
+            this.equationInLatex = `v_{i} = \\frac{d - \\frac{at^{2}}{2}}{t} \\implies \\frac{${d.value} - \\frac{(${a.value})(${t.value})^{2}}{2}}{${t.value}}` 
             // Change the variables into units so that mathjs can work with it
             t = math.unit(t.value); 
             d = math.unit(d.value);
@@ -201,8 +181,31 @@ class Kinematics {
         }
     }
 
-    finalVelocity() {
-        // TO BE CONTINUED
+    finalVelocity(gv) {
+        if (this.checkArrayEquality(gv, ["vi", "a", "t"]))  {
+            // vf = vi + at
+            // Write the needed equation in latex
+            this.equationInLatex = `v_{f} = v_{i} + at \\implies ${vi.value} - (${a.value})(${t.value})`
+            // Change the variables into units so that mathjs can work with it
+            vi = math.unit(vi.value);
+            a = math.unit(a.value); 
+            t = math.unit(t.value);
+            // Get the result based on the formula
+            this.result = (math.add(vi, math.multiply(a, t))).toString()
+            // Append the result in the needed latex equation
+            this.equationInLatex += ` = ${this.result}`
+        } else if (this.checkArrayEquality(gv, ["vi", "a", "d"])) {
+            // vf = sqrt(vi^2 + 2ad)
+            this.equationInLatex = `v_{f} = \\sqrt{v_{i}^{2} + 2ad} \\implies \\sqrt{(${vi.value})^{2} + 2(${a.value})(${d.value})}` 
+            // Change the variables into units so that mathjs can work with it
+            vi = math.unit(vi.value); 
+            a = math.unit(a.value);
+            d = math.unit(d.value);
+            // Get the result based on the formula
+            this.result = (math.sqrt(math.add(math.square(vi), math.multiply(2, math.multiply(a,d))))).toString()
+            // Append the result in the needed latex equation
+            this.equationInLatex += ` = ${this.result}`
+        }     
     }
 
     // Checks array equality for determining the right formula to be used

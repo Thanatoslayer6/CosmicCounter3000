@@ -192,7 +192,7 @@ client.on('interactionCreate', async (interaction) => {
             // SEND!!!!!!!!
             await interaction.reply({ 
                 embeds: [{ // Send embedded latex command
-                    description: `**Known Values:** \`${temp1.knownValuesToString()}\`\n**Solve For:** \`${temp1.solveFor}\``,
+                    description: `**Given:** \`${temp1.knownValuesToString()}\`\n**Find:** \`${temp1.solveFor}\`\n**Answer:** \`${temp1.result}\``,
                     image: {
                         url: 'attachment://latex_eq.png'
                     }
@@ -201,9 +201,8 @@ client.on('interactionCreate', async (interaction) => {
             })
 
         } catch (exception) {
-            await interaction.reply(`Something went wrong o_O`)
+            await interaction.reply(`Something went wrong (o_O) please check your input below\n\`${variables} -> solve for ${toSolveFor}\``)
         }
-        // TODO: To be continued   
         
     } else if (interaction.commandName == 'weq') {
         let wordEqForm = interaction.options.getString('word-equation')
@@ -226,6 +225,8 @@ client.on('interactionCreate', async (interaction) => {
         } catch (exception) {
             await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
         }
+    } else if (interaction.commandName == 'stoichiometry') {
+
     }
 
 });
