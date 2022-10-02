@@ -7,6 +7,7 @@ const { Latex } = require('./commands/latex');
 const { WordToChem } = require('./commands/weq')
 const { Balancer } = require('./commands/balance')
 const { Kinematics } = require('./commands/kinematics')
+const { Stoichiometry } = require('./commands/stoichiometry')
 require('dotenv').config();
 
 // List of all commands
@@ -98,6 +99,25 @@ const ListOfCommands = [{
         name: 'equation',
         description: 'The given chemical equation e.g (H2 + O2 = H2O)',
         type: 3, 
+        required: true
+    }]
+}, {
+    name: 'stoichiometry',
+    description: 'Solves Mass to mass, Mass to Volume, Volume to Volume',
+    options: [{
+        name: "equation",
+        description: "The given chemical equation e.g (Mg + O2 = MgO)",
+        type: 3,
+        required: true
+    }, {
+        name: "given",
+        description: "Known values e.g (25.2 g of Mg, 5ml of H2O)",
+        type: 3,
+        required: true
+    }, {
+        name: "solve-for",
+        description: "Can be mass in grams or volume in liters e.g (m of MgO, volume of H2O)",
+        type: 3,
         required: true
     }]
 }];
@@ -226,7 +246,12 @@ client.on('interactionCreate', async (interaction) => {
             await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
         }
     } else if (interaction.commandName == 'stoichiometry') {
-
+        let chemEquation = interaction.options.getString('equation');
+        let givenInfo = interaction.options.getString('given');
+        let solveFor = interaction.options.getSubcommand('solve-for');
+        try {
+            let temp = new Stoichiometry(chemEquation, givenInfo, solveFor);
+        }
     }
 
 });

@@ -1,8 +1,9 @@
 // const { Bearing } = require('./bearing');
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
-const { Kinematics } = require('./commands/kinematics')
-const math = require('mathjs')
+// const { Kinematics } = require('./commands/kinematics')
+const { Stoichiometry } = require('./commands/stoichiometry')
+// const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
 
@@ -16,13 +17,14 @@ const math = require('mathjs')
 // const d = math.unit('500 m')
 // console.log(math.number(math.subtract(c, d)))
 
+new Stoichiometry("Mg + O2 = MgO", "25g of Mg", "mass of MgO")
 
 
+// let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")
+// console.log(temp)
 
-let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")
-console.log(temp)
+// console.log(masterString)
 
-console.log(masterString)
 // new FoxyMethod(["30N 20 Degrees East of West", "50N 10 DEGREES N of E", "203.12km/s 50 degrees W of E"])
 // let temp = new FoxyMethod(["3m 30 Degrees N of West", "5m 45 degrees south of west"])
 // console.log(temp)
