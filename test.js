@@ -3,12 +3,12 @@
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
 const { Stoichiometry } = require('./commands/stoichiometry')
-// const math = require('mathjs')
+const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
 
 // let te = new Balancer("H2 + O2 = H2O")
-// console.log(math.number(math.unit('5m/s'), 'km/h')) // THIS WORKS WTF?!?!?
+// console.log(math.number(math.unit('2300ml'), 'l')) // THIS WORKS WTF?!?!?
 
 // let into = new Bearing(179)
 // let temp = new Kinematics("vf=20km/s vi=0km/s t = 8s", "a")

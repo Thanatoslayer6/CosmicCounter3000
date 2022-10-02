@@ -251,6 +251,8 @@ client.on('interactionCreate', async (interaction) => {
         let solveFor = interaction.options.getSubcommand('solve-for');
         try {
             let temp = new Stoichiometry(chemEquation, givenInfo, solveFor);
+        } catch(exception) {
+            //something
         }
     }
 
