@@ -154,9 +154,17 @@ class Balancer {
         this.equation = "";
         let reaction = this.parseChemFormulaInfo(chemFormula)  
         let coefficient, temp = balance(reaction);
+        // Create a detailed object
+        this.reactants = []
+        this.products = []
         // Format the answer and place it in the 'equation' variable
         reaction.reactants.forEach((item, index) => {
             coefficient = temp.get(item);
+            // Push the information to the 'detailed' object
+            this.reactants.push({
+                name: item,
+                coefficient: coefficient 
+            })
             if (coefficient == 1) {
                 this.equation += item;
             } else {
@@ -171,6 +179,11 @@ class Balancer {
         this.equation += " = "
         reaction.products.forEach((item, index) => {
             coefficient = temp.get(item);
+            // Push the information to the 'detailed' object
+            this.products.push({
+                name: item,
+                coefficient: coefficient 
+            })
             if (coefficient == 1) {
                 this.equation += item;
             } else {

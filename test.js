@@ -17,8 +17,9 @@ const math = require('mathjs')
 // const d = math.unit('500 m')
 // console.log(math.number(math.subtract(c, d)))
 
-new Stoichiometry("Mg + O2 = MgO", "25g of Mg", "mass of MgO")
-
+// let st = new Stoichiometry("Mg + O2 = MgO", "25g of Mg", "mass of MgO")
+let st = new Stoichiometry("N2 + H2 = NH3", "10g of H2", "volume of NH3")
+console.log(st)
 
 // let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")
 // console.log(temp)

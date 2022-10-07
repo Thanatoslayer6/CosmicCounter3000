@@ -1,6 +1,6 @@
-const math = require('mathjs');
+// const math = require('mathjs');
 const { Balancer } = require('./balance');
-const { Unit } = require('mathjs')
+const { unit, Unit, multiply, divide } = require('mathjs')
 const parseCompound = require('compound-parser');
 
 let MolarMass = [{
@@ -482,25 +482,26 @@ class Stoichiometry {
         // First get the elements of the unbalanced equation, and check if the values for 'given' and 'solve' are right
         let t1 = given.split(' of ');
         let t2 = solve.split(' of ');
-        this.result, this.equationInLatex;
+        this.result, this.equationInLatex, this.balancedEquation;
         this.info = {
             given: {
                 equation: equation,
                 element: t1[1],
-                elementInfo: math.unit(t1[0]).toJSON(),
+                elementInfo: unit(t1[0]).toJSON(),
                 elementMolarMass: null 
             },
-            solveFor: t2[0],
             solveForElement: t2[1],
             solveForElementMolarMass: null
         }
+        this.solveFor = t2[0],
         // SOLVE
         this.determineWhatToSolve()
         // this.getMolarMass()
     }
 
     determineWhatToSolve() { // Function supports mL, L, kg, and g units for now
-        if (this.info.solveFor.toLowerCase() == "mass" || this.info.solveFor.toLowerCase() == "m") { 
+        if (this.solveFor.toLowerCase() == "mass" || this.solveFor.toLowerCase() == "m") { 
+            this.solveFor = "Mass"
             // Two things are possible it can be  m to m or m to v
             if (this.info.given.elementInfo.unit == "g" || this.info.given.elementInfo.unit == "kg")  {
                 // Mass to Mass
@@ -509,7 +510,8 @@ class Stoichiometry {
                 // Volume to Mass
                 this.volumeToMass()
             }
-        } else if (this.info.solveFor.toLowerCase() == "volume" || this.info.solveFor.toLowerCase() == "v") {
+        } else if (this.solveFor.toLowerCase() == "volume" || this.solveFor.toLowerCase() == "v") {
+            this.solveFor = "Volume"
             // can be m to v or v to v
             if (this.info.given.elementInfo.unit == "g" || this.info.given.elementInfo.unit == "kg")  {
                 // Mass to Volume
@@ -521,30 +523,122 @@ class Stoichiometry {
         }
     }
 
+    // g1, g2 are masses, meanwhile n1, n2 are coefficients... you get it...
     massToMass() {
         // m/n(MW) = x/n(MW) ---> m/n(MW) * n1(MW1) = x
-        // Assign variables for convenience
-        // let g1 = JSON.parse(JSON.stringify(this.info.given.elementInfo), math.reviver())
-        let g1 = (Unit.fromJSON(this.info.given.elementInfo)).toString()
-        // Then get molar mass of the elements
+        // Assign variables for convenience (as Math.js UNITS)
+        let m = (Unit.fromJSON(this.info.given.elementInfo))
+        // Then get molar mass of the elements 'given' and 'solve for' elements
         this.getMolarMass()
-        // After that balance the equation
-        // let balanced = new Balancer(this.info.equation);
-        this.equationInLatex = `\\frac{m}{n(MW)} = \\frac{x}{n(MW)} \\implies \\frac{${g1}}{n()}`
+        // Assign the solved molar masses into their own temporary variables
+        let mw = Unit.fromJSON(this.info.given.elementMolarMass)
+        let mw1 = Unit.fromJSON(this.info.solveForElementMolarMass)
+        // After that balance the equation (then assign it to the global class variable)
+        let balanced = new Balancer(this.info.given.equation);
+        this.balancedEquation = balanced.equation;
+        // console.log(balanced)
+        // Get the coefficient of the known elemenet
+        let n = balanced.reactants.find(item => {
+            return item.name == this.info.given.element
+        }) || balanced.products.find(item => {
+            return item.name == this.info.given.element
+        })
+        // console.log(n)
+        // Get the coefficient of the element to be solved 
+        let n1 = balanced.products.find(item => {
+            return item.name == this.info.solveForElement
+        }) || balanced.reactants.find(item => {
+            return item.name == this.info.solveForElement
+        })
+        // console.log(n1)
 
-        // TODO: Get the coefficients of the elements after balanced, probably don't convert math.js unit for now
-        // 
+        this.result = (multiply(divide(m, multiply(n.coefficient, mw)), multiply(n1.coefficient, mw1))).toString()
+
+        // Transform the variables into strings for latex
+        this.equationInLatex = `\\frac{m}{n(MW)} = \\frac{x}{n(MW)} \\implies \\frac{${m.toString()}}{${n.coefficient}(${mw.toString()})} \\times ${n1.coefficient}(${mw1.toString()}) = ${this.result}`
     }
 
     massToVolume() {
+        // m/n(MW) = V/n(22.4 L) ---> m/n(MW) * n(22.4L) = V
+        let m = (Unit.fromJSON(this.info.given.elementInfo))
+        // Then get molar mass of the elements 'given' and 'solve for' elements
+        this.getMolarMass()
+        // Assign the solved molar masses into their own temporary variables
+        let mw = Unit.fromJSON(this.info.given.elementMolarMass)
+        // After that balance the equation (then assign it to the global class variable)
+        let balanced = new Balancer(this.info.given.equation);
+        this.balancedEquation = balanced.equation;
+        // console.log(balanced)
+        // Get the coefficient of the known elemenet
+        let n = balanced.reactants.find(item => {
+            return item.name == this.info.given.element
+        }) || balanced.products.find(item => {
+            return item.name == this.info.given.element
+        })
+        // console.log(n)
+        // Get the coefficient of the element to be solved 
+        let n1 = balanced.products.find(item => {
+            return item.name == this.info.solveForElement
+        }) || balanced.reactants.find(item => {
+            return item.name == this.info.solveForElement
+        })
+        let stp = unit('22.4l');
+        // I guess the correct unit would be liters/mole (cause default was m^3/mol) 
+        this.result = unit(multiply(divide(m, multiply(n.coefficient, mw)), multiply(n1.coefficient, stp))).to("l mol")
 
+        // Transform the variables into strings for latex
+        this.equationInLatex = `\\frac{m}{n(MW)} = \\frac{V}{n(22.4L)} \\implies \\frac{${m.toString()}}{${n.coefficient}(${mw.toString()})} \\times ${n1.coefficient}(22.4L) = ${this.result}`
     }
-    volumeToMass() {
 
+    volumeToMass() {
+        // m/n(MW) = V/n(22.4 L) ---> V/n(22.4L) * n(MW) = m
+        let v = (Unit.fromJSON(this.info.given.elementInfo))
+        // Then get molar mass of the elements 'given' and 'solve for' elements
+        this.getMolarMass()
+        // Assign the solved molar masses into their own temporary variables
+        let mw1 = Unit.fromJSON(this.info.solveForElementMolarMass)
+        // After that balance the equation (then assign it to the global class variable)
+        let balanced = new Balancer(this.info.given.equation);
+        this.balancedEquation = balanced.equation;
+        // Get the coefficient of the known elemenet
+        let n = balanced.reactants.find(item => {
+            return item.name == this.info.given.element
+        }) || balanced.products.find(item => {
+            return item.name == this.info.given.element
+        })
+        // Get the coefficient of the element to be solved 
+        let n1 = balanced.products.find(item => {
+            return item.name == this.info.solveForElement
+        }) || balanced.reactants.find(item => {
+            return item.name == this.info.solveForElement
+        })
+        let stp = unit('22.4l');
+        this.result = multiply(divide(v, multiply(n.coefficient, stp)), multiply(n1.coefficient, mw1))
+
+        // Transform the variables into strings for latex
+        this.equationInLatex = `\\frac{V}{n(22.4L)} = \\frac{m}{n(MW)} \\implies \\frac{${v.toString()}}{${n.coefficient}(22.4L)} \\times ${n1.coefficient}(${mw1.toString()}) = ${this.result}`
     }
 
     volumeToVolume() {
-
+        // v/n = x/n --> v/n * n1 = x
+        let v = (Unit.fromJSON(this.info.given.elementInfo))
+        // Then get molar mass of the elements 'given' and 'solve for' elements
+        // After that balance the equation (then assign it to the global class variable)
+        let balanced = new Balancer(this.info.given.equation);
+        this.balancedEquation = balanced.equation;
+        // Get the coefficient of the known elemenet
+        let n = balanced.reactants.find(item => {
+            return item.name == this.info.given.element
+        }) || balanced.products.find(item => {
+            return item.name == this.info.given.element
+        })
+        // Get the coefficient of the element to be solved 
+        let n1 = balanced.products.find(item => {
+            return item.name == this.info.solveForElement
+        }) || balanced.reactants.find(item => {
+            return item.name == this.info.solveForElement
+        })
+        this.result = multiply(divide(v, n.coefficient), n1.coefficient)
     }
 
     getMolarMass() {
@@ -559,7 +653,7 @@ class Stoichiometry {
             // while i[1] is the number of elements in the compound.
             mm += ts.mass * i[1];
         })
-        this.info.solveForElementMolarMass = (math.unit(mm, "g/mol")).toJSON()
+        this.info.solveForElementMolarMass = (unit(mm, "g/mol")).toJSON()
         // Molar mass of given element (reset variables to be efficient)
         mm = 0, temp = Array.from(parseCompound(this.info.given.element))
         temp.forEach(i => {
@@ -568,7 +662,7 @@ class Stoichiometry {
             })
             mm += ts.mass * i[1]
         })
-        this.info.given.elementMolarMass = (math.unit(mm, "g/mol")).toJSON()
+        this.info.given.elementMolarMass = (unit(mm, "g/mol")).toJSON()
         // console.log(this.info)
     }
 

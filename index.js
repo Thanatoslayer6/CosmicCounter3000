@@ -106,7 +106,7 @@ const ListOfCommands = [{
     description: 'Solves Mass to mass, Mass to Volume, Volume to Volume',
     options: [{
         name: "equation",
-        description: "The given chemical equation e.g (Mg + O2 = MgO)",
+        description: "The given chemical equation e.g (Mg + O2 = MgO) make sure the spaces are equal",
         type: 3,
         required: true
     }, {
@@ -116,7 +116,7 @@ const ListOfCommands = [{
         required: true
     }, {
         name: "solve-for",
-        description: "Can be mass in grams or volume in liters e.g (m of MgO, volume of H2O)",
+        description: "Can be mass in grams or volume in liters e.g (Mass of MgO, volume of H2O)",
         type: 3,
         required: true
     }]
@@ -248,11 +248,31 @@ client.on('interactionCreate', async (interaction) => {
     } else if (interaction.commandName == 'stoichiometry') {
         let chemEquation = interaction.options.getString('equation');
         let givenInfo = interaction.options.getString('given');
-        let solveFor = interaction.options.getSubcommand('solve-for');
+        let solveFor = interaction.options.getString('solve-for');
         try {
-            let temp = new Stoichiometry(chemEquation, givenInfo, solveFor);
+            // STOICHIOMETRY
+            let temp1 = new Stoichiometry(chemEquation, givenInfo, solveFor);
+
+            // LATEX
+            let temp2 = new Latex(temp1.equationInLatex)
+            await temp2.main() // Evaluate all methods (main)
+
+            let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
+
+            // SEND!!!!!!!!
+            await interaction.reply({ 
+                embeds: [{ // Send embedded latex command
+                    description: `**Balanced Equation:** \`${temp1.balancedEquation}\`\n**Find:** \`${temp1.solveFor}\`\n**Answer:** \`${temp1.result}\``,
+                    image: {
+                        url: 'attachment://latex_eq.png'
+                    }
+                }], 
+                files: [attc]
+            })
         } catch(exception) {
             //something
+            await interaction.reply(`Error! can't do stoichiometry for the given`)
+            console.error(exception)
         }
     }
 
