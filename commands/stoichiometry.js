@@ -501,7 +501,6 @@ class Stoichiometry {
 
     determineWhatToSolve() { // Function supports mL, L, kg, and g units for now
         if (this.solveFor.toLowerCase() == "mass" || this.solveFor.toLowerCase() == "m") { 
-            this.solveFor = "Mass"
             // Two things are possible it can be  m to m or m to v
             if (this.info.given.elementInfo.unit == "g" || this.info.given.elementInfo.unit == "kg")  {
                 // Mass to Mass
@@ -511,7 +510,6 @@ class Stoichiometry {
                 this.volumeToMass()
             }
         } else if (this.solveFor.toLowerCase() == "volume" || this.solveFor.toLowerCase() == "v") {
-            this.solveFor = "Volume"
             // can be m to v or v to v
             if (this.info.given.elementInfo.unit == "g" || this.info.given.elementInfo.unit == "kg")  {
                 // Mass to Volume
@@ -523,6 +521,8 @@ class Stoichiometry {
         }
     }
 
+    // TODO: Lessen the codebase... this is a current mess but it works!
+    
     // g1, g2 are masses, meanwhile n1, n2 are coefficients... you get it...
     massToMass() {
         // m/n(MW) = x/n(MW) ---> m/n(MW) * n1(MW1) = x
@@ -587,7 +587,7 @@ class Stoichiometry {
         this.result = unit(multiply(divide(m, multiply(n.coefficient, mw)), multiply(n1.coefficient, stp))).to("l mol")
 
         // Transform the variables into strings for latex
-        this.equationInLatex = `\\frac{m}{n(MW)} = \\frac{V}{n(22.4L)} \\implies \\frac{${m.toString()}}{${n.coefficient}(${mw.toString()})} \\times ${n1.coefficient}(22.4L) = ${this.result}`
+        this.equationInLatex = `\\frac{m}{n(MW)} = \\frac{V}{n(22.4l)} \\implies \\frac{${m.toString()}}{${n.coefficient}(${mw.toString()})} \\times ${n1.coefficient}(22.4l) = ${this.result}`
     }
 
     volumeToMass() {
@@ -616,7 +616,7 @@ class Stoichiometry {
         this.result = multiply(divide(v, multiply(n.coefficient, stp)), multiply(n1.coefficient, mw1))
 
         // Transform the variables into strings for latex
-        this.equationInLatex = `\\frac{V}{n(22.4L)} = \\frac{m}{n(MW)} \\implies \\frac{${v.toString()}}{${n.coefficient}(22.4L)} \\times ${n1.coefficient}(${mw1.toString()}) = ${this.result}`
+        this.equationInLatex = `\\frac{V}{n(22.4l)} = \\frac{m}{n(MW)} \\implies \\frac{${v.toString()}}{${n.coefficient}(22.4l)} \\times ${n1.coefficient}(${mw1.toString()}) = ${this.result}`
     }
 
     volumeToVolume() {
@@ -639,6 +639,8 @@ class Stoichiometry {
             return item.name == this.info.solveForElement
         })
         this.result = multiply(divide(v, n.coefficient), n1.coefficient)
+        // Transform the variables into strings for latex
+        this.equationInLatex = `\\frac{V}{n} = \\frac{V}{n} \\implies \\frac{${v.toString()}}{${n.coefficient}} \\times ${n1.coefficient} = ${this.result}`
     }
 
     getMolarMass() {
@@ -666,6 +668,12 @@ class Stoichiometry {
         // console.log(this.info)
     }
 
+}
+
+class Percentage {
+    constructor() {
+        // TODO: Create another class for percentage
+    }
 }
 
 module.exports = { Stoichiometry }

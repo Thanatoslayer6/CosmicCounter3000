@@ -120,6 +120,18 @@ const ListOfCommands = [{
         type: 3,
         required: true
     }]
+}, {
+    name: 'stoichiometry-percentage',
+    description: 'Solves mass-by-mass, mass-by-volume, volume-by-volume',
+    options: [{
+        name: "percent",
+        description: "Percent by m/m, m/v, or v/v (optional)",
+        required: false
+    }, {
+        name: "solute",
+        description: "Mass of solute/volume of solute e.g (40g, 2.1L)"
+        //TODO: Do something here
+    }]
 }];
 
 // Env variables
@@ -262,7 +274,7 @@ client.on('interactionCreate', async (interaction) => {
             // SEND!!!!!!!!
             await interaction.reply({ 
                 embeds: [{ // Send embedded latex command
-                    description: `**Balanced Equation:** \`${temp1.balancedEquation}\`\n**Find:** \`${temp1.solveFor}\`\n**Answer:** \`${temp1.result}\``,
+                    description: `**Given:** \`${givenInfo}\`\n**Find:** \`${solveFor}\`\n**Balanced Equation:** \`${temp1.balancedEquation}\`\n**Answer:** \`${temp1.result}\``,
                     image: {
                         url: 'attachment://latex_eq.png'
                     }
