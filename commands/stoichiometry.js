@@ -1,6 +1,6 @@
 // const math = require('mathjs');
 const { Balancer } = require('./balance');
-const { unit, Unit, multiply, divide } = require('mathjs')
+const { unit, Unit, multiply, divide, subtract } = require('mathjs')
 const parseCompound = require('compound-parser');
 
 let MolarMass = [{
@@ -670,10 +670,31 @@ class Stoichiometry {
 
 }
 
-class Percentage {
-    constructor() {
+class StoichiometryPercentage {
+    constructor(percent, solute, solution) {
+        this.percent = percent;
+        this.solute = unit(solute);
+        this.solution = unit(solution);
+        this.solvent;
         // TODO: Create another class for percentage
+        this.solve(); // Final method, just does everything...
+    }
+    solve() {
+        // TODO: FIX UNITS DONT MATCH!!! if Mass/Volume
+        if (this.percent == undefined) { // Formula is m/m * 100 or m/v * 100
+            this.percent = `${multiply(divide(this.solute, this.solution), 100)}%`;
+            this.solvent = subtract(this.solution, this.solute).toString();
+            // Just transform the stuff to string back...
+            this.solute = this.solute.toString();
+            this.solution = this.solution.toString();
+        } else if (this.solute == undefined) {
+
+
+        } else if (this.solution == undefined) {
+
+        }
+
     }
 }
 
-module.exports = { Stoichiometry }
+module.exports = { Stoichiometry, StoichiometryPercentage }

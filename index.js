@@ -122,15 +122,22 @@ const ListOfCommands = [{
     }]
 }, {
     name: 'stoichiometry-percentage',
-    description: 'Solves mass-by-mass, mass-by-volume, volume-by-volume',
+    description: 'Solves percentage of mass-by-mass, mass-by-volume, volume-by-volume',
     options: [{
         name: "percent",
-        description: "Percent by m/m, m/v, or v/v (optional)",
+        description: "Percent by m/m, m/v, or v/v e.g (14%, 49%) (optional)",
+        type: 3,
         required: false
     }, {
         name: "solute",
-        description: "Mass of solute/volume of solute e.g (40g, 2.1L)"
-        //TODO: Do something here
+        description: "Mass/volume of solute e.g (40g, 2.1L) (optional)",
+        tpe: 3,
+        required: false
+    }, {
+        name: "solution",
+        description: "Mass/volume of solvent e.g (2.2kg, 590ml) (optional)",
+        type: 3,
+        required: false
     }]
 }];
 

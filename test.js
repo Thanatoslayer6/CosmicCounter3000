@@ -2,7 +2,7 @@
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
-const { Stoichiometry } = require('./commands/stoichiometry')
+const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
@@ -18,7 +18,7 @@ const math = require('mathjs')
 // console.log(math.number(math.subtract(c, d)))
 
 // let st = new Stoichiometry("Mg + O2 = MgO", "25g of Mg", "mass of MgO")
-let st = new Stoichiometry("N2 + H2 = NH3", "10g of H2", "volume of NH3")
+let st = new StoichiometryPercentage(undefined, "20g", "500ml");
 console.log(st)
 
 // let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")
