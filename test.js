@@ -3,7 +3,7 @@
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
 const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
-const math = require('mathjs')
+// const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
 
@@ -18,7 +18,9 @@ const math = require('mathjs')
 // console.log(math.number(math.subtract(c, d)))
 
 // let st = new Stoichiometry("Mg + O2 = MgO", "25g of Mg", "mass of MgO")
-let st = new StoichiometryPercentage(undefined, "20g", "500ml");
+// let st = new StoichiometryPercentage(undefined, "20g", "500g", "m/m");
+// percent, solute, solution, method
+let st = new StoichiometryPercentage("10%", undefined, "500g", "m/m");
 console.log(st)
 
 // let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")

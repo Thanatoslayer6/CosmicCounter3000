@@ -7,7 +7,7 @@ const { Latex } = require('./commands/latex');
 const { WordToChem } = require('./commands/weq')
 const { Balancer } = require('./commands/balance')
 const { Kinematics } = require('./commands/kinematics')
-const { Stoichiometry } = require('./commands/stoichiometry')
+const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 require('dotenv').config();
 
 // List of all commands
@@ -103,7 +103,7 @@ const ListOfCommands = [{
     }]
 }, {
     name: 'stoichiometry',
-    description: 'Solves Mass to mass, Mass to Volume, Volume to Volume',
+    description: 'Solves Mass to Mass, Mass to Volume, Volume to Volume',
     options: [{
         name: "equation",
         description: "The given chemical equation e.g (Mg + O2 = MgO) make sure the spaces are equal",
@@ -120,20 +120,35 @@ const ListOfCommands = [{
         type: 3,
         required: true
     }]
-}, {
+},{
     name: 'stoichiometry-percentage',
     description: 'Solves percentage of mass-by-mass, mass-by-volume, volume-by-volume',
     options: [{
+        name: "method",
+        description: "Specify if % by (m/m), (m/v), or (v/v)",
+        type: 3,
+        required: true,
+        choices: [{
+            name: 'Percent by Mass %(m/m)',
+            value: 'm/m',
+        }, {
+            name: 'Percent by Mass/Volume %(m/v)',
+            value: 'm/v',
+        }, {
+            name: 'Percent by Volume %(v/v)',
+            value: 'v/v'
+        }]
+    },{
         name: "percent",
-        description: "Percent by m/m, m/v, or v/v e.g (14%, 49%) (optional)",
+        description: "% by m/m, m/v, or v/v e.g (14%, 49%) (optional)",
         type: 3,
         required: false
-    }, {
+    },{
         name: "solute",
         description: "Mass/volume of solute e.g (40g, 2.1L) (optional)",
-        tpe: 3,
+        type: 3,
         required: false
-    }, {
+    },{
         name: "solution",
         description: "Mass/volume of solvent e.g (2.2kg, 590ml) (optional)",
         type: 3,
@@ -293,8 +308,29 @@ client.on('interactionCreate', async (interaction) => {
             await interaction.reply(`Error! can't do stoichiometry for the given`)
             console.error(exception)
         }
-    }
+    } else if (interaction.commandName == 'stoichiometry-percentage') {
+        let percent = interaction.options.getString('percent')
+        let solute = interaction.options.getString('solute')        
+        let solution = interaction.options.getString('solution')
+        let method = interaction.options.getString('method')
+        let temp1 = new StoichiometryPercentage(percent, solute, solution, method)
+        // LATEX
+        let temp2 = new Latex(temp1.equationInLatex)
+        await temp2.main() // Evaluate all methods (main)
 
+        let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
+
+        // SEND!!!!!!!!
+        await interaction.reply({ 
+            embeds: [{ // Send embedded latex command
+                description: temp1.givenInfo,
+                image: {
+                    url: 'attachment://latex_eq.png'
+                }
+            }], 
+            files: [attc]
+        })
+    }
 });
 
 // Main
