@@ -699,7 +699,7 @@ class StoichiometryPercentage {
             // Just transform the stuff to string back...
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
-            this.equationInLatex = `\\ \\text{% by Mass} = \\frac{\\text{Mass solute}}{\\text{Mass solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
+            this.equationInLatex = `\\text{% by Mass} = \\frac{\\text{Mass solute}}{\\text{Mass solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
             // Store info the givenInfo variable for outputting proper stuff into embed
             this.givenInfo = `**Given:**\n - Mass solute: \`${this.solute}\`\n - Mass solvent: \`${this.solvent}\`\n - Mass solution: \`${this.solution}\`\n**Find:** \`Percent by Mass %(m/m)\`\n**Answer:** \`${this.percent}\``
 
@@ -709,17 +709,56 @@ class StoichiometryPercentage {
             // Just transform the stuff to string back...
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
-            this.equationInLatex = `\\ \\text{% by Mass} = \\frac{\\text{Mass solute}}{\\text{Mass solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
+            this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Mass solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
             // Store info the givenInfo variable for outputting proper stuff into embed
-            this.givenInfo = `**Given:**\n - Mass solute: \`${this.solute}\`\n - Mass solution: \`${this.solution}\`\n**Find:** \`Percent by Mass %(m/m)\``
+            this.givenInfo = `**Given:**\n - % by Mass: \`${this.percent.toFixed(2)}%\`\n - Mass solvent: \`${this.solvent}\`\n - Mass solution: \`${this.solution}\`\n**Find:** \`Mass of solute\`\n**Answer:** \`${this.solute}\``
 
-        } else if (this.solution == undefined) {
-            // TODO: Fix latex and for previous if else statement, and other stuff... finish this too
+        } else if (this.solution == undefined) { // solute * 100/%(m/m) = soln
+            this.solution =  multiply(this.solute, divide(100, this.percent));
+            this.solvent = subtract(this.solution, this.solute).toString();
+            // Just transform the stuff to string back...
+            this.solute = this.solute.toString();
+            this.solution = this.solution.toString();
+            // this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Mass solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
+            this.equationInLatex = `\\text{Mass solution} = \\frac{\\text{100%}}{\\text{% by Mass}} \\times \\text{Mass solute} \\implies \\frac{100}{${this.percent.toFixed(2)}} \\times ${this.solute} = ${this.solution}`
+            // Store info the givenInfo variable for outputting proper stuff into embed
+            this.givenInfo = `**Given:**\n - % by Mass: \`${this.percent.toFixed(2)}%\`\n - Mass solvent: \`${this.solvent}\`\n - Mass solute: \`${this.solute}\`\n**Find:** \`Mass of solution\`\n**Answer:** \`${this.solution}\``
         }
-    }
+    } // Works !
+    
+    // TODO: Fix unit issues
+    percentByMassVolume() { // Same stuff
+        if (this.percent == undefined) {
+            this.percent = `${multiply(divide(this.solute, this.solution), 100)}%`;
+            // this.solvent = subtract(this.solution, this.solute).toString();
+            // Just transform the stuff to string back...
+            this.solute = this.solute.toString();
+            this.solution = this.solution.toString();
+            this.equationInLatex = `\\text{% by Mass} = \\frac{\\text{Mass solute}}{\\text{Volume solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
+            // Store info the givenInfo variable for outputting proper stuff into embed
+            this.givenInfo = `**Given:**\n - Mass solute: \`${this.solute}\`\n - Volume solution: \`${this.solution}\`\n**Find:** \`Percent by Mass/Volume %(m/v)\`\n**Answer:** \`${this.percent}\``
 
-    percentByMassVolume() {
+        } else if (this.solute == undefined) { // %(m/v)/100 * solution
+            this.solute = multiply(divide(this.percent, 100), this.solution);
+            // this.solvent = subtract(this.solution, this.solute).toString();
+            // Just transform the stuff to string back...
+            this.solute = this.solute.toString();
+            this.solution = this.solution.toString();
+            this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Volume solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
+            // Store info the givenInfo variable for outputting proper stuff into embed
+            this.givenInfo = `**Given:**\n - % by Mass: \`${this.percent.toFixed(2)}%\`\n - Volume solution: \`${this.solution}\`\n**Find:** \`Mass of solute\`\n**Answer:** \`${this.solute}\``
 
+        } else if (this.solution == undefined) { // solute * 100/%(m/m) = soln
+            this.solution =  multiply(this.solute, divide(100, this.percent));
+            // this.solvent = subtract(this.solution, this.solute).toString();
+            // Just transform the stuff to string back...
+            this.solute = this.solute.toString();
+            this.solution = this.solution.toString();
+            // this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Mass solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
+            this.equationInLatex = `\\text{Volume solution} = \\frac{\\text{100%}}{\\text{% by Mass}} \\times \\text{Mass solute} \\implies \\frac{100}{${this.percent.toFixed(2)}} \\times ${this.solute} = ${this.solution}`
+            // Store info the givenInfo variable for outputting proper stuff into embed
+            this.givenInfo = `**Given:**\n - % by Mass: \`${this.percent.toFixed(2)}%\`\n - Mass solute: \`${this.solute}\`\n**Find:** \`Volume of solution\`\n**Answer:** \`${this.solution}\``
+        }
     }
 
     percentByVolume() {
