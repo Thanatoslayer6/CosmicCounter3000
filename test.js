@@ -21,7 +21,7 @@ const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiom
 // let st = new StoichiometryPercentage(undefined, "20g", "500g", "m/m");
 // percent, solute, solution, method
 let st = new StoichiometryPercentage(undefined, "40g", "0.52l", "m/v");
-console.log(st)
+// console.log(st)
 
 // let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")
 // console.log(temp)

@@ -676,7 +676,6 @@ class StoichiometryPercentage {
         if (percent != undefined) {
             this.percent = parseFloat(percent.slice(0,-1)); // Remove last character
         }
-        // this.percent = percent || percent.slice(0, -1);
         if (solute != undefined) {
             this.solute = unit(solute);
         }
@@ -686,12 +685,14 @@ class StoichiometryPercentage {
         if (method == "m/m") {
             this.percentByMass();
         } else if (method == "m/v") {
+            // console.log((this.solute).toJSON());
+            // console.log((this.solution).toJSON());
             this.percentByMassVolume();
         } else if (method == "v/v") {
             this.percentByVolume();
         }
     }
-
+    
     percentByMass() {  // Formula is m/m * 100 or m/v * 100 (can be g/g or kg/kg, g/kg and such)
         if (this.percent == undefined) { // Solve normally
             this.percent = `${multiply(divide(this.solute, this.solution), 100).toFixed(2)}%`;
@@ -728,12 +729,15 @@ class StoichiometryPercentage {
     
     // TODO: Fix unit issues
     percentByMassVolume() { // Same stuff
+        // Transform the units to json for accessing the stuff...
+        let st = this.solute.toJSON(), sln = this.solution.toJSON(); 
         if (this.percent == undefined) {
-            this.percent = `${multiply(divide(this.solute, this.solution), 100)}%`;
-            // this.solvent = subtract(this.solution, this.solute).toString();
+            // Units must be in pair with each other! convert them into the stuff... (g/ml) or (kg/l)
+            this.percent = `${multiply(divide(st.value, sln.value), 100)}%`;
+            if (st.unit == 'g' && sln.unit == 'ml') // TODO: This!!!!!!
             // Just transform the stuff to string back...
-            this.solute = this.solute.toString();
-            this.solution = this.solution.toString();
+            // this.solute = this.solute.toString();
+            // this.solution = this.solution.toString();
             this.equationInLatex = `\\text{% by Mass} = \\frac{\\text{Mass solute}}{\\text{Volume solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
             // Store info the givenInfo variable for outputting proper stuff into embed
             this.givenInfo = `**Given:**\n - Mass solute: \`${this.solute}\`\n - Volume solution: \`${this.solution}\`\n**Find:** \`Percent by Mass/Volume %(m/v)\`\n**Answer:** \`${this.percent}\``
@@ -764,6 +768,7 @@ class StoichiometryPercentage {
     percentByVolume() {
 
     }
+    
 }
 
 module.exports = { Stoichiometry, StoichiometryPercentage }
