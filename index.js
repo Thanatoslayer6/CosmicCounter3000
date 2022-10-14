@@ -304,7 +304,6 @@ client.on('interactionCreate', async (interaction) => {
                 files: [attc]
             })
         } catch(exception) {
-            //something
             await interaction.reply(`Error! can't do stoichiometry for the given`)
             console.error(exception)
         }
@@ -313,23 +312,28 @@ client.on('interactionCreate', async (interaction) => {
         let solute = interaction.options.getString('solute')        
         let solution = interaction.options.getString('solution')
         let method = interaction.options.getString('method')
-        let temp1 = new StoichiometryPercentage(percent, solute, solution, method)
-        // LATEX
-        let temp2 = new Latex(temp1.equationInLatex)
-        await temp2.main() // Evaluate all methods (main)
+        try {
+            let temp1 = new StoichiometryPercentage(percent, solute, solution, method)
+            // LATEX
+            let temp2 = new Latex(temp1.equationInLatex)
+            await temp2.main() // Evaluate all methods (main)
 
-        let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
+            let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
 
-        // SEND!!!!!!!!
-        await interaction.reply({ 
-            embeds: [{ // Send embedded latex command
-                description: temp1.givenInfo,
-                image: {
-                    url: 'attachment://latex_eq.png'
-                }
-            }], 
-            files: [attc]
-        })
+            // SEND!!!!!!!!
+            await interaction.reply({ 
+                embeds: [{ // Send embedded latex command
+                    description: temp1.givenInfo,
+                    image: {
+                        url: 'attachment://latex_eq.png'
+                    }
+                }], 
+                files: [attc]
+            })
+        } catch (exception) {
+            await interaction.reply(`Error! can't do stoichiometry percentages for the given`)
+            console.error(exception)
+        }
     }
 });
 

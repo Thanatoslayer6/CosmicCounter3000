@@ -2,11 +2,14 @@
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
-const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
+const { VerticallyDownward } = require('./commands/projectilemotion')
+// const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
-
+// vi, vf, h, t
+let st = new VerticallyDownward("5.0m/s", undefined, "20m", undefined)
+console.log(st)
 // let te = new Balancer("H2 + O2 = H2O")
 // console.log(math.number(math.unit('2300ml'), 'l')) // THIS WORKS WTF?!?!?
 
@@ -23,8 +26,8 @@ const math = require('mathjs')
 // let st = new StoichiometryPercentage(undefined, "40g", "0.52l", "m/v");
 // let st = new StoichiometryPercentage("7.69%", undefined, "520ml", "m/v");
 // let st = new StoichiometryPercentage("7.69%", "40g", undefined, "m/v");
-let st = new StoichiometryPercentage("12.20%", "0.2kg", undefined, "m/m")
-console.log(st)
+// let st = new StoichiometryPercentage("12.20%", "0.2kg", undefined, "m/m")
+// console.log(st)
 // let stuff = math.unit('0.04kg')
 // console.log(stuff.toString())
 // let temp = new Kinematics("vf = 20km/s vi=0km/s t = 8s", "a")
