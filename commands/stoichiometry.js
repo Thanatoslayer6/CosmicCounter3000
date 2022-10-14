@@ -703,8 +703,10 @@ class StoichiometryPercentage {
     percentByMass() {  // Formula is m/m * 100 or m/v * 100 (can be g/g or kg/kg, g/kg and such)
         if (this.percent == undefined) { // Solve normally
             this.percent = `${multiply(divide(this.solute, this.solution), 100).toFixed(2)}%`;
-            this.solvent = subtract(this.solution, this.solute).toString();
+            this.solvent = subtract(this.solution, this.solute)
+            this.solvent.value = round(this.solvent.value, 2)
             // Just transform the stuff to string back...
+            this.solvent = this.solvent.toString();
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
             this.equationInLatex = `\\text{% by Mass} = \\frac{\\text{Mass solute}}{\\text{Mass solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
@@ -714,8 +716,10 @@ class StoichiometryPercentage {
         } else if (this.solute == undefined) { // %(m/m)/100 * solution
             this.solute = (multiply(divide(this.percent, 100), this.solution));
             this.solute.value = round(this.solute.value, 2) // Round to two decimal places
-            this.solvent = subtract(this.solution, this.solute).toString();
+            this.solvent = subtract(this.solution, this.solute)
+            this.solvent.value = round(this.solvent.value, 2)
             // Just transform the stuff to string back...
+            this.solvent = this.solvent.toString();
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
             this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Mass solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
@@ -725,8 +729,10 @@ class StoichiometryPercentage {
         } else if (this.solution == undefined) { // solute * 100/%(m/m) = soln
             this.solution =  (multiply(this.solute, divide(100, this.percent)));
             this.solution.value = round(this.solution.value, 2); // Round to two decimal places
-            this.solvent = subtract(this.solution, this.solute).toString();
+            this.solvent = subtract(this.solution, this.solute);
+            this.solvent.value = round(this.solvent.value, 2)
             // Just transform the stuff to string back...
+            this.solvent = this.solvent.toString();
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
             // this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Mass solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
@@ -788,8 +794,10 @@ class StoichiometryPercentage {
     percentByVolume() { // Copied from percent by mass, just change the format
         if (this.percent == undefined) { // Solve normally
             this.percent = `${multiply(divide(this.solute, this.solution), 100).toFixed(2)}%`;
-            this.solvent = subtract(this.solution, this.solute).toString();
+            this.solvent = subtract(this.solution, this.solute)
+            this.solvent.value = round(this.solvent.value, 2);
             // Just transform the stuff to string back...
+            this.solvent = this.solvent.toString()
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
             this.equationInLatex = `\\text{% by Volume} = \\frac{\\text{Volume solute}}{\\text{Volume solution}} \\times \\text{100%} \\implies \\frac{${this.solute}}{${this.solution}} \\times \\text{100%} = \\text{${this.percent}}`
@@ -799,8 +807,10 @@ class StoichiometryPercentage {
         } else if (this.solute == undefined) { // %(m/m)/100 * solution
             this.solute = multiply(divide(this.percent, 100), this.solution);
             this.solute.value = round(this.solute.value, 2); // Round final ans
-            this.solvent = subtract(this.solution, this.solute).toString();
+            this.solvent = subtract(this.solution, this.solute);
+            this.solvent.value = round(this.solvent.value, 2); // Round solvent
             // Just transform the stuff to string back...
+            this.solvent = this.solvent.toString();
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
             this.equationInLatex = `\\text{Volume solute} = \\frac{\\text{% by Volume}}{\\text{100%}} \\times \\text{Volume solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
@@ -810,8 +820,10 @@ class StoichiometryPercentage {
         } else if (this.solution == undefined) { // solute * 100/%(m/m) = soln
             this.solution =  multiply(this.solute, divide(100, this.percent));
             this.solution.value = round(this.solution.value, 2); // Round final ans
-            this.solvent = subtract(this.solution, this.solute).toString();
+            this.solvent = subtract(this.solution, this.solute);
+            this.solvent.value = round(this.solvent.value, 2); // Round final ans
             // Just transform the stuff to string back...
+            this.solvent = this.solvent.toString();
             this.solute = this.solute.toString();
             this.solution = this.solution.toString();
             // this.equationInLatex = `\\text{Mass solute} = \\frac{\\text{% by Mass}}{\\text{100%}} \\times \\text{Mass solution} \\implies \\frac{${this.percent.toFixed(2)}}{100} \\times ${this.solution} = ${this.solute}`
