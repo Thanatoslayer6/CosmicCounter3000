@@ -1,6 +1,6 @@
 // const math = require('mathjs');
 const { Balancer } = require('./balance');
-const { unit, format, Unit, multiply, divide, subtract } = require('mathjs')
+const { unit, round, Unit, multiply, divide, subtract } = require('mathjs')
 const parseCompound = require('compound-parser');
 
 let MolarMass = [{
@@ -712,7 +712,8 @@ class StoichiometryPercentage {
             this.givenInfo = `**Given:**\n - Mass solute: \`${this.solute}\`\n - Mass solvent: \`${this.solvent}\`\n - Mass solution: \`${this.solution}\`\n**Find:** \`Percent by Mass %(m/m)\`\n**Answer:** \`${this.percent}\``
 
         } else if (this.solute == undefined) { // %(m/m)/100 * solution
-            this.solute = multiply(divide(this.percent, 100), this.solution);
+            this.solute = (multiply(divide(this.percent, 100), this.solution));
+            this.solute.value = round(this.solute.value, 2) // Round to two decimal places
             this.solvent = subtract(this.solution, this.solute).toString();
             // Just transform the stuff to string back...
             this.solute = this.solute.toString();
@@ -722,7 +723,8 @@ class StoichiometryPercentage {
             this.givenInfo = `**Given:**\n - % by Mass: \`${this.percent.toFixed(2)}%\`\n - Mass solvent: \`${this.solvent}\`\n - Mass solution: \`${this.solution}\`\n**Find:** \`Mass of solute\`\n**Answer:** \`${this.solute}\``
 
         } else if (this.solution == undefined) { // solute * 100/%(m/m) = soln
-            this.solution =  multiply(this.solute, divide(100, this.percent));
+            this.solution =  (multiply(this.solute, divide(100, this.percent)));
+            this.solution.value = round(this.solution.value, 2); // Round to two decimal places
             this.solvent = subtract(this.solution, this.solute).toString();
             // Just transform the stuff to string back...
             this.solute = this.solute.toString();
@@ -734,7 +736,6 @@ class StoichiometryPercentage {
         }
     } // Works !
     
-    // TODO: Fix unit issues
     percentByMassVolume(originalSolute, originalSolution) { // Same stuff
         if (this.percent == undefined) {
             // Units must be in pair with each other! convert them into (g/ml) or (kg/l)
@@ -797,6 +798,7 @@ class StoichiometryPercentage {
 
         } else if (this.solute == undefined) { // %(m/m)/100 * solution
             this.solute = multiply(divide(this.percent, 100), this.solution);
+            this.solute.value = round(this.solute.value, 2); // Round final ans
             this.solvent = subtract(this.solution, this.solute).toString();
             // Just transform the stuff to string back...
             this.solute = this.solute.toString();
@@ -807,6 +809,7 @@ class StoichiometryPercentage {
 
         } else if (this.solution == undefined) { // solute * 100/%(m/m) = soln
             this.solution =  multiply(this.solute, divide(100, this.percent));
+            this.solution.value = round(this.solution.value, 2); // Round final ans
             this.solvent = subtract(this.solution, this.solute).toString();
             // Just transform the stuff to string back...
             this.solute = this.solute.toString();

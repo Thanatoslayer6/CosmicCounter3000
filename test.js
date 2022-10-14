@@ -23,7 +23,7 @@ const math = require('mathjs')
 // let st = new StoichiometryPercentage(undefined, "40g", "0.52l", "m/v");
 // let st = new StoichiometryPercentage("7.69%", undefined, "520ml", "m/v");
 // let st = new StoichiometryPercentage("7.69%", "40g", undefined, "m/v");
-/
+let st = new StoichiometryPercentage("12.20%", "0.2kg", undefined, "m/m")
 console.log(st)
 // let stuff = math.unit('0.04kg')
 // console.log(stuff.toString())
