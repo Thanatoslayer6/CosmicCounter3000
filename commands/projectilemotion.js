@@ -15,6 +15,7 @@ class VerticallyDownward {
         // this.result;
         this.main();
     }
+
     main() {
         if (this.initialVelocity != undefined) { // If initial velocity is not missing
             this.initialVelocity = unit(this.initialVelocity);
@@ -81,14 +82,58 @@ class VerticallyUpward {
     // object will peak when its final velocity is vf = 0. Furthermore, the object will fall due to gravity 
     // VerticallyUpward (vi = +) -> Peak (vf = 0, vi = 0) -> VerticallyDownward/Freefall motion (vi = 0, vf = +) 
     constructor(initialVelocity, finalVelocity, maxHeight, halfTime, totalTime) {
-        this.initialVelocity = initialVelocity; // Required
+        // Object going up...
+        this.initialVelocity = initialVelocity; 
+        // Object going down / free fall
         this.finalVelocity = finalVelocity;
         this.maxHeight = maxHeight;
-        this.time = time;
+        this.halfTime = halfTime;
+        this.totalTime = totalTime;
         // this.solveFor = solveFor;
         this.equationInLatex;
+        getNumberOfSigFigs()
         // this.result;
-        this.main();
+        // this.main();
+        this.main(this.identifyObjectPosition());
+    }
+
+    // Convert defined units and identify if the object is going up or going down.
+    identifyObjectPosition() { 
+        if (this.finalVelocity == undefined && this.initialVelocity != undefined) { // Means object will be thrown upwardly first
+            this.initialVelocity = unit(this.initialVelocity);
+            return "Upward";
+        } else if (this.initialVelocity == undefined && this.finalVelocity != undefined) { // Means object is now falling
+            this.finalVelocity = unit(this.finalVelocity);
+            return "Downward";
+        }
+    }
+    
+    // Main method
+    main(position) {
+        if (position == "Upward") { // Remember that g = -negative
+            // Solve for maximum height attained by object, based on its initial velocity
+            if (this.maxHeight == undefined) { 
+                // Apply the formula d = -vi^2/2g (actually don't need to follow the negative units, since both will cancel)
+                this.maxHeight = divide(square(this.initialVelocity), multiply(2, gravity));
+            }
+            if (this.halfTime == undefined) {
+                // Apply the formula t = -vi/g (again, no need to think about the negative sign)
+                this.halfTime = divide(this.initialVelocity, gravity);
+            }
+            if (this.totalTime == undefined) {
+                this.totalTime = multiply(2, this.halfTime)
+            }
+            // Falling object -> g = vf/t
+            this.finalVelocity = multiply(gravity, this.halfTime);
+        } else if (position == "Downward") { // Remember that g = +positive
+
+        }
+        // Convert everything as string
+        this.initialVelocity = this.initialVelocity.toString()
+        this.finalVelocity = this.finalVelocity.toString()
+        this.maxHeight = this.maxHeight.toString()
+        this.halfTime = this.halfTime.toString()
+        this.totalTime = this.totalTime.toString()
     }
 }
 
