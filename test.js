@@ -2,13 +2,19 @@
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
-const { VerticallyDownward } = require('./commands/projectilemotion')
+const { VerticallyDownward, VerticallyUpward } = require('./commands/projectilemotion')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
 // vi, vf, h, t
-let st = new VerticallyDownward("5.0m/s", undefined, "20m", undefined)
+// let st = new VerticallyDownward("5.0m/s", undefined, "20m", undefined) // WORKS (vi and h)
+// let st = new VerticallyDownward("5.0m/s", "10m/s", undefined, undefined) // WORKS (height and time)
+// let st = new VerticallyDownward("5.0m/s", undefined, "3.83m", undefined) // WORKS (final velocity and time)
+// let st = new VerticallyDownward("5.0m/s", undefined, undefined, "0.51055s") // WORKS (final velocity and height)
+let st = new VerticallyDownward(undefined, "10m/s", "3.83m", undefined);
+// let st = new VerticallyDownward(undefined, "10m/s", undefined, "0.51055s");
+// let st = new VerticallyDownward(undefined, undefined, "3.83m", "0.51055s");
 console.log(st)
 // let te = new Balancer("H2 + O2 = H2O")
 // console.log(math.number(math.unit('2300ml'), 'l')) // THIS WORKS WTF?!?!?
