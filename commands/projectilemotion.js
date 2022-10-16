@@ -44,7 +44,7 @@ class VerticallyDownward {
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
                 // Find the time use the formula t = vf - vi / g
-                this.time = divide(subtract(this.finalVelocity, this.initialVelocity), gravity);
+                this.time.actual = divide(subtract(this.finalVelocity.actual, this.initialVelocity.actual), gravity);
                 this.time.rounded = clone(this.time.actual);
                 this.time.rounded.value = SigFig(this.time.rounded.value, this.roundToSigFig) 
             } else if (this.finalVelocity.actual == undefined && this.time.actual == undefined) {
@@ -62,21 +62,21 @@ class VerticallyDownward {
                 this.time.actual = divide(subtract(this.finalVelocity.actual, this.initialVelocity.actual), gravity)
                 this.time.rounded = clone(this.time.actual);
                 this.time.rounded.value = SigFig(this.time.rounded.value, this.roundToSigFig) 
-            } else if (this.finalVelocity == undefined && this.height == undefined) {
+            } else if (this.finalVelocity.actual == undefined && this.height.actual == undefined) {
                 this.time.actual = unit(this.time.actual);
                 this.time.rounded = clone(this.time.actual);
                 this.time.rounded.value = SigFig(this.time.rounded.value, this.roundToSigFig) 
                 // Find the final velocity vf = gt + vi
-                this.finalVelocity.actual = add(multiply(gravity, this.time), this.initialVelocity);
+                this.finalVelocity.actual = add(multiply(gravity, this.time.actual), this.initialVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
                 // Find the height d = vit + gt^2/2
-                this.height.actual = add(multiply(this.initialVelocity, this.time), divide(multiply(gravity, square(this.time)), 2))
+                this.height.actual = add(multiply(this.initialVelocity.actual, this.time.actual), divide(multiply(gravity, square(this.time.actual)), 2))
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
             }
-        } else if (this.initialVelocity == undefined) { // If initial velocity is missing (rare scenario)
-            if (this.finalVelocity == undefined) {
+        } else if (this.initialVelocity.actual == undefined) { // If initial velocity is missing (rare scenario)
+            if (this.finalVelocity.actual == undefined) {
                 this.height.actual = unit(this.height.actual);
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
@@ -92,7 +92,7 @@ class VerticallyDownward {
                 this.finalVelocity.actual = add(multiply(gravity, this.time.actual), this.initialVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
-            } else if (this.height == undefined) {
+            } else if (this.height.actual == undefined) {
                 this.finalVelocity.actual = unit(this.finalVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
@@ -108,12 +108,12 @@ class VerticallyDownward {
                 this.height.actual = add(multiply(this.initialVelocity.actual, this.time.actual), divide(multiply(gravity, square(this.time.actual)), 2)) 
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
-            } else if (this.time == undefined) {
-                this.finalVelocity.actual = unit(this.finalVelocity);
+            } else if (this.time.actual == undefined) {
+                this.finalVelocity.actual = unit(this.finalVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
                 // Get height
-                this.height.actual = unit(this.height)
+                this.height.actual = unit(this.height.actual)
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
                 // Find vi using the derived formula vi = sqrt(vf^2 - 2gd)
