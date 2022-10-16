@@ -154,6 +154,8 @@ const ListOfCommands = [{
         type: 3,
         required: false
     }]
+}, {
+    
 }];
 
 // Env variables
