@@ -15,37 +15,12 @@ const math = require('mathjs')
 // let st = new VerticallyDownward(undefined, "10m/s", "3.83m", undefined);
 // let st = new VerticallyDownward(undefined, "10m/s", undefined, "0.51055s");
 // let st = new VerticallyDownward(undefined, undefined, "3.83m", "0.51055s");
-// let st = new VerticallyUpward("3.0m/s");
-// console.log(st)
-// TODO: Sig fig counter...
-const calculateSigfig = function (num) {
-	// const filterDecimal = [...convertToString].filter(digit => {
-	// 	if (digit !== '.') return digit;
-	// });
-    let hasDecimal = false, convertedNum = "", stop = false;
-    for (let i = 0; i < num.length; i++) {
-        if (stop == false) {
-            if (num[i] == 0) {
-                continue;
-            } else if (num[i] == '.') {
-                hasDecimal = true;
-                continue;
-            } else {
-                stop = true;
-                convertedNum += num[i];
-            }
-        } else {
-            convertedNum += num[i]
-        }
-    }
+let st = new VerticallyUpward("3.0m/s", undefined, undefined, undefined, undefined, 2);
+console.log(st)
 
-    return { convertedNum: convertedNum, decimal: hasDecimal }
-	// const sigfig = filterDecimal.length;
-	// return sigfig;
-};
 
-console.log(calculateSigfig("0.001012300"))
-console.log(calculateSigfig("5.0"))
+// console.log(calculateSigfig("0.001012300"))
+// console.log(calculateSigfig("5.0"))
 
 // let te = new Balancer("H2 + O2 = H2O")
 // console.log(math.number(math.unit('2300ml'), 'l')) // THIS WORKS WTF?!?!?

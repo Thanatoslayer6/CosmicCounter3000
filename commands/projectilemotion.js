@@ -5,7 +5,7 @@ class VerticallyDownward {
     // When vertically thrown downward automatically, it has vi (e.g. yoyo, bball)
     // Usually height, final velocity, and time are the only things to solve here...
     // Gravity (g) = 9.8m/s^2, 980cm/s^2, 32ft/s^2 and is positive (+)
-    constructor(initialVelocity, finalVelocity, height, time) {
+    constructor(initialVelocity, finalVelocity, height, time, roundToSigFig) {
         this.initialVelocity = initialVelocity;
         this.finalVelocity = finalVelocity;
         this.height = height;
@@ -81,17 +81,32 @@ class VerticallyUpward {
     // as a factor, meaning that the value of it will be negative. as a result it would mean that the 
     // object will peak when its final velocity is vf = 0. Furthermore, the object will fall due to gravity 
     // VerticallyUpward (vi = +) -> Peak (vf = 0, vi = 0) -> VerticallyDownward/Freefall motion (vi = 0, vf = +) 
-    constructor(initialVelocity, finalVelocity, maxHeight, halfTime, totalTime) {
+    constructor(initialVelocity, finalVelocity, maxHeight, halfTime, totalTime, roundToSigFig) {
         // Object going up...
-        this.initialVelocity = initialVelocity; 
+        this.initialVelocity = {
+            actual: initialVelocity,
+            rounded: null
+        }
         // Object going down / free fall
-        this.finalVelocity = finalVelocity;
-        this.maxHeight = maxHeight;
-        this.halfTime = halfTime;
-        this.totalTime = totalTime;
+        this.finalVelocity = {
+            actual: finalVelocity, 
+            rounded: null
+        } 
+        this.maxHeight =  {
+            actual: maxHeight,
+            rounded: null
+        }
+        this.halfTime = {
+            actual: halfTime,
+            rounded: null
+        }
+        this.totalTime = { 
+            actual: totalTime, 
+            rounded: null 
+        }
+        this.roundToSigFig = roundToSigFig
         // this.solveFor = solveFor;
         this.equationInLatex;
-        getNumberOfSigFigs()
         // this.result;
         // this.main();
         this.main(this.identifyObjectPosition());
@@ -99,41 +114,76 @@ class VerticallyUpward {
 
     // Convert defined units and identify if the object is going up or going down.
     identifyObjectPosition() { 
-        if (this.finalVelocity == undefined && this.initialVelocity != undefined) { // Means object will be thrown upwardly first
-            this.initialVelocity = unit(this.initialVelocity);
+        if (this.finalVelocity.actual == undefined && this.initialVelocity.actual != undefined) { // Means object will be thrown upwardly first
+            this.initialVelocity.actual = unit(this.initialVelocity.actual);
             return "Upward";
-        } else if (this.initialVelocity == undefined && this.finalVelocity != undefined) { // Means object is now falling
-            this.finalVelocity = unit(this.finalVelocity);
+        } else if (this.initialVelocity.actual == undefined && this.finalVelocity.actual != undefined) { // Means object is now falling
+            this.finalVelocity.actual = unit(this.finalVelocity.actual);
             return "Downward";
         }
     }
     
     // Main method
     main(position) {
+        let temp = null;
         if (position == "Upward") { // Remember that g = -negative
             // Solve for maximum height attained by object, based on its initial velocity
-            if (this.maxHeight == undefined) { 
+            if (this.maxHeight.actual == undefined) { 
                 // Apply the formula d = -vi^2/2g (actually don't need to follow the negative units, since both will cancel)
-                this.maxHeight = divide(square(this.initialVelocity), multiply(2, gravity));
+                temp = divide(square(this.initialVelocity.actual), multiply(2, gravity));
+                this.maxHeight.actual = temp.toString()
+                console.log(this.maxHeight.actual)
+                // this.maxHeight.actual = this.maxHeight.actual.toString()
+                // divide(square(this.initialVelocity.actual), multiply(2, gravity));
+                temp.value = parseFloat(temp.value.toPrecision(this.roundToSigFig));
+                this.maxHeight.rounded = temp;
+                // this.maxHeight.rounded = this.maxHeight.rounded.toString()
+                // this.maxHeight.rounded = (this.maxHeight.actual.value).toPrecision(this.roundToSigFig)
             }
-            if (this.halfTime == undefined) {
+            if (this.halfTime.actual == undefined) {
+                // SMETHING ETWORNG WORHEURH
                 // Apply the formula t = -vi/g (again, no need to think about the negative sign)
-                this.halfTime = divide(this.initialVelocity, gravity);
+                temp = divide(this.initialVelocity.actual, gravity);
+                this.halfTime.actual = temp.toString()
+                console.log(this.halfTime.actual)
+                // this.halfTime.actual = this.halfTime.actual.toString();
+                // Test
+                temp.value = parseFloat(temp.value.toPrecision(this.roundToSigFig))
+                this.halfTime.rounded = temp;
             }
-            if (this.totalTime == undefined) {
-                this.totalTime = multiply(2, this.halfTime)
+            if (this.totalTime.actual == undefined) {
+                temp = multiply(2, this.halfTime.actual)
+                this.totalTime.actual = temp.toString()
+                // this.totalTime.actual = this.totalTime.actual.toString();
+                temp.value = parseFloat(temp.value.toPrecision(this.roundToSigFig))
+                this.totalTime.rounded = temp;
             }
             // Falling object -> g = vf/t
-            this.finalVelocity = multiply(gravity, this.halfTime);
+            this.finalVelocity.actual = multiply(gravity, this.halfTime.actual);
+            // TODO: Here
         } else if (position == "Downward") { // Remember that g = +positive
 
         }
         // Convert everything as string
-        this.initialVelocity = this.initialVelocity.toString()
-        this.finalVelocity = this.finalVelocity.toString()
-        this.maxHeight = this.maxHeight.toString()
-        this.halfTime = this.halfTime.toString()
-        this.totalTime = this.totalTime.toString()
+        // if (this.initialVelocity.rounded != undefined) {
+        //     this.initialVelocity.rounded = this.initialVelocity.rounded.toString()
+        // }
+
+        // if (this.finalVelocity.rounded != undefined) {
+        //     this.finalVelocity.rounded = this.finalVelocity.rounded.toString()
+        // }
+
+        // if (this.maxHeight.rounded != undefined) {
+        //     this.maxHeight.rounded = this.maxHeight.rounded.toString()
+        // }
+
+        // if (this.halfTime.rounded != undefined) {
+        //     this.halfTime.rounded = this.halfTime.rounded.toString()
+        // }
+
+        // if (this.totalTime.rounded != undefined)  {
+        //     this.totalTime.rounded = this.totalTime.rounded.toString()
+        // }
     }
 }
 
