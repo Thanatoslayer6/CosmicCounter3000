@@ -1,4 +1,4 @@
-const { Routes, REST, Client, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
+const { Routes, REST, Client, AttachmentBuilder, GatewayIntentBits, Embed } = require('discord.js');
 const { table, getBorderCharacters } = require('table');
 const { Bearing } = require('./commands/bearing');
 const { AccuracyPrecision } = require('./commands/accuracyprecision');
@@ -8,6 +8,7 @@ const { WordToChem } = require('./commands/weq')
 const { Balancer } = require('./commands/balance')
 const { Kinematics } = require('./commands/kinematics')
 const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
+const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
 require('dotenv').config();
 
 // List of all commands
@@ -155,7 +156,34 @@ const ListOfCommands = [{
         required: false
     }]
 }, {
-    
+    name: "downward-motion",
+    description: "Solves vertically downward motion problems",
+    options: [{
+        name: "round-to-sigfig",
+        description: "Round to how many sig figs?",
+        type: 4,
+        required: true
+    },{
+        name: "initial-velocity",
+        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false,
+    },{
+        name: "final-velocity",
+        description: "Final velocity of the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
+    },{
+        name: "height",
+        description: "The starting height of the object e.g (55m, 21.02ft)",
+        type: 3,
+        required: false
+    }, {
+        name: "time",
+        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
+        type: 3,
+        required: false
+    }]
 }];
 
 // Env variables
@@ -334,6 +362,38 @@ client.on('interactionCreate', async (interaction) => {
             })
         } catch (exception) {
             await interaction.reply(`Error! can't do stoichiometry percentages for the given`)
+            console.error(exception)
+        }
+    } else if (interaction.commandName == 'downward-motion') {
+        let sf = interaction.options.getInteger('round-to-sigfig')
+        let vi = interaction.options.getString('initial-velocity')
+        let vf = interaction.options.getString('final-velocity')
+        let d = interaction.options.getString('height')
+        let t = interaction.options.getString('time')
+        try {
+            let temp = new VerticallyDownward(vi, vf, d, t, sf);
+            // LATEX
+            let [ formula1, formula2] = [new Latex(temp.equationInLatex[0]), new Latex(temp.equationInLatex[1])];
+            await formula1.main() // Evaluate all methods (main)
+            await formula2.main()
+            let [ attc1, attc2 ] = [new AttachmentBuilder(formula1.pngBuffer, { name: `latex_eq1.png` }), new AttachmentBuilder(formula2.pngBuffer, { name: `latex_eq2.png` })]
+
+            // SEND!!!!!!!!
+            await interaction.reply({ 
+                embeds: [{ // Send embedded latex command
+                    description: temp.givenInfo,
+                    image: {
+                        url: 'attachment://latex_eq1.png'
+                    }
+                }, {
+                    image:  {
+                        url: 'attachment://latex_eq2.png'
+                    }
+                }],
+                files: [attc1, attc2]
+            })
+        } catch (exception) {
+            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
         }
     }

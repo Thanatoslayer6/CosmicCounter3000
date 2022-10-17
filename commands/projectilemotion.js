@@ -25,10 +25,11 @@ class VerticallyDownward {
             rounded: null
         };
         this.roundToSigFig = roundToSigFig;
-        this.equationInLatex;
+        this.givenInfo;
+        this.equationInLatex = [];
         this.main();
     }
-
+    // TODO: Fix gravity issues when units are different (m/s or ft/s or cm/s)
     main() {
         if (this.initialVelocity.actual != undefined) { // If initial velocity is not missing
             this.initialVelocity.actual = unit(this.initialVelocity.actual);
@@ -43,10 +44,20 @@ class VerticallyDownward {
                 this.height.actual = divide(subtract(square(this.finalVelocity.actual), square(this.initialVelocity.actual)), multiply(2, gravity));
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`d = \\frac{vf^{2} - vi^{2}}{2g} \\implies \\frac{(${this.finalVelocity.actual.toString()})^{2} - (${this.initialVelocity.actual.toString()})^{2}}{2(${gravity.toString()})} = ${this.height.rounded.toString()}`)
                 // Find the time use the formula t = vf - vi / g
                 this.time.actual = divide(subtract(this.finalVelocity.actual, this.initialVelocity.actual), gravity);
                 this.time.rounded = clone(this.time.actual);
                 this.time.rounded.value = SigFig(this.time.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`t = \\frac{vf - vi}{g} \\implies \\frac{${this.finalVelocity.actual.toString()} - ${this.initialVelocity.actual.toString()}}{${gravity.toString()}} = ${this.time.rounded.toString()}`)
+                this.givenInfo = `
+                **Given:**\n 
+                - Initial Velocity (vi): \`${this.initialVelocity.actual.toString()}\` = \`${this.initialVelocity.rounded.toString()}\`\n
+                - Final Velocity (vf): \`${this.finalVelocity.actual.toString()}\` = \`${this.finalVelocity.rounded.toString()}\`\n
+                **Find:** \`Height and Time\`\n
+                **Answer:**\n
+                - Height (d): \`${this.height.actual.toString()}\` = \`${this.height.rounded.toString()}\`\n
+                - Time (t): \`${this.time.actual.toString()}\` = \`${this.time.rounded.toString()}\``
             } else if (this.finalVelocity.actual == undefined && this.time.actual == undefined) {
                 // Convert the known units
                 this.height.actual = unit(this.height.actual)
@@ -57,11 +68,21 @@ class VerticallyDownward {
                 this.finalVelocity.actual = sqrt(add(square(this.initialVelocity.actual), multiply(multiply(2, gravity), this.height.actual)))
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`vf = \\sqrt{vi^{2} - 2gd} \\implies \\sqrt{(${this.initialVelocity.actual.toString()})^{2} - 2(${gravity.toString()})(${this.height.actual.toString()})} = ${this.finalVelocity.rounded.toString()}`)
                 // Next find the time (use the computed final velocity)
                 // Apply the derived formula from g=vf-vf/t to t = \frac{vf - vi}{g}
                 this.time.actual = divide(subtract(this.finalVelocity.actual, this.initialVelocity.actual), gravity)
                 this.time.rounded = clone(this.time.actual);
                 this.time.rounded.value = SigFig(this.time.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`t = \\frac{vf - vi}{g} \\implies \\frac{${this.finalVelocity.actual.toString()} - ${this.initialVelocity.actual.toString()}}{${gravity.toString()}} = ${this.time.rounded.toString()}`)
+                this.givenInfo = `
+                **Given:**\n 
+                - Initial Velocity (vi): \`${this.initialVelocity.actual.toString()}\` = \`${this.initialVelocity.rounded.toString()}\`\n
+                - Height (d): \`${this.height.actual.toString()}\` = \`${this.height.rounded.toString()}\`\n
+                **Find:** \`Final Velocity and Time\`\n
+                **Answer:**\n
+                - Final Velocity (vf): \`${this.finalVelocity.actual.toString()}\` = \`${this.finalVelocity.rounded.toString()}\`\n
+                - Time (t): \`${this.time.actual.toString()}\` = \`${this.time.rounded.toString()}\``
             } else if (this.finalVelocity.actual == undefined && this.height.actual == undefined) {
                 this.time.actual = unit(this.time.actual);
                 this.time.rounded = clone(this.time.actual);
@@ -70,10 +91,20 @@ class VerticallyDownward {
                 this.finalVelocity.actual = add(multiply(gravity, this.time.actual), this.initialVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`vf = vi + gt \\implies ${this.initialVelocity.actual.toString()} + (${gravity.toString()})(${this.time.actual.toString()}) = ${this.finalVelocity.rounded.toString()}`)
                 // Find the height d = vit + gt^2/2
                 this.height.actual = add(multiply(this.initialVelocity.actual, this.time.actual), divide(multiply(gravity, square(this.time.actual)), 2))
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`d = vit + \\frac{gt^{2}}{2} \\implies (${this.initialVelocity.actual.toString()})(${this.time.actual.toString()}) + \\frac{(${gravity.toString()})(${this.time.actual.toString()})^{2}}{2} = ${this.height.rounded.toString()}`)
+                this.givenInfo = `
+                **Given:**\n 
+                - Initial Velocity (vi): \`${this.initialVelocity.actual.toString()}\` = \`${this.initialVelocity.rounded.toString()}\`\n
+                - Time (t): \`${this.time.actual.toString()}\` = \`${this.time.rounded.toString()}\`\n
+                **Find:** \`Final Velocity and Height\`\n
+                **Answer:**\n
+                - Final Velocity (vf): \`${this.finalVelocity.actual.toString()}\` = \`${this.finalVelocity.rounded.toString()}\`\n
+                - Height (d): \`${this.height.actual.toString()}\` = \`${this.height.rounded.toString()}\``
             }
         } else if (this.initialVelocity.actual == undefined) { // If initial velocity is missing (rare scenario)
             if (this.finalVelocity.actual == undefined) {
@@ -88,10 +119,20 @@ class VerticallyDownward {
                 this.initialVelocity.actual = divide(subtract(this.height.actual, divide(multiply(gravity, square(this.time.actual)), 2)), this.time.actual);
                 this.initialVelocity.rounded = clone(this.initialVelocity.actual);
                 this.initialVelocity.rounded.value = SigFig(this.initialVelocity.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`vi = \\frac{d - \\frac{gt^{2}}{2}}{t} \\implies \\frac{${this.height.actual.toString()} - \\frac{(${gravity.toString()})(${this.time.actual.toString()})^{2}}{2}}{${this.time.actual.toString()}} = ${this.initialVelocity.rounded.toString()}`)
                 // Use the formula vf = gt + vi
                 this.finalVelocity.actual = add(multiply(gravity, this.time.actual), this.initialVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
                 this.finalVelocity.rounded.value = SigFig(this.finalVelocity.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`vf = vi + gt \\implies ${this.initialVelocity.actual.toString()} + (${gravity.toString()})(${this.time.actual.toString()}) = ${this.finalVelocity.rounded.toString()}`)
+                this.givenInfo = `
+                **Given:**\n 
+                - Height (d): \`${this.height.actual.toString()}\` = \`${this.height.rounded.toString()}\`\n
+                - Time (t): \`${this.time.actual.toString()}\` = \`${this.time.rounded.toString()}\`\n
+                **Find:** \`Initial Velocity and Final Velocity\`\n
+                **Answer:**\n
+                - Initial Velocity (vi): \`${this.initialVelocity.actual.toString()}\` = \`${this.initialVelocity.rounded.toString()}\`\n
+                - Final Velocity (vf): \`${this.finalVelocity.actual.toString()}\` = \`${this.finalVelocity.rounded.toString()}\``
             } else if (this.height.actual == undefined) {
                 this.finalVelocity.actual = unit(this.finalVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
@@ -104,10 +145,20 @@ class VerticallyDownward {
                 this.initialVelocity.actual = subtract(this.finalVelocity.actual, multiply(gravity, this.time.actual));
                 this.initialVelocity.rounded = clone(this.initialVelocity.actual);
                 this.initialVelocity.rounded.value = SigFig(this.initialVelocity.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`vi = vf + gt \\implies ${this.finalVelocity.actual.toString()} + (${gravity.toString()})(${this.time.actual.toString()}) = ${this.initialVelocity.rounded.toString()}`)
                 // Just use d = vit + gt^2 / 2
                 this.height.actual = add(multiply(this.initialVelocity.actual, this.time.actual), divide(multiply(gravity, square(this.time.actual)), 2)) 
                 this.height.rounded = clone(this.height.actual);
                 this.height.rounded.value = SigFig(this.height.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`d = vit + \\frac{gt^{2}}{2} \\implies (${this.initialVelocity.actual.toString()})(${this.time.actual.toString()}) + \\frac{(${gravity.toString()})(${this.time.actual.toString()})^{2}}{2} = ${this.height.rounded.toString()}`)
+                this.givenInfo = `
+                **Given:**\n 
+                - Final Velocity (vf): \`${this.finalVelocity.actual.toString()}\` = \`${this.finalVelocity.rounded.toString()}\`\n
+                - Time (t): \`${this.time.actual.toString()}\` = \`${this.time.rounded.toString()}\`\n
+                **Find:** \`Initial Velocity and Height\`\n
+                **Answer:**\n
+                - Initial Velocity (vi): \`${this.initialVelocity.actual.toString()}\` = \`${this.initialVelocity.rounded.toString()}\`\n
+                - Height (d): \`${this.height.actual.toString()}\` = \`${this.height.rounded.toString()}\``
             } else if (this.time.actual == undefined) {
                 this.finalVelocity.actual = unit(this.finalVelocity.actual);
                 this.finalVelocity.rounded = clone(this.finalVelocity.actual);
@@ -120,22 +171,32 @@ class VerticallyDownward {
                 this.initialVelocity.actual = sqrt(subtract(square(this.finalVelocity.actual), multiply(multiply(2, gravity), this.height.actual)))
                 this.initialVelocity.rounded = clone(this.initialVelocity.actual);
                 this.initialVelocity.rounded.value = SigFig(this.initialVelocity.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`vi = \\sqrt{vf^{2} - 2gd} \\implies \\sqrt{(${this.finalVelocity.actual.toString()})^{2} - 2(${gravity.toString()})(${this.height.actual.toString()})} = ${this.initialVelocity.rounded.toString()}`)
                 // t = vf - vi /g
                 this.time.actual = divide(subtract(this.finalVelocity.actual, this.initialVelocity.actual), gravity)
                 this.time.rounded = clone(this.time.actual);
                 this.time.rounded.value = SigFig(this.time.rounded.value, this.roundToSigFig) 
+                this.equationInLatex.push(`t = \\frac{vf - vi}{g} \\implies \\frac{${this.finalVelocity.actual.toString()} - ${this.initialVelocity.actual.toString()}}{${gravity.toString()}} = ${this.time.rounded.toString()}`)
+                this.givenInfo = `
+                **Given:**\n 
+                - Final Velocity (vf): \`${this.finalVelocity.actual.toString()}\` = \`${this.finalVelocity.rounded.toString()}\`\n
+                - Height (d): \`${this.height.actual.toString()}\` = \`${this.height.rounded.toString()}\`\n
+                **Find:** \`Initial Velocity and Time\`\n
+                **Answer:**\n
+                - Initial Velocity (vi): \`${this.initialVelocity.actual.toString()}\` = \`${this.initialVelocity.rounded.toString()}\`\n
+                - Time (t): \`${this.time.actual.toString()}\` = \`${this.time.rounded.toString()}\``
             }
         }
 
         // Convert every unit into string
-        this.initialVelocity.actual = this.initialVelocity.actual.toString()
-        this.initialVelocity.rounded = this.initialVelocity.rounded.toString()
-        this.finalVelocity.actual = this.finalVelocity.actual.toString()
-        this.finalVelocity.rounded = this.finalVelocity.rounded.toString()
-        this.height.actual = this.height.actual.toString()
-        this.height.rounded = this.height.rounded.toString()
-        this.time.actual = this.time.actual.toString()
-        this.time.rounded = this.time.rounded.toString()
+        // this.initialVelocity.actual = this.initialVelocity.actual.toString()
+        // this.initialVelocity.rounded = this.initialVelocity.rounded.toString()
+        // this.finalVelocity.actual = this.finalVelocity.actual.toString()
+        // this.finalVelocity.rounded = this.finalVelocity.rounded.toString()
+        // this.height.actual = this.height.actual.toString()
+        // this.height.rounded = this.height.rounded.toString()
+        // this.time.actual = this.time.actual.toString()
+        // this.time.rounded = this.time.rounded.toString()
     }
 }
 
@@ -168,10 +229,7 @@ class VerticallyUpward {
             rounded: null 
         }
         this.roundToSigFig = roundToSigFig
-        // this.solveFor = solveFor;
         this.equationInLatex;
-        // this.result;
-        // this.main();
         this.main(this.identifyObjectPosition());
     }
 

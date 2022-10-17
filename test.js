@@ -9,7 +9,7 @@ const math = require('mathjs')
 // const { Balancer } = require('./commands/balance')
 // vi, vf, h, t
 // let st = new VerticallyDownward("5.0m/s", undefined, "20m", undefined, 1) // WORKS (vi and h)
-// let st = new VerticallyDownward("5.0m/s", "10m/s", undefined, undefined, 1) // WORKS (height and time)
+let st = new VerticallyDownward("5.0m/s", "10m/s", undefined, undefined, 1) // WORKS (height and time)
 // let st = new VerticallyDownward("5.0m/s", undefined, "3.83m", undefined, 1) // WORKS (final velocity and time)
 // let st = new VerticallyDownward("5.0m/s", undefined, undefined, "0.51055s", 1) // WORKS (final velocity and height)
 // let st = new VerticallyDownward(undefined, "10m/s", "3.83m", undefined, 1);
