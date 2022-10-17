@@ -157,7 +157,7 @@ const ListOfCommands = [{
     }]
 }, {
     name: "downward-motion",
-    description: "Solves vertically downward motion problems",
+    description: "Solves vertically downward projectile motion problems",
     options: [{
         name: "round-to-sigfig",
         description: "Round to how many sig figs?",
@@ -181,6 +181,40 @@ const ListOfCommands = [{
     }, {
         name: "time",
         description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
+        type: 3,
+        required: false
+    }]
+}, {
+    name: "upward-motion",
+    description: "Solves vertically upward projectile motion problems",
+    options: [{
+        name: "round-to-sigfig",
+        description: "Round to how many sig figs?",
+        type: 4,
+        required: true
+    },{
+        name: "initial-velocity",
+        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false,
+    },{
+        name: "final-velocity",
+        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
+    },{
+        name: "height",
+        description: "The height of the object (peak) e.g (55m, 21.02ft)",
+        type: 3,
+        required: false
+    }, {
+        name: "time",
+        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
+        type: 3,
+        required: false
+    }, {
+        name: "total-time",
+        description: "The total time where the object is in motion/in the air e.g (2.3s, 1.25s)",
         type: 3,
         required: false
     }]
@@ -392,6 +426,51 @@ client.on('interactionCreate', async (interaction) => {
                 }],
                 files: [attc1, attc2]
             })
+        } catch (exception) {
+            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
+            console.error(exception)
+        }
+    } else if (interaction.commandName == "upward-motion") {
+        let sf = interaction.options.getInteger('round-to-sigfig')
+        let vi = interaction.options.getString('initial-velocity')
+        let vf = interaction.options.getString('final-velocity')
+        let d = interaction.options.getString('height')
+        let t = interaction.options.getString('time')
+        let tT = interaction.options.getString('total-time')
+        try {
+            // let temp = new VerticallyDownward(vi, vf, d, t, sf);
+            let temp = new VerticallyUpward(vi, vf, d, t, tT, sf);
+            // LATEX
+            let formulas = [], attc = [], properEmbeds = [];
+            temp.equationInLatex.forEach(item => {
+                formulas.push(new Latex(item));
+            })
+            formulas.forEach((item, index) => {
+                await item.main()
+                attc.push(new AttachmentBuilder(item.pngBuffer, { name: `latex_eq${index}.png` }));
+                if (index == 0) {
+                    properEmbeds.push({
+                        description: temp.givenInfo, 
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                } else {
+                    properEmbeds.push({
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                }
+            })
+            
+            // let [ formula1, formula2 ] = [new Latex(temp.equationInLatex[0]), new Latex(temp.equationInLatex[1])];
+            // await formula1.main() // Evaluate all methods (main)
+            // await formula2.main()
+            // let [ attc1, attc2 ] = [new AttachmentBuilder(formula1.pngBuffer, { name: `latex_eq1.png` }), new AttachmentBuilder(formula2.pngBuffer, { name: `latex_eq2.png` })]
+
+            // SEND!!!!!!!!
+            await interaction.reply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
             await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
