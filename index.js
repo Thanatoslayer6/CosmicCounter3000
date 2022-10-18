@@ -441,11 +441,31 @@ client.on('interactionCreate', async (interaction) => {
             // let temp = new VerticallyDownward(vi, vf, d, t, sf);
             let temp = new VerticallyUpward(vi, vf, d, t, tT, sf);
             // LATEX
+            // let attc = [], properEmbeds = [];
+            // for (let i = 0; i < temp.equationInLatex.length; i++) {
+            //     let t = new Latex(temp.equationInLatex[i]);
+            //     await t.main()
+            //     attc.push(new AttachmentBuilder(t.pngBuffer, { name: `latex_eq${i}.png` }))
+            //     if (i == 0) {
+            //         properEmbeds.push({
+            //             description: temp.givenInfo,
+            //             image: {
+            //                 url: `attachment://latex_eq${i}.png`
+            //             }
+            //         })
+            //     } else {
+            //         properEmbeds.push({
+            //             image: {
+            //                 url: `attachment://latex_eq${i}.png`
+            //             }
+            //         })
+            //     }
+            // }
             let formulas = [], attc = [], properEmbeds = [];
             temp.equationInLatex.forEach(item => {
                 formulas.push(new Latex(item));
             })
-            formulas.forEach((item, index) => {
+            formulas.forEach(async (item, index) => {
                 await item.main()
                 attc.push(new AttachmentBuilder(item.pngBuffer, { name: `latex_eq${index}.png` }));
                 if (index == 0) {
