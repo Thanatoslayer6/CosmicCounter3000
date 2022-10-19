@@ -441,33 +441,14 @@ client.on('interactionCreate', async (interaction) => {
             // let temp = new VerticallyDownward(vi, vf, d, t, sf);
             let temp = new VerticallyUpward(vi, vf, d, t, tT, sf);
             // LATEX
-            // let attc = [], properEmbeds = [];
-            // for (let i = 0; i < temp.equationInLatex.length; i++) {
-            //     let t = new Latex(temp.equationInLatex[i]);
-            //     await t.main()
-            //     attc.push(new AttachmentBuilder(t.pngBuffer, { name: `latex_eq${i}.png` }))
-            //     if (i == 0) {
-            //         properEmbeds.push({
-            //             description: temp.givenInfo,
-            //             image: {
-            //                 url: `attachment://latex_eq${i}.png`
-            //             }
-            //         })
-            //     } else {
-            //         properEmbeds.push({
-            //             image: {
-            //                 url: `attachment://latex_eq${i}.png`
-            //             }
-            //         })
-            //     }
-            // }
             let formulas = [], attc = [], properEmbeds = [];
-            temp.equationInLatex.forEach(item => {
-                formulas.push(new Latex(item));
-            })
-            formulas.forEach(async (item, index) => {
-                await item.main()
-                attc.push(new AttachmentBuilder(item.pngBuffer, { name: `latex_eq${index}.png` }));
+            for (let i = 0; i < temp.equationInLatex.length; i++) {
+                let info = new Latex(temp.equationInLatex[i]);
+                await info.main()
+                formulas.push(info.pngBuffer)
+            }
+            formulas.forEach((latexPng, index) => {
+                attc.push(new AttachmentBuilder(latexPng, { name: `latex_eq${index}.png` }))
                 if (index == 0) {
                     properEmbeds.push({
                         description: temp.givenInfo, 
@@ -483,13 +464,6 @@ client.on('interactionCreate', async (interaction) => {
                     })
                 }
             })
-            
-            // let [ formula1, formula2 ] = [new Latex(temp.equationInLatex[0]), new Latex(temp.equationInLatex[1])];
-            // await formula1.main() // Evaluate all methods (main)
-            // await formula2.main()
-            // let [ attc1, attc2 ] = [new AttachmentBuilder(formula1.pngBuffer, { name: `latex_eq1.png` }), new AttachmentBuilder(formula2.pngBuffer, { name: `latex_eq2.png` })]
-
-            // SEND!!!!!!!!
             await interaction.reply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
             await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
@@ -506,7 +480,6 @@ client.on('interactionCreate', async (interaction) => {
 		console.log('Successfully reloaded application (/) commands.');
         // Login to Discord with your client's token
         client.login(TOKEN);
-
     } catch (err) {
         console.error(err);
     }

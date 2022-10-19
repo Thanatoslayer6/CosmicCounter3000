@@ -3,6 +3,7 @@
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
 const { VerticallyDownward, VerticallyUpward } = require('./commands/projectilemotion')
+const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
@@ -19,10 +20,19 @@ const math = require('mathjs')
 // let st = new VerticallyUpward("3m/s", undefined, undefined, undefined, undefined, 1);
 // let st = new VerticallyUpward(undefined, "3m/s", undefined, undefined, undefined, 1);
 //
-let st = new VerticallyUpward(undefined, undefined, undefined, "0.3061s", undefined, 1) // Max height & halftime
+// let st = new VerticallyUpward(undefined, undefined, undefined, "0.3061s", undefined, 1) // Max height & halftime
 // let st = new VerticallyUpward(undefined, undefined, undefined, undefined, "0.6122s", 1) // Max height & halftime
-console.log(st)
-
+// (async() => {
+//     let formulas = [], attc = [], properEmbeds = [];
+//     for (let i = 0; i < st.equationInLatex.length; i++) {
+//         let info = new Latex(st.equationInLatex[i]);
+//         await info.main()
+//         formulas.push(info.pngBuffer)
+//     }
+//     console.log(formulas)
+//     // let stuff = await Promise.all(formulas)
+// })()
+// console.log(st)
 
 // console.log(calculateSigfig("0.001012300"))
 // console.log(calculateSigfig("5.0"))

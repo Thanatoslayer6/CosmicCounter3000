@@ -469,19 +469,139 @@ class VerticallyUpward {
 
 class HorizontalProjection {
     // Vx = vi, Vy = gt, d = gt^2/2, R = vit
-    constructor(vx, vy, vi, vf, t, d, r, sf) {
-        this.vx = vx
-        this.vy = vy
-        this.vi = vi
-        this.vf = vf
-        this.t = t
-        this.d = d
-        this.r = r
-        this.sf = sf
-        main()
+    constructor(vi, vy, vf, t, d, r, sf) {
+        this.vi = { // Remember vi = vx
+            actual: vi,
+            rounded: null
+        }
+        this.vy = {
+            actual: vy,
+            rounded: null
+        }
+        this.vf = {
+            actual: vf,
+            rounded: null
+        }
+        this.t = {
+            actual: t,
+            rounded: null
+        }
+        this.d = {
+            actual: d,
+            rounded: null
+        }
+        this.r = {
+            actual: r,
+            rounded: null
+        }
+        this.sf = sf;
+        this.givenInfo;
+        this.equationInLatex = [];
+        this.assignVariables()
+        this.main()
     }
+
+    assignVariables() {
+        // Assign given variables
+        if (this.vi.actual != undefined) { // Remember that vi = vx
+            this.vi.actual = unit(this.vi.actual);
+            this.vi.rounded = clone(this.vi.actual);
+            this.vi.rounded.value = SigFig(this.vi.rounded.value, this.sf);
+            // this.vi.rounded.toString(); // Assign vx to initial velocity
+        }
+        if (this.vy.actual != undefined) {
+            this.vy.actual = unit(this.vy.actual);
+            this.vy.rounded = clone(this.vy.actual);
+            this.vy.rounded.value = SigFig(this.vy.rounded.value, this.sf);
+            // this.vy.rounded.toString(); // Assign vx to initial velocity
+        }
+        if (this.vf.actual != undefined) {
+            this.vf.actual = unit(this.vf.actual);
+            this.vf.rounded = clone(this.vf.actual);
+            this.vf.rounded.value = SigFig(this.vf.rounded.value, this.sf);
+        }
+        if (this.r.actual != undefined) {
+            this.r.actual = unit(this.r.actual);
+            this.r.rounded = clone(this.r.actual);
+            this.r.rounded.value = SigFig(this.r.rounded.value, this.sf);
+        }
+        if (this.t.actual != undefined) {
+            // Assign the given time
+            this.t.actual = unit(this.t.actual);
+            this.t.rounded = clone(this.t.actual);
+            this.t.rounded.value = SigFig(this.t.rounded.value, this.sf);
+        }
+        if (this.d.actual != undefined) {
+            // Assign the given time
+            this.d.actual = unit(this.d.actual);
+            this.d.rounded = clone(this.d.actual);
+            this.d.rounded.value = SigFig(this.d.rounded.value, this.sf);
+        }
+    }
+
     main() {
+        // If the user has initial velocity as input, then find the other variables
+        if (this.vi.actual != undefined) {
+            if (this.t.actual != undefined && this.r.actual == undefined) { // Range (r = vxt)
+                this.r.actual = multiply(this.vi.actual, this.t.actual);
+                this.r.rounded = clone(this.r.actual);
+                this.r.rounded.value = SigFig(this.r.rounded.value, this.sf);
+                this.equationInLatex.push(`R = v_{x}t \\implies ${this.vi.actual.toString()}(${this.t.actual.toString()}) = ${this.r.rounded.toString()}`)
+            } else if (this.r.actual != undefined && this.t.actual == undefined) { // Time ( t = R/vx )
+                this.t.actual = divide(this.r.actual, this.vi.actual);
+                this.t.rounded = clone(this.t.actual);
+                this.t.rounded.value = SigFig(this.t.rounded.value, this.sf);
+                this.equationInLatex.push(`t = \\frac{R}{v_{x}} \\implies \\frac{${this.r.actual.toString()}}{${this.vi.actual.toString()}} = ${this.t.rounded.toString()}`)
+            } else if (this.vf.actual != undefined && this.vy.actual == undefined) { // Vy = sqrt(vf^2 - vx^2) or vi^2 for vx
+                this.vy.actual = sqrt(subtract(square(this.vf.actual), square(this.vi.actual)));
+                this.vy.rounded = clone(this.vy.actual);
+                this.vy.rounded.value = SigFig(this.vy.rounded.value, this.sf)
+                this.equationInLatex.push(`V_{y} = \\sqrt{{v_{f}}^{2} - {v_{x}}^{2}} \\implies \\sqrt{(${this.vf.actual.toString()})^{2} - (${this.vi.actual.toString()})^{2}} = ${this.vy.rounded.toString()}`)
+            } else if (this.vy.actual != undefined && this.vf.actual == undefined) { // Vf = sqrt(vx^2 - vy^2)
+                this.vf.actual = sqrt(subtract(square(this.vi.actual), square(this.vy.actual)));
+                this.vf.rounded = clone(this.vf.actual);
+                this.vf.rounded.value = SigFig(this.vf.rounded.value, this.sf)
+                this.equationInLatex.push(`V_{f} = \\sqrt{{v_{x}}^{2} - {v_{y}}^{2}} \\implies \\sqrt{(${this.vi.actual.toString()})^{2} - (${this.vy.actual.toString()})^{2}} = ${this.vf.rounded.toString()}`)
+            }
+        } 
+        // Usually HorizontalProjection has vi = vx so we get time first
+        if (this.t.actual == undefined) {
+            if (this.r.actual != undefined && this.vi.actual != undefined) {
+                // Apply the formula (R/vx = t or R/vi = t)
+                this.t.actual = divide(this.r.actual, this.vi.actual);
+                this.t.rounded = clone(this.t.actual);
+                this.t.rounded.value = SigFig(this.t.rounded.value, this.sf);
+            } else if (this.d.actual != undefined) {
+                // Use the formula
+            }
+        }
+        // Get Distance
+        // if (this.d.actual == undefined) {
+        //     if ()
+        // }
         // First get vx and vy components
+        // If initial velocity is undefined then get it using range formula
+        if (this.vi.actual == undefined && this.r.actual != undefined && this.t.actual != undefined) {
+            // Get initial velocity (vi = r/t)
+            this.vi.actual = divide(this.r.actual, this.t.actual);
+            this.vi.rounded = clone(this.vi.actual);
+            this.vi.rounded.value = SigFig(this.vi.rounded.value, this.sf);
+            this.vx = this.vi.rounded.toString(); // Assign vx to initial velocity
+            this.equationInLatex.push(`v_{i} = \\frac{R}{t} \\implies \\frac{${this.r.actual.toString()}}{${this.t.actual.toString()}} = ${this.vx}`)
+        }
+
+        // // Get vy component 
+        // if (this.vy == undefined && this.t.actual != undefined) {
+        //     this.vy = (multiply(gravity, time)).toString();
+        //     this.equationInLatex.push(`v_{y} = gt \\implies ${gravity.toString()}(${this.t.rounded}) = ${this.vy}`)
+        // } else {
+        //     // Get time...
+        //     if (this.r.actual != undefined && this.vx.actual != undefined) {
+        //         // Use the formula t = r/vx
+        //         this.t.actual = divide(r, ) 
+        //     } else (this.d.actual != undefined) {
+        //     }
+        // }
     }
 }
 
