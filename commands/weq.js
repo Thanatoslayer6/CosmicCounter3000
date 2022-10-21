@@ -80,9 +80,9 @@ const Ions = [
     ["Oxide", "O", "-2"],
     // Non-metals -3
     ["Borate", "BO3", "-3"],
-    ["Phospite", "PO3", "-3"],
+    ["Phosphite", "PO3", "-3"],
     ["Phosphate", "PO4", "-3"],
-    ["Phospide", "P", "-3"],
+    ["Phosphide", "P", "-3"],
     ["Nitride", "N", "-3"],
     // -4
     ["Silicate", "SiO4", "-4"],
@@ -179,6 +179,7 @@ class WordToChem {
 
     }
     
+    // Pass 
     getIonIndex(s) {
         let t = Ions.find(i => {
             return i[0].toLowerCase() == s.toLowerCase();

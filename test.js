@@ -3,11 +3,13 @@
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
 const { VerticallyDownward, VerticallyUpward } = require('./commands/projectilemotion')
-const { Latex } = require('./commands/latex')
+// const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
+// let st = new WordToChem('Arsenic Phosphite + Ferric Sulfite = Ferric Phosphite + Arsenic Sulfite')
+// let st = new WordToChem('Plumbic Phosphite + Aluminum Chromate = Aluminum Phosphite + Plumbic Chromate')
 // vi, vf, h, t
 // let st = new VerticallyDownward("5.0m/s", undefined, "20m", undefined, 1) // WORKS (vi and h)
 // let st = new VerticallyDownward("5.0m/s", "10m/s", undefined, undefined, 1) // WORKS (height and time)
@@ -21,7 +23,9 @@ const math = require('mathjs')
 // let st = new VerticallyUpward(undefined, "3m/s", undefined, undefined, undefined, 1);
 //
 // let st = new VerticallyUpward(undefined, undefined, undefined, "0.3061s", undefined, 1) // Max height & halftime
-// let st = new VerticallyUpward(undefined, undefined, undefined, undefined, "0.6122s", 1) // Max height & halftime
+let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
+
+console.log(st)
 // (async() => {
 //     let formulas = [], attc = [], properEmbeds = [];
 //     for (let i = 0; i < st.equationInLatex.length; i++) {

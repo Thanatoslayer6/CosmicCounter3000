@@ -563,7 +563,7 @@ class HorizontalProjection {
                 this.vf.rounded.value = SigFig(this.vf.rounded.value, this.sf)
                 this.equationInLatex.push(`V_{f} = \\sqrt{{v_{x}}^{2} - {v_{y}}^{2}} \\implies \\sqrt{(${this.vi.actual.toString()})^{2} - (${this.vy.actual.toString()})^{2}} = ${this.vf.rounded.toString()}`)
             }
-        } 
+        }
         // Usually HorizontalProjection has vi = vx so we get time first
         if (this.t.actual == undefined) {
             if (this.r.actual != undefined && this.vi.actual != undefined) {

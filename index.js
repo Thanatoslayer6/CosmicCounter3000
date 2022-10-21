@@ -331,7 +331,7 @@ client.on('interactionCreate', async (interaction) => {
             `)
         } catch (exception) {
             // Just incase the user inputs a non-existent element in the list
-            await interaction.reply(`Error! can't convert the word equation **${wordEqForm}, please check the elements`) 
+            await interaction.reply(`Error! can't convert the word equation **${wordEqForm}**, please check the elements/spelling`) 
         }
     } else if (interaction.commandName == 'balance') {
         let unbalancedChemFormula = interaction.options.getString('equation');
