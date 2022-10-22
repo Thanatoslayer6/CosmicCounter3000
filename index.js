@@ -218,6 +218,45 @@ const ListOfCommands = [{
         type: 3,
         required: false
     }]
+}, {
+    name: "horizontal-motion",
+    description: "Solves horizontal projectile motion problems",
+    options: [{
+        name: "round-to-sigfig",
+        description: "Round to how many sig figs?",
+        type: 4,
+        required: true
+    },{
+        name: "initial-velocity",
+        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false,
+    },{
+        name: "vertical-velocity",
+        description: "Vertical velocity (vy) of the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false,
+    },{
+        name: "final-velocity",
+        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
+    },{
+        name: "range",
+        description: "The horizontal distance travelled by the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
+    },{
+        name: "height",
+        description: "The height of the object (peak) e.g (55m, 21.02ft)",
+        type: 3,
+        required: false
+    },{
+        name: "time",
+        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
+        type: 3,
+        required: false
+    }]
 }];
 
 // Env variables
@@ -440,6 +479,45 @@ client.on('interactionCreate', async (interaction) => {
         try {
             // let temp = new VerticallyDownward(vi, vf, d, t, sf);
             let temp = new VerticallyUpward(vi, vf, d, t, tT, sf);
+            // LATEX
+            let formulas = [], attc = [], properEmbeds = [];
+            for (let i = 0; i < temp.equationInLatex.length; i++) {
+                let info = new Latex(temp.equationInLatex[i]);
+                await info.main()
+                formulas.push(info.pngBuffer)
+            }
+            formulas.forEach((latexPng, index) => {
+                attc.push(new AttachmentBuilder(latexPng, { name: `latex_eq${index}.png` }))
+                if (index == 0) {
+                    properEmbeds.push({
+                        description: temp.givenInfo, 
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                } else {
+                    properEmbeds.push({
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                }
+            })
+            await interaction.reply({ embeds: properEmbeds, files: attc })
+        } catch (exception) {
+            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
+            console.error(exception)
+        }
+    } else if (interaction.commandName == "horizontal-motion") {
+        let sf = interaction.options.getInteger('round-to-sigfig')
+        let vi = interaction.options.getString('initial-velocity')
+        let vy = interaction.options.getString('vertical-velocity')
+        let vf = interaction.options.getString('final-velocity')
+        let d = interaction.options.getString('height')
+        let r = interaction.options.getString('range')
+        let t = interaction.options.getString('time')
+        try {
+            let temp = new HorizontalProjection(vi, vy, vf, t, d, r, sf);
             // LATEX
             let formulas = [], attc = [], properEmbeds = [];
             for (let i = 0; i < temp.equationInLatex.length; i++) {

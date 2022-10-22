@@ -2,7 +2,7 @@
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
-const { VerticallyDownward, VerticallyUpward } = require('./commands/projectilemotion')
+const { VerticallyDownward, VerticallyUpward, HorizontalProjection } = require('./commands/projectilemotion')
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
@@ -23,9 +23,12 @@ const math = require('mathjs')
 // let st = new VerticallyUpward(undefined, "3m/s", undefined, undefined, undefined, 1);
 //
 // let st = new VerticallyUpward(undefined, undefined, undefined, "0.3061s", undefined, 1) // Max height & halftime
-let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
+// let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
 
+// vi, vy, vf, t, d, r, sigfig
+let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
 console.log(st)
+
 // (async() => {
 //     let formulas = [], attc = [], properEmbeds = [];
 //     for (let i = 0; i < st.equationInLatex.length; i++) {
