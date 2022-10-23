@@ -1,4 +1,4 @@
-const { unit, clone, sqrt, square, add, Unit, multiply, divide, subtract } = require('mathjs')
+const { unit, clone, sqrt, square, add, cos, sin, Unit, multiply, divide, subtract, max } = require('mathjs')
 const gravity = unit("9.8m/s^2");
 
 const SigFig = (x, n) => +x.toPrecision(n);
@@ -647,7 +647,131 @@ class HorizontalProjection {
 }
 
 class ProjectedAtAnAngle {
+    constructor(vi, angle, vf, maxHeight, tT, r, sf) { // Initial velocity is required and angle
+        // this.vi = { actual: unit(vi), rounded: unit(vi) }
+        this.vi = unit(vi); // This is given so no need to do stuff with it
+        this.angle = unit(angle, 'deg'); // Fix rounding off errors angles...
+        this.sf = sf;
+        this.vf = {
+            actual: vf,
+            rounded: null
+        }
+        this.tT = {
+            actual: tT,
+            rounded: null
+        }
+        this.maxHeight = {
+            actual: maxHeight,
+            rounded: null
+        }
+        this.r = {
+            actual: r,
+            rounded: null
+        }
+        this.vx = {
+            actual: null,
+            rounded: null
+        }
+        this.vy = {
+            actual: null,
+            rounded: null
+        }
+        this.givenInfo;
+        this.equationInLatex = [];
+        this.assignVariables()
+        this.main()
+    }
 
+    assignVariables(){
+        let given = '**Given:**\n'
+        // Assign given variables, initial velocity and angle is already given
+        given += ` - Initial Velocity (vi): \`${this.vi.toString()}\`\n - Angle (in degrees): \`${this.angle} Degrees\`\n`;
+        if (this.vf.actual != undefined) {
+            this.vf.actual = unit(this.vf.actual);
+            this.vf.rounded = clone(this.vf.actual);
+            this.vf.rounded.value = SigFig(this.vf.rounded.value, this.sf);
+            given += ` - Final Velocity (vf): \`${this.vf.actual.toString()}\` = \`${this.vf.rounded.toString()}\`\n`
+        }
+        if (this.r.actual != undefined) {
+            this.r.actual = unit(this.r.actual);
+            this.r.rounded = clone(this.r.actual);
+            this.r.rounded.value = SigFig(this.r.rounded.value, this.sf);
+            given += ` - Range (R): \`${this.r.actual.toString()}\` = \`${this.r.rounded.toString()}\`\n`
+        }
+        if (this.tT.actual != undefined) {
+            // Assign the given time
+            this.tT.actual = unit(this.tT.actual);
+            this.tT.rounded = clone(this.tT.actual);
+            this.tT.rounded.value = SigFig(this.tT.rounded.value, this.sf);
+            given += ` - Total Time (tT): \`${this.tT.actual.toString()}\` = \`${this.tT.rounded.toString()}\`\n`
+        }
+        if (this.maxHeight.actual != undefined) {
+            // Assign the given time
+            this.maxHeight.actual = unit(this.maxHeight.actual);
+            this.maxHeight.rounded = clone(this.maxHeight.actual);
+            this.maxHeight.rounded.value = SigFig(this.maxHeight.rounded.value, this.sf);
+            given += ` - Max Height (d): \`${this.maxHeight.actual.toString()}\` = \`${this.maxHeight.rounded.toString()}\`\n`
+        }
+        // Concatenate the given and what to find into the global string
+        this.givenInfo = given;
+    }
+
+    main(){ 
+        let find = "**Find:** ";
+        let answer = "**Answer:**\n";
+        // If user has distance, only thing to have is to get is time
+        // First find vx and vy
+        this.vx.actual = multiply(this.vi, cos(this.angle))
+        this.vx.rounded = clone(this.vx.actual);
+        this.vx.rounded.value = SigFig(this.vx.rounded.value, this.sf)
+        this.equationInLatex.push(`v_{x} = v_{i}cos(${this.angle.toString()}) = ${this.vx.rounded.toString()}`)
+        find += "Horizontal Velocity (vx), "
+        answer += ` - Horizontal Velocity (vx): \`${this.vx.actual.toString()}\` = \`${this.vx.rounded.toString()}\`\n`
+
+        this.vy.actual = multiply(this.vi, sin(this.angle))
+        this.vy.rounded = clone(this.vy.actual);
+        this.vy.rounded.value = SigFig(this.vy.rounded.value, this.sf)
+        this.equationInLatex.push(`v_{y} = v_{i}sin(${this.angle.toString()}) = ${this.vy.rounded.toString()}`)
+        find += "Vertical Velocity (vy), "
+        answer += ` - Vertical Velocity (vy): \`${this.vy.actual.toString()}\` = \`${this.vy.rounded.toString()}\`\n`
+        
+        if (this.maxHeight.actual == undefined) {
+            // dmax = -vy^2/2g (no need negative symbol)
+            this.maxHeight.actual = divide(square(this.vy.actual), multiply(2, gravity));
+            this.maxHeight.rounded = clone(this.maxHeight.actual);
+            this.maxHeight.rounded.value = SigFig(this.maxHeight.rounded.value, this.sf)
+            this.equationInLatex.push(`d_{max} = \\frac{-{v_{y}}^{2}}{2g} \\implies \\frac{-(${this.vy.actual.toString()})^{2}}{2(-${gravity.toString()})} = ${this.maxHeight.rounded.toString()}`)
+            find += "Max Height (d), "
+            answer += ` - Max Height (d): \`${this.maxHeight.actual.toString()}\` = \`${this.maxHeight.rounded.toString()}\`\n`
+        }
+        if (this.tT.actual == undefined) {
+            // tT = -2vy/g (no need negative symbol)
+            this.tT.actual = divide(multiply(2, this.vy.actual), gravity);
+            this.tT.rounded = clone(this.tT.actual);
+            this.tT.rounded.value = SigFig(this.tT.rounded.value, this.sf)
+            this.equationInLatex.push(`t_{T} = \\frac{-2v_{y}}{g} \\implies \\frac{-2(${this.vy.actual.toString()})}{-${gravity.toString()}} = ${this.tT.rounded.toString()}`)
+            find += "Total Time (tT), "
+            answer += ` - Total Time (tT): \`${this.tT.actual.toString()}\` = \`${this.tT.rounded.toString()}\`\n`
+        }
+        if (this.r.actual == undefined) {
+            // R = vx * tT
+            this.r.actual = multiply(this.vx.actual, this.tT.actual);
+            this.r.rounded = clone(this.r.actual);
+            this.r.rounded.value = SigFig(this.r.rounded.value, this.sf)
+            this.equationInLatex.push(`R = v_{x}t_{T} \\implies (${this.vx.actual.toString()})(${this.tT.actual.toString()})= ${this.r.rounded.toString()}`)
+            find += "Range (R), "
+            answer += ` - Range (R): \`${this.r.actual.toString()}\` = \`${this.r.rounded.toString()}\`\n`
+        }
+        if (this.vf.actual == undefined) {
+            this.vf.actual = sqrt(add(square(this.vi), square(this.vy.actual)));
+            this.vf.rounded = clone(this.vf.actual);
+            this.vf.rounded.value = SigFig(this.vf.rounded.value, this.sf);
+            this.equationInLatex.push(`v_{f} = \\sqrt{v_{x}^{2} + v_{y}^{2}} \\implies \\sqrt{${this.vi.toString()}^{2} + ${this.vy.actual.toString()}^{2}} = ${this.vf.rounded.toString()}`)
+            find += "Final Velocity (vf), "
+            answer += ` - Final Velocity (vf): \`${this.vf.actual.toString()}\` = \`${this.vf.rounded.toString()}\`\n`
+        }
+        this.givenInfo += find + "\n" + answer;
+    }
 }
 
 module.exports = {VerticallyUpward, VerticallyDownward, HorizontalProjection, ProjectedAtAnAngle};

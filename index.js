@@ -257,6 +257,45 @@ const ListOfCommands = [{
         type: 3,
         required: false
     }]
+}, {
+    name: "projected-at-an-angle",
+    description: "Solves the properties of an object projected at an angle",
+    options: [{
+        name: "round-to-sigfig",
+        description: "Round to how many sig figs?",
+        type: 4,
+        required: true
+    },{
+        name: "initial-velocity",
+        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: true,
+    },{
+        name: "final-velocity",
+        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
+    },{
+        name: "angle",
+        description: "Projected angle of the object, must be between 0 and 90 degrees e.g (10, 80)",
+        type: 4,
+        required: true
+    },{
+        name: "range",
+        description: "The horizontal distance travelled by the object e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
+    },{
+        name: "max-height",
+        description: "The height of the object (peak) e.g (55m, 21.02ft)",
+        type: 3,
+        required: false
+    },{
+        name: "total-time",
+        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
+        type: 3,
+        required: false
+    }]
 }];
 
 // Env variables

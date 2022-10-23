@@ -2,7 +2,7 @@
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
-const { VerticallyDownward, VerticallyUpward, HorizontalProjection } = require('./commands/projectilemotion')
+const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
@@ -26,7 +26,8 @@ const math = require('mathjs')
 // let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
 
 // vi, vy, vf, t, d, r, sigfig
-let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
+// let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
+let st = new ProjectedAtAnAngle("20m/s", 30, undefined, undefined, undefined, undefined, 2);
 console.log(st)
 
 // (async() => {
