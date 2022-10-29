@@ -261,11 +261,6 @@ const ListOfCommands = [{
     name: "projected-at-an-angle",
     description: "Solves the properties of an object projected at an angle",
     options: [{
-        name: "round-to-sigfig",
-        description: "Round to how many sig figs?",
-        type: 4,
-        required: true
-    },{
         name: "initial-velocity",
         description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
         type: 3,
@@ -273,6 +268,11 @@ const ListOfCommands = [{
     },{
         name: "angle",
         description: "Projected angle of the object, must be between 0 and 90 degrees e.g (10, 80)",
+        type: 4,
+        required: true
+    },{
+        name: "round-to-sigfig",
+        description: "Round to how many sig figs?",
         type: 4,
         required: true
     },{
@@ -419,12 +419,11 @@ client.on('interactionCreate', async (interaction) => {
             The balanced chemical formula for **${unbalancedChemFormula}** is: \`\`\`${temp.equation}\`\`\`
             `)
         } catch (exception) {
-            if (unbalancedChemFormula.toLowerCase() == "sir naval") {
-                await interaction.reply('https://imgflip.com/i/6xizng')
-            } else {
-                await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
-            }
-
+            // if (unbalancedChemFormula.toLowerCase() == "sir naval") {
+            //     await interaction.reply('https://imgflip.com/i/6xizng')
+            // } else {
+            await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
+            // }
         }
     } else if (interaction.commandName == 'stoichiometry') {
         let chemEquation = interaction.options.getString('equation');
@@ -488,6 +487,7 @@ client.on('interactionCreate', async (interaction) => {
         let d = interaction.options.getString('height')
         let t = interaction.options.getString('time')
         try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking
             let temp = new VerticallyDownward(vi, vf, d, t, sf);
             // LATEX
             let [ formula1, formula2] = [new Latex(temp.equationInLatex[0]), new Latex(temp.equationInLatex[1])];
@@ -521,6 +521,7 @@ client.on('interactionCreate', async (interaction) => {
         let t = interaction.options.getString('time')
         let tT = interaction.options.getString('total-time')
         try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking
             // let temp = new VerticallyDownward(vi, vf, d, t, sf);
             let temp = new VerticallyUpward(vi, vf, d, t, tT, sf);
             // LATEX
@@ -561,6 +562,7 @@ client.on('interactionCreate', async (interaction) => {
         let r = interaction.options.getString('range')
         let t = interaction.options.getString('time')
         try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking
             let temp = new HorizontalProjection(vi, vy, vf, t, d, r, sf);
             // LATEX
             let formulas = [], attc = [], properEmbeds = [];
@@ -587,6 +589,46 @@ client.on('interactionCreate', async (interaction) => {
                 }
             })
             await interaction.reply({ embeds: properEmbeds, files: attc })
+        } catch (exception) {
+            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
+            console.error(exception)
+        }
+    } else if (interaction.commandName == "projected-at-an-angle") {
+        let sf = interaction.options.getInteger('round-to-sigfig')
+        let angle = interaction.options.getInteger('angle')
+        let vi = interaction.options.getString('initial-velocity')
+        let maxHeight = interaction.options.getString('max-height')
+        let tT = interaction.options.getString('total-time')
+        let r = interaction.options.getString('range')
+        let vf = interaction.options.getString('final-velocity')
+        try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking
+            let temp = new ProjectedAtAnAngle(vi, angle, vf, maxHeight, tT, r, sf);
+            // LATEX
+            let formulas = [], attc = [], properEmbeds = [];
+            for (let i = 0; i < temp.equationInLatex.length; i++) {
+                let info = new Latex(temp.equationInLatex[i]);
+                await info.main()
+                formulas.push(info.pngBuffer)
+            }
+            formulas.forEach((latexPng, index) => {
+                attc.push(new AttachmentBuilder(latexPng, { name: `latex_eq${index}.png` }))
+                if (index == 0) {
+                    properEmbeds.push({
+                        description: temp.givenInfo, 
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                } else {
+                    properEmbeds.push({
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                }
+            })
+            await interaction.editReply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
             await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)

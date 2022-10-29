@@ -574,7 +574,7 @@ class HorizontalProjection {
                 this.d.actual = divide(multiply(gravity, square(this.t.actual)), 2);
                 this.d.rounded = clone(this.d.actual);
                 this.d.rounded.value = SigFig(this.d.rounded.value, this.sf);
-                this.equationInLatex.push(`d = \\frac{gt^{2}}{2} \\implies \\frac{(${gravity.toString()})(${this.t.toString()})^{2}}{2} = ${this.d.rounded.toString()}`)
+                this.equationInLatex.push(`d = \\frac{gt^{2}}{2} \\implies \\frac{(${gravity.toString()})(${this.t.actual.toString()})^{2}}{2} = ${this.d.rounded.toString()}`)
                 find += "Distance (d), "
                 answer += ` - Distance (d): \`${this.d.actual.toString()}\` = \`${this.d.rounded.toString()}\`\n`
             }
@@ -685,7 +685,7 @@ class ProjectedAtAnAngle {
     assignVariables(){
         let given = '**Given:**\n'
         // Assign given variables, initial velocity and angle is already given
-        given += ` - Initial Velocity (vi): \`${this.vi.toString()}\`\n - Angle (in degrees): \`${this.angle} Degrees\`\n`;
+        given += ` - Initial Velocity (vi): \`${this.vi.toString()}\`\n - Angle: \`${this.angle}\`\n`;
         if (this.vf.actual != undefined) {
             this.vf.actual = unit(this.vf.actual);
             this.vf.rounded = clone(this.vf.actual);
@@ -724,14 +724,14 @@ class ProjectedAtAnAngle {
         this.vx.actual = multiply(this.vi, cos(this.angle))
         this.vx.rounded = clone(this.vx.actual);
         this.vx.rounded.value = SigFig(this.vx.rounded.value, this.sf)
-        this.equationInLatex.push(`v_{x} = v_{i}cos(${this.angle.toString()}) = ${this.vx.rounded.toString()}`)
+        this.equationInLatex.push(`v_{x} = v_{i}cos(\\theta) \\implies ${this.vi.toString()} \\cdot cos(${this.angle.toString()}) = ${this.vx.rounded.toString()}`)
         find += "Horizontal Velocity (vx), "
         answer += ` - Horizontal Velocity (vx): \`${this.vx.actual.toString()}\` = \`${this.vx.rounded.toString()}\`\n`
 
         this.vy.actual = multiply(this.vi, sin(this.angle))
         this.vy.rounded = clone(this.vy.actual);
         this.vy.rounded.value = SigFig(this.vy.rounded.value, this.sf)
-        this.equationInLatex.push(`v_{y} = v_{i}sin(${this.angle.toString()}) = ${this.vy.rounded.toString()}`)
+        this.equationInLatex.push(`v_{y} = v_{i}sin(\\theta) \\implies ${this.vi.toString()} \\cdot sin(${this.angle.toString()}) = ${this.vy.rounded.toString()}`)
         find += "Vertical Velocity (vy), "
         answer += ` - Vertical Velocity (vy): \`${this.vy.actual.toString()}\` = \`${this.vy.rounded.toString()}\`\n`
         

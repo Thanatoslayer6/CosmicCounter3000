@@ -27,7 +27,8 @@ const math = require('mathjs')
 
 // vi, vy, vf, t, d, r, sigfig
 // let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
-let st = new ProjectedAtAnAngle("20m/s", 30, undefined, undefined, undefined, undefined, 2);
+// 
+let st = new ProjectedAtAnAngle("20m/s", 45, undefined, undefined, undefined, undefined, 2);
 console.log(st)
 
 // (async() => {
