@@ -271,15 +271,15 @@ const ListOfCommands = [{
         type: 3,
         required: true,
     },{
-        name: "final-velocity",
-        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
         name: "angle",
         description: "Projected angle of the object, must be between 0 and 90 degrees e.g (10, 80)",
         type: 4,
         required: true
+    },{
+        name: "final-velocity",
+        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
+        type: 3,
+        required: false
     },{
         name: "range",
         description: "The horizontal distance travelled by the object e.g (2.00m/s, 12ft/s)",
@@ -419,7 +419,12 @@ client.on('interactionCreate', async (interaction) => {
             The balanced chemical formula for **${unbalancedChemFormula}** is: \`\`\`${temp.equation}\`\`\`
             `)
         } catch (exception) {
-            await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
+            if (unbalancedChemFormula.toLowerCase() == "sir naval") {
+                await interaction.reply('https://imgflip.com/i/6xizng')
+            } else {
+                await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
+            }
+
         }
     } else if (interaction.commandName == 'stoichiometry') {
         let chemEquation = interaction.options.getString('equation');
