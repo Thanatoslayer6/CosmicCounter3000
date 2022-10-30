@@ -835,4 +835,4 @@ class StoichiometryPercentage {
     
 }
 
-module.exports = { Stoichiometry, StoichiometryPercentage }
+module.exports = { Stoichiometry, StoichiometryPercentage, MolarMass}

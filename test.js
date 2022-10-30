@@ -2,7 +2,8 @@
 // const { AccuracyPrecision } = require('./commands/accuracyprecision')
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
-const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
+// const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
+const { ChemTable } = require('./commands/chemtable');
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const math = require('mathjs')
@@ -24,12 +25,15 @@ const math = require('mathjs')
 //
 // let st = new VerticallyUpward(undefined, undefined, undefined, "0.3061s", undefined, 1) // Max height & halftime
 // let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
+let some = math.unit("0.18kg").to('g')
+console.log(some.toString())
+// let st = new ChemTable("NaCl")
 
 // vi, vy, vf, t, d, r, sigfig
 // let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
 // 
-let st = new ProjectedAtAnAngle("20m/s", 45, undefined, undefined, undefined, undefined, 2);
-console.log(st)
+// let st = new ProjectedAtAnAngle("20m/s", 45, undefined, undefined, undefined, undefined, 2);
+// console.log(st)
 
 // (async() => {
 //     let formulas = [], attc = [], properEmbeds = [];
@@ -93,13 +97,3 @@ console.log(st)
 // console.log(temp.percentError);
 // console.log(temp.relativeDeviation);
 // console.log(temp.conclusion);
-
-// const { table } = require('table');
-
-// const data = [
-//     ['0A', '0B', '0C'],
-//     ['1A', '1B', '1C'],
-//     ['2A', '2B', '2C']
-// ];
-
-// console.log(table(data));
