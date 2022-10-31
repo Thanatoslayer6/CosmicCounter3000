@@ -103,49 +103,65 @@ const formulas = {
 class ChemTable {
     constructor(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, normality) {
         // First we figure out the molar mass of the solution
-        // let temp = Array.from(parseCompound(solution))
         this.given = {
             solution: solution, // This one's required to no need to set to null
             // solute
-            // TODO: Do this stuff
-            massSolute: unit(massSolute).to('g'), // already guds
-            mwSolute: unit(this.getMolarMass(solution)).to("g/mol"), // already guds
+            massSolute: massSolute,
+            mwSolute: unit(this.getMolarMass(solution), "g/mol"), // already guds once user inputs solution
             nSolute: nSolute,
             nfSolute: nfSolute,
             // solvent
-            massSolvent: unit(massSolvent).to('g'),
-            mwSolvent: unit(18).to("g/mol"), // required (default)
+            massSolvent: massSolvent,
+            mwSolvent: unit(18, 'g'), // required (default) already guds
             nSolvent: nSolvent,
             nfSolvent: nfSolvent,
             // others
-            massSolution: unit(massSolution).to('g'),
+            massSolution: massSolution,
             molality: molality,
             molarity: molarity,
             normality: normality
         }
 
         this.checkGiven();
-        this.solve();
+        // this.solve();
     }
 
     checkGiven() {
-        if (this.nSolute != undefined) {
-            this.nSolute = unit(this.nSolute).to("mol");
-        }
-        if (this.nfSolute != undefined) {
-            this.nfSolute = parseFloat(this.nfSolute)
-        }
-
-        if (this.nSolvent != undefined) {
-            this.nSolvent = unit(this.nSolvent).to("mol");
-        }
-
-        if (this.nfSolvent != undefined) {
-            this.nfSolvent = parseFloat(this.nfSolvent)
-        }
+        // if (this.massSolute != undefined) {
+        //     this.massSolute = unit(massSolute, 'g');
+        // }
+        (this.massSolute != undefined) ? this.massSolute = unit(this.massSolute, 'g') : undefined;
+        // if (this.nSolute != undefined) {
+        //     this.nSolute = unit(this.nSolute, 'mol');
+        // }
+        (this.nSolute != undefined) ? this.nSolute = unit(this.nSolute, 'mol') : undefined;
+        // if (this.nfSolute != undefined) {
+        //     this.nfSolute = parseFloat(this.nfSolute)
+        // }
+        (this.nfSolute != undefined) ? this.nfSolute = parseFloat(this.nfSolute) : undefined;
+        // if (this.massSolvent != undefined) {
+        //     this.massSolvent = unit(massSolvent, 'g');
+        // }
+        (this.massSolvent != undefined) ? this.massSolvent = unit(this.massSolvent, 'g') : undefined;
+        // if (this.nSolvent != undefined) {
+        //     this.nSolvent = unit(this.nSolvent, 'mol');
+        // }
+        (this.nSolvent != undefined) ? this.nSolvent = unit(massSolvent, 'g') : undefined;
+        // if (this.nfSolvent != undefined) {
+        //     this.nfSolvent = parseFloat(this.nfSolvent)
+        // }
+        (this.nfSolvent != undefined) ? this.nfSolvent = parseFloat(this.nfSolvent) : undefined;
+        // if (this.massSolution != undefined) {
+        //     this.massSolution = unit(this.massSolution, 'g')
+        // } 
+        (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, 'g') : undefined;
+        (this.molality != undefined) ? this.molality = parseFloat(this.molality) : undefined;
+        (this.molarity != undefined) ? this.molarity = parseFloat(this.molarity) : undefined;
+        (this.normality != undefined) ? this.normality = parseFloat(this.normality) : undefined;
     }
+
     solve() {
-        this.nSolute
+        // this.nSolute
     }
 
     getNSolute() {
