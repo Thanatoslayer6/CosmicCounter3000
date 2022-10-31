@@ -26,9 +26,11 @@ const math = require('mathjs')
 // let st = new VerticallyUpward(undefined, undefined, undefined, "0.3061s", undefined, 1) // Max height & halftime
 // let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
 // console.log(some)
-let st = new ChemTable("NaCl", "122g", "400g", undefined, undefined, undefined, undefined, undefined, undefined)
+// let st = new ChemTable("Al2(CO3)3", "122g", "400g", undefined, undefined, undefined, undefined, undefined, undefined, undefined)
+let st = new ChemTable("LiCl", undefined, undefined, undefined, 20, undefined, 0.20, undefined, undefined, undefined, undefined, undefined)
+// let st = new ChemTable("H2SO4", "210g")
 //TODO: Debug this
-// console.log(st)
+console.log(st.showOutput())
 
 // vi, vy, vf, t, d, r, sigfig
 // let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
