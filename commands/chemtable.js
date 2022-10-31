@@ -1,186 +1,218 @@
-const { unit, round, Unit, multiply, divide, subtract } = require('mathjs')
+const { unit, round, Unit, multiply, divide, add, subtract } = require('mathjs')
 const { MolarMass } = require('./stoichiometry')
 const parseCompound = require('compound-parser')
 
 const formulas = {
     // Solute
     nSolute: (massSolute, mwSolute, nSolvent, nfSolvent, nfSolute, molality, massSolvent, molarity, massSolution) => {
-        if (massSolute != null && mwSolute != null) { // main formula
-            return massSolute/mwSolute
-        } else if (nSolvent != null && nfSolvent != null) { // derived formula from nfsolvent
-            return  (nSolvent/nfSolvent) - nSolvent 
-        } else if (nSolvent != null && nfSolute != null) { // derived formula from nfsolute, parenthesis very improtnat
-            return (nfSolute * nSolvent)/ (1 - nfSolute)
-        } else if(molality != null && massSolvent != null){
-            return molality * (massSolvent / 1000)
-        } else if(molarity != null && massSolution != null){
-            return molarity * (massSolution / 1000)
+        if (massSolute != undefined && mwSolute != undefined) { // main formula
+            // return massSolute/mwSolute
+            return divide(massSolute, mwSolute)
+        } else if (nSolvent != undefined && nfSolvent != undefined) { // derived formula from nfsolvent
+            // return  (nSolvent/nfSolvent) - nSolvent 
+            return subtract(divide(nSolvent, nfSolvent), nSolvent)
+        } else if (nSolvent != undefined && nfSolute != undefined) { // derived formula from nfsolute, parenthesis very improtnat
+            // return (nfSolute * nSolvent)/ (1 - nfSolute)
+            return divide(multiply(nfSolute, nSolvent), subtract(1, nfSolute))
+        } else if(molality != undefined && massSolvent != undefined){
+            // return molality * (massSolvent / 1000)
+            return multiply(molality, massSolvent.to('kg'))
+        } else if(molarity != undefined && massSolution != undefined){
+            // return molarity * (massSolution / 1000)
+            return multiply(molarity, massSolute.to('kg'))
         }
-        return null
+        return undefined
     },
     massSolute: (massSolution, massSolvent, mwSolute, nSolute) => {
-        if (massSolution != null && massSolvent != null) {
-            return massSolution - massSolvent
-        } else if (mwSolute != null && nSolute != null) {
-            return mwSolute * nSolute 
+        if (massSolution != undefined && massSolvent != undefined) {
+            // return massSolution - massSolvent
+            return subtract(massSolution, massSolvent)
+        } else if (nSolute != undefined && mwSolute != undefined) {
+            // return mwSolute * nSolute 
+            return multiply(mwSolute, nSolute)
         }
-        return null
+        return undefined
     },
     nfSolute: (nSolute, nSolvent, nfSolvent) => {
-        if (nSolute != null && nSolvent != null) {
-            return ((nSolute) / ((nSolute) + (nSolvent)))
-        } else if (nfSolvent != null) {
-            return 1 - nfSolvent
+        if (nSolute != undefined && nSolvent != undefined) {
+            // return ((nSolute) / ((nSolute) + (nSolvent)))
+            return divide(nSolute, add(nSolute, nSolvent))
+        } else if (nfSolvent != undefined) {
+            // return 1 - nfSolvent
+            return subtract(1, nfSolvent)
         }
-        return null
+        return undefined
     },
-      // Solvent
+    // Solvent
     nSolvent: (massSolvent, mwSolvent, nSolute, nfSolute, nfSolvent) => {
-        if (massSolvent != null && mwSolvent != null) {
-            return massSolvent/mwSolvent
-        } else if (nSolute != null && nfSolute != null) {
-            return (nSolute/nfSolute) - nSolute
-        } else if (nSolute != null && nfSolvent != null) {
-            return (nfSolvent * nSolute) /(1 - nfSolvent)
+        if (massSolvent != undefined && mwSolvent != undefined) {
+            // return massSolvent/mwSolvent
+            return divide(massSolvent, mwSolvent)
+        } else if (nSolute != undefined && nfSolute != undefined) {
+            // return (nSolute/nfSolute) - nSolute
+            return subtract(divide(nSolute, nfSolute), nSolute)
+        } else if (nSolute != undefined && nfSolvent != undefined) {
+            // return (nfSolvent * nSolute) /(1 - nfSolvent)
+            return divide(multiply(nfSolvent, nSolute), subtract(1 - nfSolvent))
         }
-      return null
+      return undefined
     },
 
     massSolvent: (massSolution, massSolute, mwSolvent, nSolvent, nSolute, molality) => {
-        if (massSolution != null && massSolute != null) {
-          return massSolution - massSolute;
-        } else if (mwSolvent != null && nSolvent != null) {
-          return mwSolvent * nSolvent
-        } else if(nSolute != null && molality != null){
-          return nSolute / molality
+        if (massSolution != undefined && massSolute != undefined) {
+            // return massSolution - massSolute;
+            return subtract(massSolution, massSolute) 
+        } else if (nSolvent != undefined && mwSolvent != undefined) {
+            // return mwSolvent * nSolvent
+            return multiply(mwSolvent, nSolvent)
+        } else if(nSolute != undefined && molality != undefined){
+          // return nSolute / molality
+            return divide(nSolute, molality) 
         }
-        return null
+        return undefined
     },
 
     nfSolvent: (nSolute, nSolvent, nfSolute) => {
-      if (nSolute != null && nSolvent != null) {
-        return ((nSolvent) / ((nSolute) + (nSolvent)))
-      } else if (nfSolute != null) {
-        return 1 - nfSolute
-      }
-      return null
+        if (nSolute != undefined && nSolvent != undefined) {
+          // return ((nSolvent) / ((nSolute) + (nSolvent)))
+            return add(divide(nSolvent, nSolute), nSolvent)
+        } else if (nfSolute != undefined) {
+            return subtract(1, nfSolute)
+          // return 1 - nfSolute
+        }
+        return undefined
     },
-    // Added another method for calculating massSolution cuz of (null + somenumber = somenumber) issues
+    // Added another method for calculating massSolution cuz of (undefined + somenumber = somenumber) issues
     massSolution: (massSolute, massSolvent, nSolute, molarity) => {
-      if (massSolute != null && massSolvent != null) {
-        return massSolute + massSolvent;
-      } else if(nSolute != null && molarity != null){
-        return nSolute / molarity
-      }
-      return null
+        if (massSolute != undefined && massSolvent != undefined) {
+            return add(massSolute, massSolvent)
+          // return massSolute + massSolvent;
+        } else if(nSolute != undefined && molarity != undefined){
+            return divide(nSolute, molarity)
+          // return nSolute / molarity
+        }
+        return undefined
     },
     molality: (nSolute, massSolvent) => {
-      if(nSolute != null && massSolvent != null){
-        return (nSolute) / (massSolvent / 1000)
-      }
-      return null
+        if(nSolute != undefined && massSolvent != undefined){
+            return divide(nSolute, massSolvent)
+          // return (nSolute) / (massSolvent / 1000)
+        }
+        return undefined
     },
     molarity: (nSolute, massSolution) => {
-      // Mass solution can be Volume solution since Aqueous solutions is 1g/1ml
-      if(nSolute != null && massSolution != null){
-        return (nSolute) / (massSolution / 1000)
-      }
-      return null
-      // with molarity we can derive ---> nsolute and volume solution ORR mass solution actually
+        // Mass solution can be Volume solution since Aqueous solutions is 1g/1ml
+        if(nSolute != undefined && massSolution != undefined){
+            return divide(nSolute, massSolution)
+          // return (nSolute) / (massSolution / 1000)
+        }
+        return undefined
+        // with molarity we can derive ---> nsolute and volume solution ORR mass solution actually
     },
-    normality: () => {
+    // normality: () => {
     
-    },
-    equivalentWeight: () => {
+    // },
+    // equithisentWeight: () => {
       
-    },
-    equivalentsOfSolute: () => {
+    // },
+    // equithisentsOfSolute: () => {
       
-    }
+    // }
 }
 
 
 class ChemTable {
     constructor(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, normality) {
         // First we figure out the molar mass of the solution
-        this.given = {
-            solution: solution, // This one's required to no need to set to null
-            // solute
-            massSolute: massSolute,
-            mwSolute: unit(this.getMolarMass(solution), "g/mol"), // already guds once user inputs solution
-            nSolute: nSolute,
-            nfSolute: nfSolute,
-            // solvent
-            massSolvent: massSolvent,
-            mwSolvent: unit(18, 'g'), // required (default) already guds
-            nSolvent: nSolvent,
-            nfSolvent: nfSolvent,
-            // others
-            massSolution: massSolution,
-            molality: molality,
-            molarity: molarity,
-            normality: normality
-        }
+        this.solution = solution, // This one's required to no need to set to undefined
+        // solute
+        this.massSolute = massSolute,
+        this.mwSolute = unit(this.getMolarMass(solution), "g/mol"), // already guds once user inputs solution
+        this.nSolute = nSolute,
+        this.nfSolute = nfSolute,
+        // solvent
+        this.massSolvent = massSolvent,
+        this.mwSolvent = unit(18, "g/mol"), // required (default) already guds
+        this.nSolvent = nSolvent,
+        this.nfSolvent = nfSolvent,
+        // others
+        this.massSolution = massSolution,
+        this.molality = molality,
+        this.molarity = molarity,
+        this.normality = normality
 
         this.checkGiven();
-        // this.solve();
+        this.solve();
+         // Object.keys(this))
     }
 
     checkGiven() {
-        // if (this.massSolute != undefined) {
-        //     this.massSolute = unit(massSolute, 'g');
-        // }
-        (this.massSolute != undefined) ? this.massSolute = unit(this.massSolute, 'g') : undefined;
-        // if (this.nSolute != undefined) {
-        //     this.nSolute = unit(this.nSolute, 'mol');
-        // }
-        (this.nSolute != undefined) ? this.nSolute = unit(this.nSolute, 'mol') : undefined;
-        // if (this.nfSolute != undefined) {
-        //     this.nfSolute = parseFloat(this.nfSolute)
-        // }
-        (this.nfSolute != undefined) ? this.nfSolute = parseFloat(this.nfSolute) : undefined;
-        // if (this.massSolvent != undefined) {
-        //     this.massSolvent = unit(massSolvent, 'g');
-        // }
-        (this.massSolvent != undefined) ? this.massSolvent = unit(this.massSolvent, 'g') : undefined;
-        // if (this.nSolvent != undefined) {
-        //     this.nSolvent = unit(this.nSolvent, 'mol');
-        // }
-        (this.nSolvent != undefined) ? this.nSolvent = unit(massSolvent, 'g') : undefined;
-        // if (this.nfSolvent != undefined) {
-        //     this.nfSolvent = parseFloat(this.nfSolvent)
-        // }
-        (this.nfSolvent != undefined) ? this.nfSolvent = parseFloat(this.nfSolvent) : undefined;
-        // if (this.massSolution != undefined) {
-        //     this.massSolution = unit(this.massSolution, 'g')
-        // } 
-        (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, 'g') : undefined;
-        (this.molality != undefined) ? this.molality = parseFloat(this.molality) : undefined;
-        (this.molarity != undefined) ? this.molarity = parseFloat(this.molarity) : undefined;
-        (this.normality != undefined) ? this.normality = parseFloat(this.normality) : undefined;
+        // Solute
+        (this.massSolute != undefined) ? this.massSolute = unit(this.massSolute) : undefined;
+        (this.nSolute != undefined) ? this.nSolute = unit(this.nSolute) : undefined;
+        (this.nfSolute != undefined) ? this.nfSolute = unit(this.nfSolute) : undefined;
+        // Solvent
+        (this.massSolvent != undefined) ? this.massSolvent = unit(this.massSolvent) : undefined;
+        (this.nSolvent != undefined) ? this.nSolvent = unit(massSolvent) : undefined;
+        (this.nfSolvent != undefined) ? this.nfSolvent = unit(this.nfSolvent) : undefined;
+        // Others
+        (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution) : undefined;
+        (this.molality != undefined) ? this.molality = unit(this.molality) : undefined;
+        (this.molarity != undefined) ? this.molarity = unit(this.molarity) : undefined;
+        (this.normality != undefined) ? this.normality = unit(this.normality) : undefined;
     }
 
     solve() {
-        // this.nSolute
+        if(this.massSolute == undefined){
+            this.massSolute = formulas.massSolute(this.massVolSolution, this.massSolvent, this.mwSolute, this.nSolute)
+        } 
+        if(this.massSolvent == undefined){
+            this.massSolvent = formulas.massSolvent(this.massVolSolution, this.massSolute, this.mwSolvent, this.nSolvent, this.nSolute, this.molality)
+        } 
+        if(this.solution == undefined){
+            this.massVolSolution = formulas.massSolution(this.massSolute, this.massSolvent, this.nSolute, this.molarity)
+        }
+        // Solve for mole solute and mole solvent
+        if(this.nSolute == undefined){
+            this.nSolute = formulas.nSolute(this.massSolute, this.mwSolute, this.nSolvent, this.nfSolvent, this.nfSolute, this.molality, this.massSolvent, this.molarity, this.massVolSolution)
+        }
+        if(this.nSolvent == undefined){
+            this.nSolvent = formulas.nSolvent(this.massSolvent, this.mwSolvent, this.nSolute, this.nfSolute, this.nfSolvent)
+        }
+        // Solve for mole fraction
+        if(this.nfSolute == undefined){
+            this.nfSolute = formulas.nfSolute(this.nSolute, this.nSolvent, this.nfSolvent)
+        }
+        if(this.nfSolvent == undefined){
+            this.nfSolvent = formulas.nfSolvent(this.nSolute, this.nSolvent, this.nfSolute)
+        }
+        // Molality
+        if(this.molality == undefined){
+            this.molality = formulas.molality(this.nSolute, this.massSolvent)
+        }
+        // Molarity
+        if(this.molarity == undefined){
+            this.molarity = formulas.molarity(this.nSolute, this.massVolSolution)
+        }
     }
 
-    getNSolute() {
-        if (this.massSolute != null) { // main formula
-            return divide(this.massSolute, this.mwSolute)
-        } else if (this.nSolvent != null && this.nfSolvent != null) { // derived formula from nfsolvent
-            // return  (nSolvent/nfSolvent) - nSolvent 
-            return subtract(divide(this.nSolvent, this.nfSolvent), this.nSolvent)
-        } else if (this.nSolvent != null && this.nfSolute != null) { // derived formula from nfsolute, parenthesis very improtnat
-            return divide(multiply(this.nfSolute, this.nSolvent), subtract(1, this.nfSolute))
-        } else if(this.molality != null && this.massSolvent != null){
-            // return molality * (massSolvent / 1000)
-            return multiply(this.molality, this.massSolvent.to('kg'))
-        } else if(molarity != null && massSolution != null){
-            // return molarity * (massSolution / 1000)
-            return multiply(this.molarity, this.massSolution.to('kg'))
-        }
-        return null;
-    }
+    // getNSolute() {
+        // if (this.massSolute != undefined) { // main formula
+        //     return divide(this.massSolute, this.mwSolute)
+        // } else if (this.nSolvent != undefined && this.nfSolvent != undefined) { // derived formula from nfsolvent
+        //     // return  (nSolvent/nfSolvent) - nSolvent 
+        //     return subtract(divide(this.nSolvent, this.nfSolvent), this.nSolvent)
+        // } else if (this.nSolvent != undefined && this.nfSolute != undefined) { // derived formula from nfsolute, parenthesis very improtnat
+        //     return divide(multiply(this.nfSolute, this.nSolvent), subtract(1, this.nfSolute))
+        // } else if(this.molality != undefined && this.massSolvent != undefined){
+        //     // return molality * (massSolvent / 1000)
+        //     return multiply(this.molality, this.massSolvent.to('kg'))
+        // } else if(this.molarity != undefined && this.massSolution != undefined){
+        //     // return molarity * (massSolution / 1000)
+        //     return multiply(this.molarity, this.massSolution.to('kg'))
+        // }
+        // return undefined;
+    // }
     
     getMolarMass(solution) {
         // Molar mass of element needed to be solved
