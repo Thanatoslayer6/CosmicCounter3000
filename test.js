@@ -27,7 +27,9 @@ const { ChemTable } = require('./commands/chemtable');
 // let st = new VerticallyUpward(undefined, undefined, "250m", undefined, undefined, 2) // Max height & halftime
 // console.log(some)
 // let st = new ChemTable("Al2(CO3)3", "122g", "400g", undefined, undefined, undefined, undefined, undefined, undefined, undefined)
-let st = new ChemTable("LiCl", undefined, undefined, undefined, 20, undefined, 0.20, undefined, undefined, undefined, undefined, undefined)
+// let st = new ChemTable("LiCl", undefined, undefined, undefined, 20, undefined, 0.20, undefined, undefined, undefined, undefined, undefined)
+let st = new ChemTable("NaCl", undefined, undefined, undefined, 5, undefined, undefined, undefined, undefined, 8.77)
+// FIX THIS ONE TODO ABOVE
 // let st = new ChemTable("H2SO4", "210g")
 //TODO: Debug this
 console.log(st.showOutput())

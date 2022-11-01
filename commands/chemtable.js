@@ -108,10 +108,15 @@ const formulas = {
             // temp = multiply() // Convert to liters
             // Assuming that massSolution is already in kilograms...
             // console.log(massSolution.formatUnits())
-            massSolution = massSolution.to('kg')
-            let temp = nSolute.value / massSolution.value
-            // return divide(nSolute, massSolution)
-            return unit(temp, "mol/l")
+            // massSolution = massSolution.to('kg')
+            // let temp = nSolute.value / massSolution.value
+            let temp = (divide(nSolute, massSolution.to('kg'))).toJSON()
+            // CHange unit to 'mol/L'
+            temp.unit = 'mol / l';
+            return Unit.fromJSON(temp)
+            // console.log(temp.unit)
+            // return 
+            // return unit(temp, "mol/l")
             // TODO: Fix conversoin issues and normality, also equivalentSolutes
             // return divide(nSolute, multiply(massSolution))
           // return (nSolute) / (massSolution / 1000)
@@ -131,7 +136,12 @@ const formulas = {
 
     normality: (equivalentSolutes, equivalentWeight, molarity, valencyFactor) => {
         if (molarity != undefined && valencyFactor != undefined) {
-            return (multiply(molarity, valencyFactor))
+            // console.log(multiply(molarity, valencyFactor))
+            // let temp = multiply(molarity, valencyFactor).toJSON()
+            // temp.unit = 'eq / l'
+
+            // return Unit.fromJSON(temp)
+            return (multiply(molarity, valencyFactor)).toNumber()
         } 
         // else if (equivalentSolutes != undefined && equivalentWeight != undefined) {
         //     return divide(equivalentSolutes, equivalentWeight)            
