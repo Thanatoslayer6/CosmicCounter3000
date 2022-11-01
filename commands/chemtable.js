@@ -106,9 +106,14 @@ const formulas = {
         if(nSolute != undefined && massSolution != undefined){
             // let temp = clone(massSolution)
             // temp = multiply() // Convert to liters
+            // Assuming that massSolution is already in kilograms...
+            // console.log(massSolution.formatUnits())
+            massSolution = massSolution.to('kg')
+            let temp = nSolute.value / massSolution.value
             // return divide(nSolute, massSolution)
+            return unit(temp, "mol/l")
             // TODO: Fix conversoin issues and normality, also equivalentSolutes
-            return divide(nSolute, multiply(massSolution, unit('1000', 'l/kg')))
+            // return divide(nSolute, multiply(massSolution))
           // return (nSolute) / (massSolution / 1000)
         }
         return undefined

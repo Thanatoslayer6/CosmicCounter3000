@@ -6,7 +6,7 @@
 const { ChemTable } = require('./commands/chemtable');
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
-const math = require('mathjs')
+// const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
 // let st = new WordToChem('Arsenic Phosphite + Ferric Sulfite = Ferric Phosphite + Arsenic Sulfite')
