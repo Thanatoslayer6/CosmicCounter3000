@@ -1,7 +1,10 @@
-const { unit, round, Unit, clone, multiply, divide, add, abs, subtract } = require('mathjs')
+const { unit, round, Unit, evaluate, clone, createUnit, multiply, divide, add, abs, subtract } = require('mathjs')
 const { MolarMass } = require('./stoichiometry')
 const { Ions } = require('./weq')
 const parseCompound = require('compound-parser')
+
+createUnit("equivalent", { aliases: [ 'eq', 'eqw', 'equiv' ] })
+createUnit("equivalentPerLiter", { definition: ['eq/l', 'eqw/l' ,'equiv/l'] })
 
 const formulas = {
     // Solute
@@ -19,15 +22,24 @@ const formulas = {
             // return molality * (massSolvent / 1000)
             return multiply(molality, massSolvent.to('kg'))
         } else if(molarity != undefined && massSolution != undefined){
-            // return molarity * (massSolution / 1000)
-            return multiply(molarity, massSolute.to('kg'))
+            try {
+                return multiply(molarity, massSolution.to('kg'))
+            } catch (exception) {
+                return multiply(molarity, convertMassOrVolumeSolution(massSolution, true))
+            }
         }
         return undefined
     },
     massSolute: (massSolution, massSolvent, mwSolute, nSolute) => {
         if (massSolution != undefined && massSolvent != undefined) {
             // return massSolution - massSolvent
-            return subtract(massSolution, massSolvent)
+            try {
+                return subtract(massSolution, massSolvent)
+                // return multiply(molarity, massSolution.to('kg'))
+            } catch (exception) {
+                return subtract(convertMassOrVolumeSolution(massSolution), massSolvent)
+                // return multiply(molarity, convertMassOrVolumeSolution(massSolution))
+            }
         } else if (nSolute != undefined && mwSolute != undefined) {
             // return mwSolute * nSolute 
             return multiply(mwSolute, nSolute)
@@ -62,7 +74,11 @@ const formulas = {
     massSolvent: (massSolution, massSolute, mwSolvent, nSolvent, nSolute, molality) => {
         if (massSolution != undefined && massSolute != undefined) {
             // return massSolution - massSolute;
-            return subtract(massSolution, massSolute) 
+            try {
+                return subtract(massSolution, massSolute) 
+            } catch (exception) {
+                return subtract(convertMassOrVolumeSolution(massSolution), massSolute) 
+            }
         } else if (nSolvent != undefined && mwSolvent != undefined) {
             // return mwSolvent * nSolvent
             return multiply(mwSolvent, nSolvent)
@@ -89,7 +105,8 @@ const formulas = {
             return add(massSolute, massSolvent)
           // return massSolute + massSolvent;
         } else if(nSolute != undefined && molarity != undefined){
-            return divide(nSolute, molarity)
+            // Since this is just mol / (mol / l) just convert to grams
+            return convertMassOrVolumeSolution(divide(nSolute, molarity))
           // return nSolute / molarity
         }
         return undefined
@@ -110,38 +127,40 @@ const formulas = {
             // console.log(massSolution.formatUnits())
             // massSolution = massSolution.to('kg')
             // let temp = nSolute.value / massSolution.value
-            let temp = (divide(nSolute, massSolution.to('kg'))).toJSON()
-            // CHange unit to 'mol/L'
-            temp.unit = 'mol / l';
-            return Unit.fromJSON(temp)
+            
+            // let temp = (divide(nSolute, massSolution.to('kg'))).toJSON()
+            // // Change unit to 'mol/L'
+            // temp.unit = 'mol / l';
+            // return Unit.fromJSON(temp)
+
             // console.log(temp.unit)
             // return 
             // return unit(temp, "mol/l")
             // TODO: Fix conversoin issues and normality, also equivalentSolutes
-            // return divide(nSolute, multiply(massSolution))
+            try {
+                return divide(nSolute, massSolution.to('l'))
+            } catch (exception) {
+                return divide(nSolute, convertMassOrVolumeSolution(massSolution, true))
+            }
           // return (nSolute) / (massSolution / 1000)
         }
         return undefined
-        // with molarity we can derive ---> nsolute and volume solution ORR mass solution actually
     },
-
+    
+    // TODO: Do equivalent solutes and discord output
     // equivalentSolutes: (massSolute, massSolution, equivalentWeight, normality) => {
     //     if (massSolute != undefined && equivalentWeight != undefined) {
     //         return divide(massSolute, equivalentWeight)
     //     } else if (massSolution != undefined && normality != undefined) {
-    //         return multiply(normality, massSolution.to('kg'))
+    //         return multiply(normality, massSolution)
     //     }
     //     return undefined;
     // },
 
     normality: (equivalentSolutes, equivalentWeight, molarity, valencyFactor) => {
         if (molarity != undefined && valencyFactor != undefined) {
-            // console.log(multiply(molarity, valencyFactor))
-            // let temp = multiply(molarity, valencyFactor).toJSON()
-            // temp.unit = 'eq / l'
-
-            // return Unit.fromJSON(temp)
-            return (multiply(molarity, valencyFactor)).toNumber()
+            let temp = (multiply(molarity, valencyFactor)).toNumber('mol/l')
+            return unit(temp, 'eq/l')
         } 
         // else if (equivalentSolutes != undefined && equivalentWeight != undefined) {
         //     return divide(equivalentSolutes, equivalentWeight)            
@@ -150,6 +169,27 @@ const formulas = {
     },
 }
 
+// Used for converting mass -> volume, volume <- mass, since aqueous solutions are 1g/1ml or 1kg/1l
+const convertMassOrVolumeSolution = (u, isKiloOrLiter) => {
+    let actualUnit = (Unit.parse(u.valueOf())).formatUnits()
+    if (actualUnit == 'l') { // convert to kilograms
+        return unit(u.toNumber(actualUnit), 'kg')
+    } else if (actualUnit == 'ml'){ // convert to grams
+        if (isKiloOrLiter) {
+            return unit(u.toNumber(actualUnit), 'kg')
+        }
+        return unit(u.toNumber(actualUnit), 'g')
+
+    } else if (actualUnit == 'g') { // convert to mL
+        if (isKiloOrLiter) {
+            return unit(u.toNumber(actualUnit), 'l')
+        }
+        return unit(u.toNumber(actualUnit), 'ml')
+    } else if (actualUnit == 'kg') { // convert to liters
+        return unit(u.toNumber(actualUnit), 'l')
+    }
+    return undefined;
+}
 
 class ChemTable {
     constructor(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, equivalentSolutes, normality) {
@@ -176,7 +216,7 @@ class ChemTable {
         this.equivalentWeight = unit(temp.equivalentWeight, 'g')
         this.equivalentSolutes = equivalentSolutes;
         this.checkGiven();
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 3; i++) {
             this.solve();
         }
     }
@@ -193,7 +233,7 @@ class ChemTable {
         // Others
         (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, "g") : undefined;
         (this.molality != undefined) ? this.molality = unit(this.molality, "mol/kg") : undefined;
-        (this.molarity != undefined) ? this.molarity = unit(this.molarity) : undefined;
+        (this.molarity != undefined) ? this.molarity = unit(this.molarity, "mol/l") : undefined;
         (this.equivalentSolutes != undefined) ? this.equivalentSolutes = unit(this.equivalentSolutes) : undefined;
         (this.normality != undefined) ? this.normality = unit(this.normality) : undefined;
     }
