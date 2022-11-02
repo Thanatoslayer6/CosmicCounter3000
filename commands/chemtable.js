@@ -1,4 +1,4 @@
-const { unit, round, Unit, evaluate, clone, createUnit, multiply, divide, add, abs, subtract } = require('mathjs')
+const { unit, round, Unit, format, createUnit, multiply, divide, add, abs, subtract } = require('mathjs')
 const { MolarMass } = require('./stoichiometry')
 const { Ions } = require('./weq')
 const parseCompound = require('compound-parser')
@@ -17,7 +17,7 @@ const formulas = {
             return subtract(divide(nSolvent, nfSolvent), nSolvent)
         } else if (nSolvent != undefined && nfSolute != undefined) { // derived formula from nfsolute, parenthesis very improtnat
             // return (nfSolute * nSolvent)/ (1 - nfSolute)
-            return divide(multiply(nfSolute, nSolvent), subtract(1, nfSolute))
+            return divide(multiply(nfSolute, nSolvent), subtract(unit(1), nfSolute))
         } else if(molality != undefined && massSolvent != undefined){
             // return molality * (massSolvent / 1000)
             return multiply(molality, massSolvent.to('kg'))
@@ -52,7 +52,7 @@ const formulas = {
             return divide(nSolute, add(nSolute, nSolvent))
         } else if (nfSolvent != undefined) {
             // return 1 - nfSolvent
-            return subtract(1, nfSolvent)
+            return subtract(unit(1), nfSolvent)
         }
         return undefined
     },
@@ -66,7 +66,8 @@ const formulas = {
             return subtract(divide(nSolute, nfSolute), nSolute)
         } else if (nSolute != undefined && nfSolvent != undefined) {
             // return (nfSolvent * nSolute) /(1 - nfSolvent)
-            return divide(multiply(nfSolvent, nSolute), subtract(1 - nfSolvent))
+            // console.log(multiply(nfSolvent, nSolute))
+            return divide(multiply(nfSolvent, nSolute), subtract(unit(1), nfSolvent))
         }
       return undefined
     },
@@ -94,7 +95,7 @@ const formulas = {
              // return ((nSolvent) / ((nSolute) + (nSolvent)))
             return divide(nSolvent, add(nSolvent, nSolute))
         } else if (nfSolute != undefined) {
-            return subtract(1, nfSolute)
+            return subtract(unit(1), nfSolute)
           // return 1 - nfSolute
         }
         return undefined
@@ -133,7 +134,7 @@ const formulas = {
     
     // TODO: Do equivalent solutes and discord output
     //  equivalent weight is already given
-    equivalentSolutes: (massSolute, equivalentWeight) => {
+    equivalentOfSolute: (massSolute, equivalentWeight) => {
         if (massSolute != undefined && equivalentWeight != undefined) {
             let temp = divide(massSolute, equivalentWeight)
             return unit(temp, "eq")
@@ -141,12 +142,16 @@ const formulas = {
         return undefined;
     },
 
-    normality: (equivalentSolutes, massSolution, molarity, valencyFactor) => {
+    normality: (equivalentOfSolute, massSolution, molarity, valencyFactor) => {
         if (molarity != undefined && valencyFactor != undefined) {
             let temp = (multiply(molarity, valencyFactor)).toNumber('mol/l')
             return unit(temp, 'eq/l')
-        } else if (equivalentSolutes != undefined && massSolution != undefined) {
-            return divide(equivalentSolutes, convertMassOrVolumeSolution(massSolution, true))            
+        } else if (equivalentOfSolute != undefined && massSolution != undefined) {
+            try {
+                return divide(equivalentOfSolute, massSolution.to('l'))
+            } catch (exception) {
+                return divide(equivalentOfSolute, convertMassOrVolumeSolution(massSolution, true))            
+            }
         }
         return undefined
     },
@@ -175,7 +180,7 @@ const convertMassOrVolumeSolution = (u, isKiloOrLiter) => {
 }
 
 class ChemTable {
-    constructor(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, equivalentSolutes, normality) {
+    constructor(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, equivalentOfSolute, normality) {
         let temp = this.getMolarMassAndEquivalentWeight(solution);
         // First we figure out the molar mass of the solution
         this.solution = solution // This one's required to no need to set to undefined
@@ -197,8 +202,9 @@ class ChemTable {
         this.normality = normality
         this.valencyFactor = temp.valencyFactor;
         this.equivalentWeight = unit(temp.equivalentWeight, 'g')
-        this.equivalentSolutes = equivalentSolutes;
+        this.equivalentOfSolute = equivalentOfSolute;
         this.checkGiven();
+        this.solve()
         for (let i = 0; i < 3; i++) {
             this.solve();
         }
@@ -217,8 +223,8 @@ class ChemTable {
         (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, "g") : undefined;
         (this.molality != undefined) ? this.molality = unit(this.molality, "mol/kg") : undefined;
         (this.molarity != undefined) ? this.molarity = unit(this.molarity, "mol/l") : undefined;
-        (this.equivalentSolutes != undefined) ? this.equivalentSolutes = unit(this.equivalentSolutes, "eq") : undefined;
-        (this.normality != undefined) ? this.normality = unit(this.normality) : undefined;
+        (this.equivalentOfSolute != undefined) ? this.equivalentOfSolute = unit(this.equivalentOfSolute, "eq") : undefined;
+        (this.normality != undefined) ? this.normality = unit(this.normality, "eq/l") : undefined;
     }
 
     solve() {
@@ -255,12 +261,12 @@ class ChemTable {
             this.molarity = formulas.molarity(this.nSolute, this.massSolution)
         }
         // Equivalent solutes (mass of solute / equivalent weight) this is like moles but in terms of eq
-        if (this.equivalentSolutes == undefined) {
-            this.equivalentSolutes = formulas.equivalentSolutes(this.massSolute, this.equivalentWeight)
+        if (this.equivalentOfSolute == undefined) {
+            this.equivalentOfSolute = formulas.equivalentOfSolute(this.massSolute, this.equivalentWeight)
         }
         // Normality
         if (this.normality == undefined) {
-            this.normality = formulas.normality(this.equivalentSolutes, this.equivalentWeight, this.molarity, this.valencyFactor)
+            this.normality = formulas.normality(this.equivalentOfSolute, this.massSolution, this.molarity, this.valencyFactor)
         }
     }
 
@@ -306,35 +312,88 @@ class ChemTable {
         return parseInt(temp[2]);
     }
 
+    // Mass Solute: ${this.massSolute.to('g')?.toString()}
     showOutput() {
         let output = `
-            Solution: ${this.solution}
+        Mass Solute: \`${format(this.massSolute?.to('g'), {notation: 'fixed', precision: 2})}\`
+        Mass Solvent: \`${format(this.massSolvent?.to('g'), {notation: 'fixed', precision: 2})}\`
+        Mass Solution: \`${format(this.massSolution?.to('g'), {notation: 'fixed', precision: 2})}\`
 
-            Mass Solute: ${this.massSolute?.toString()}
-            MW Solute: ${this.mwSolute?.toString()}
-            Mole Solute (nSolute): ${this.nSolute?.toString()}
-            Mole Fraction Solute (nfSolute): ${this.nfSolute?.toString()}
+        MW Solute: \`${format(this.mwSolute, {notation: 'fixed', precision: 2})}\`
+        MW Solvent: \`${format(this.mwSolvent, {notation: 'fixed', precision: 2})}\`
 
-            Mass Solvent: ${this.massSolvent?.toString()}
-            MW Solvent: ${this.mwSolvent?.toString()}
-            Mole Solvent (nSolvent): ${this.nSolvent?.toString()}
-            Mole Fraction Solvent (nfSolvent): ${this.nfSolvent?.toString()}
+        Mole Solute (nSolute): \`${format(this.nSolute, {notation: 'fixed', precision: 2})}\`
+        Mole Solvent (nSolvent): \`${format(this.nSolvent, {notation: 'fixed', precision: 2})}\`
 
-            Mass Solution: ${this.massSolution?.toString()}
-            Molality: ${this.molality?.toString()}
-            Molarity: ${this.molarity?.toString()}
-            Normality: ${this.normality?.toString()}
+        Mole Fraction Solute (nfSolute): \`${format(this.nfSolute, {notation: 'fixed', precision: 2})}\`
+        Mole Fraction Solvent (nfSolvent): \`${format(this.nfSolvent, {notation: 'fixed', precision: 2})}\`
 
-            Valency Factor: ${this.valencyFactor}
-            Equivalent Weight: ${this.equivalentWeight?.toString()}
-            Equivalent Solute: ${this.equivalentSolutes?.toString()}
-        `;
-        // Object.keys(this).forEach(i => {
-        //     output += this[i]
-        // })
+        Molality: \`${format(this.molality, {notation: 'fixed', precision: 2})}\`
+        Molarity: \`${format(this.molarity, {notation: 'fixed', precision: 2})}\`
+        Normality: \`${format(this.normality, {notation: 'fixed', precision: 2})}\`
+
+        Valency Factor (n): \`${this.valencyFactor}\`
+        Equivalent Weight: \`${format(this.equivalentWeight, {notation: 'fixed', precision: 2})}\`
+        Equivalent of Solute: \`${this.equivalentOfSolute?.toString()}\``;
         return output
     }
 
 }
 
-module.exports = { ChemTable }
+// let item = new ChemTable()
+const ChemTableCommand = {
+    name: "chemistry-table",
+    description: "Solves the whole chemistry table solution from mass solute/solvent up to normality",
+    options: [{
+        name: "solution",
+        description: "The given solution like NaCl, LiCl, or any other compound",
+        type: 3,
+        required: true,
+    },{
+        name: "mass-solute",
+        description: "Mass solute of the solution can be in g or kg, default is in grams (245, 245g, 0.245kg)",
+        type: 3,
+    },{
+        name: "mass-solvent",
+        description: "Mass solvent of the solution can be in g or kg, default is in grams (245, 245g, 0.245kg)",
+        type: 3,
+    },{
+        name: "mass-solution",
+        description: "Mass solution can be in g or kg, default is in grams (120, 120, 0.12kg)",
+        type: 3,
+    },{
+        name: "nsolute",
+        description: "Mole solute, default is in mol (0.20, 0.20 mol)",
+        type: 3,
+    },{
+        name: "nsolvent",
+        description: "Mole solvent, default is in mol (0.20, 0.20 mol)",
+        type: 3,
+    },{
+        name: "nfsolute",
+        description: "Mole fraction solute, no unit needed (0.79, 0.21)",
+        type: 3,
+    }, {
+        name: "nfsolvent",
+        description: "Mole fraction solvent, no unit needed (0.54, 0.46)",
+        type: 3
+    }, {
+        name: "molality",
+        description: "Molality amount of moles per kilogram solvent, default is in mol/kg (8.2, 8.2 mol/kg)",
+        type: 3
+    }, {
+        name: "molarity",
+        description: "Molarity amount of moles per liter solution, default is in mol/L (8.2, 8.2 mol/l)",
+        type: 3
+    }, {
+        name: "equivalent-of-solute",
+        description: "Equivalent grams of solute default is in eq (2.4, 2.4 eq)",
+        type: 3
+    }, {
+        name: "normality",
+        description: "Normality amount of equivalents of solute per liter solution, default is in eq/L (8.2, 8.2 eq/l)",
+        type: 3
+    }]
+}
+
+module.exports = { ChemTable, ChemTableCommand }

@@ -9,6 +9,7 @@ const { Balancer } = require('./commands/balance')
 const { Kinematics } = require('./commands/kinematics')
 const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
+const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
 require('dotenv').config();
 
 // List of all commands
@@ -296,7 +297,7 @@ const ListOfCommands = [{
         type: 3,
         required: false
     }]
-}];
+}, ChemTableCommand];
 
 // Env variables
 const TOKEN = process.env.TOKEN;
@@ -419,11 +420,11 @@ client.on('interactionCreate', async (interaction) => {
             The balanced chemical formula for **${unbalancedChemFormula}** is: \`\`\`${temp.equation}\`\`\`
             `)
         } catch (exception) {
-            // if (unbalancedChemFormula.toLowerCase() == "sir naval") {
-            //     await interaction.reply('https://imgflip.com/i/6xizng')
-            // } else {
-            await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
-            // }
+            if (unbalancedChemFormula.toLowerCase() == "sir naval") {
+                await interaction.reply('https://imgflip.com/i/6xizng')
+            } else {
+                await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
+            }
         }
     } else if (interaction.commandName == 'stoichiometry') {
         let chemEquation = interaction.options.getString('equation');
@@ -632,6 +633,33 @@ client.on('interactionCreate', async (interaction) => {
         } catch (exception) {
             await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
+        }
+    } else if (interaction.commandName == 'chemistry-table') {
+        let solution = interaction.options.getString('solution')
+        let massSolute = interaction.options.getString('mass-solute')
+        let massSolvent = interaction.options.getString('mass-solvent')
+        let massSolution = interaction.options.getString('mass-solution')
+        let nSolute = interaction.options.getString('nsolute')
+        let nSolvent = interaction.options.getString('nsolvent')
+        let nfSolute = interaction.options.getString('nfsolute')
+        let nfSolvent = interaction.options.getString('nfsolvent')
+        let molality = interaction.options.getString('molality')
+        let molarity = interaction.options.getString('molarity')
+        let equivalentOfSolute = interaction.options.getString('equivalent-of-solute')
+        let normality = interaction.options.getString('normality')       
+        try {
+            let temp = new ChemTable(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, equivalentOfSolute, normality) 
+            await interaction.reply({embeds: [{
+                title: `**Solution:** ${solution}`,
+                fields: [{ 
+                    name: "**Table Output:**", 
+                    value: temp.showOutput() 
+                }]
+            }]})
+            // await interaction.reply(temp.showOutput())
+        } catch (exception) {
+            console.log(exception)
+            await interaction.reply(`_What we know is a drop, what we don't know is an ocean_ - **Isaac Newton**`)
         }
     }
 });
