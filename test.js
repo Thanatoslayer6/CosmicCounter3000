@@ -6,7 +6,7 @@
 const { ChemTable } = require('./commands/chemtable');
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
-// const math = require('mathjs')
+const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
 // let st = new WordToChem('Arsenic Phosphite + Ferric Sulfite = Ferric Phosphite + Arsenic Sulfite')
@@ -33,6 +33,10 @@ let st = new ChemTable("LiCl", undefined, undefined, undefined, 5, undefined, un
 // let st = new ChemTable("H2SO4", "210g")
 //TODO: Debug this
 console.log(st.showOutput())
+
+// let msolute = math.unit("0.231kg")
+// let eqweight = math.unit("10g")
+// console.log((math.divide(msolute, eqweight)).valueOf())
 
 // vi, vy, vf, t, d, r, sigfig
 // let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);

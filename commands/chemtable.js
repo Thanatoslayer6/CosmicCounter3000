@@ -121,22 +121,6 @@ const formulas = {
     molarity: (nSolute, massSolution) => {
         // Mass solution can be Volume solution since Aqueous solutions is 1g/1ml
         if(nSolute != undefined && massSolution != undefined){
-            // let temp = clone(massSolution)
-            // temp = multiply() // Convert to liters
-            // Assuming that massSolution is already in kilograms...
-            // console.log(massSolution.formatUnits())
-            // massSolution = massSolution.to('kg')
-            // let temp = nSolute.value / massSolution.value
-            
-            // let temp = (divide(nSolute, massSolution.to('kg'))).toJSON()
-            // // Change unit to 'mol/L'
-            // temp.unit = 'mol / l';
-            // return Unit.fromJSON(temp)
-
-            // console.log(temp.unit)
-            // return 
-            // return unit(temp, "mol/l")
-            // TODO: Fix conversoin issues and normality, also equivalentSolutes
             try {
                 return divide(nSolute, massSolution.to('l'))
             } catch (exception) {
@@ -148,23 +132,22 @@ const formulas = {
     },
     
     // TODO: Do equivalent solutes and discord output
-    // equivalentSolutes: (massSolute, massSolution, equivalentWeight, normality) => {
-    //     if (massSolute != undefined && equivalentWeight != undefined) {
-    //         return divide(massSolute, equivalentWeight)
-    //     } else if (massSolution != undefined && normality != undefined) {
-    //         return multiply(normality, massSolution)
-    //     }
-    //     return undefined;
-    // },
+    //  equivalent weight is already given
+    equivalentSolutes: (massSolute, equivalentWeight) => {
+        if (massSolute != undefined && equivalentWeight != undefined) {
+            let temp = divide(massSolute, equivalentWeight)
+            return unit(temp, "eq")
+        }         
+        return undefined;
+    },
 
-    normality: (equivalentSolutes, equivalentWeight, molarity, valencyFactor) => {
+    normality: (equivalentSolutes, massSolution, molarity, valencyFactor) => {
         if (molarity != undefined && valencyFactor != undefined) {
             let temp = (multiply(molarity, valencyFactor)).toNumber('mol/l')
             return unit(temp, 'eq/l')
-        } 
-        // else if (equivalentSolutes != undefined && equivalentWeight != undefined) {
-        //     return divide(equivalentSolutes, equivalentWeight)            
-        // }
+        } else if (equivalentSolutes != undefined && massSolution != undefined) {
+            return divide(equivalentSolutes, convertMassOrVolumeSolution(massSolution, true))            
+        }
         return undefined
     },
 }
@@ -234,7 +217,7 @@ class ChemTable {
         (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, "g") : undefined;
         (this.molality != undefined) ? this.molality = unit(this.molality, "mol/kg") : undefined;
         (this.molarity != undefined) ? this.molarity = unit(this.molarity, "mol/l") : undefined;
-        (this.equivalentSolutes != undefined) ? this.equivalentSolutes = unit(this.equivalentSolutes) : undefined;
+        (this.equivalentSolutes != undefined) ? this.equivalentSolutes = unit(this.equivalentSolutes, "eq") : undefined;
         (this.normality != undefined) ? this.normality = unit(this.normality) : undefined;
     }
 
@@ -271,9 +254,10 @@ class ChemTable {
         if(this.molarity == undefined){
             this.molarity = formulas.molarity(this.nSolute, this.massSolution)
         }
-        // if (this.equivalentSolutes == undefined) {
-        //     this.equivalentSolutes formulas.equivalentSolutes()
-        // }
+        // Equivalent solutes (mass of solute / equivalent weight) this is like moles but in terms of eq
+        if (this.equivalentSolutes == undefined) {
+            this.equivalentSolutes = formulas.equivalentSolutes(this.massSolute, this.equivalentWeight)
+        }
         // Normality
         if (this.normality == undefined) {
             this.normality = formulas.normality(this.equivalentSolutes, this.equivalentWeight, this.molarity, this.valencyFactor)
