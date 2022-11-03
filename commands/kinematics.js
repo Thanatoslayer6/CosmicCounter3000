@@ -232,4 +232,20 @@ class Kinematics {
 
 }
 
-module.exports = { Kinematics }
+const KinematicsCommand = {
+    name: 'kinematics',
+    description: 'Tries to solve distance/time/velocity (initial or final)/acceleration',
+    options: [{
+        name: 'known-values',
+        description: 'Can be a, vf, vi, t, or d (separate by a comma or spaces) e.g (vf = 2km/s t=2s)',
+        type: 3, // string
+        required: true
+    }, {
+        name: 'solve-for',
+        description: 'Can only be a, vf, vi, t, or d',
+        type: 3, // string
+        required: true
+    }]
+} 
+
+module.exports = { Kinematics, KinematicsCommand }

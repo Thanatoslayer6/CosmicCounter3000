@@ -74,4 +74,15 @@ class Latex {
     }
 }
 
-module.exports = { Latex }
+const LatexCommand = {
+    name: 'latex',
+    description: 'Write and output an equation into fancy LaTex',
+    options: [{
+        name: 'command',
+        description: 'Write LaTex commands like \\pi, \\rightarrow, \\neq, etc...',
+        type: 3, // string
+        required: true
+    }]
+} 
+
+module.exports = { Latex, LatexCommand }

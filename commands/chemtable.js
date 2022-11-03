@@ -217,7 +217,7 @@ class ChemTable {
         (this.nfSolute != undefined) ? this.nfSolute = unit(this.nfSolute) : undefined;
         // Solvent
         (this.massSolvent != undefined) ? this.massSolvent = unit(this.massSolvent, "g") : undefined;
-        (this.nSolvent != undefined) ? this.nSolvent = unit(massSolvent, "mol") : undefined;
+        (this.nSolvent != undefined) ? this.nSolvent = unit(this.nSolvent, "mol") : undefined;
         (this.nfSolvent != undefined) ? this.nfSolvent = unit(this.nfSolvent) : undefined;
         // Others
         (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, "g") : undefined;

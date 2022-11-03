@@ -209,4 +209,15 @@ class Balancer {
     }
 }
 
-module.exports = { Balancer }
+const BalancerCommand = { 
+    name: 'balance',
+    description: 'Balances a chemical equation',
+    options: [{
+        name: 'equation',
+        description: 'The given chemical equation e.g (H2 + O2 = H2O)',
+        type: 3, 
+        required: true
+    }]
+} 
+
+module.exports = { Balancer, BalancerCommand }

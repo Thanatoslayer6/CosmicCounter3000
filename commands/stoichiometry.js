@@ -835,4 +835,61 @@ class StoichiometryPercentage {
     
 }
 
-module.exports = { Stoichiometry, StoichiometryPercentage, MolarMass}
+const StoichiometryCommand = {
+    name: 'stoichiometry',
+    description: 'Solves Mass to Mass, Mass to Volume, Volume to Volume',
+    options: [{
+        name: "equation",
+        description: "The given chemical equation e.g (Mg + O2 = MgO) make sure the spaces are equal",
+        type: 3,
+        required: true
+    }, {
+        name: "given",
+        description: "Known values e.g (25.2 g of Mg, 5ml of H2O)",
+        type: 3,
+        required: true
+    }, {
+        name: "solve-for",
+        description: "Can be mass in grams or volume in liters e.g (Mass of MgO, volume of H2O)",
+        type: 3,
+        required: true
+    }]
+}
+
+const StoichiometryPercentageCommand = {
+    name: 'stoichiometry-percentage',
+    description: 'Solves percentage of mass-by-mass, mass-by-volume, volume-by-volume',
+    options: [{
+        name: "method",
+        description: "Specify if % by (m/m), (m/v), or (v/v)",
+        type: 3,
+        required: true,
+        choices: [{
+            name: 'Percent by Mass %(m/m)',
+            value: 'm/m',
+        }, {
+            name: 'Percent by Mass/Volume %(m/v)',
+            value: 'm/v',
+        }, {
+            name: 'Percent by Volume %(v/v)',
+            value: 'v/v'
+        }]
+    },{
+        name: "percent",
+        description: "% by m/m, m/v, or v/v e.g (14%, 49%) (optional)",
+        type: 3,
+        required: false
+    },{
+        name: "solute",
+        description: "Mass/volume of solute e.g (40g, 2.1L) (optional)",
+        type: 3,
+        required: false
+    },{
+        name: "solution",
+        description: "Mass/volume of solvent e.g (2.2kg, 590ml) (optional)",
+        type: 3,
+        required: false
+    }]
+} 
+
+module.exports = { Stoichiometry, StoichiometryCommand, StoichiometryPercentage, StoichiometryPercentageCommand, MolarMass}

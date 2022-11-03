@@ -136,5 +136,32 @@ class FoxyMethod {
         this.finalSetup()
     }
 }
+const FoxyMethodCommand = {
+    name: 'foxy',
+    description: 'Solves for the RESULTANT VECTOR and EQUILIBRIUM VECTOR',
+    options: [{
+        name: 'v1',
+        description: 'The first vector e.g format (35N 30 W of N)',
+        type: 3, // string
+        required: true
+    }, {
+        name: 'v2',
+        description: 'The second vector e.g format (10N 20 Degrees West of South)',
+        type: 3, // string
+        required: true
+    }, {
+        name: 'v3',
+        description: 'The third vector',
+        type: 3, // string
+    }, {
+        name: 'v4',
+        description: 'The fourth vector',
+        type: 3, // string
+    }, {
+        name: 'v5',
+        description: 'The fifth vector',
+        type: 3, // string
+    }]
+} 
 
-module.exports = { FoxyMethod }
+module.exports = { FoxyMethod, FoxyMethodCommand }

@@ -1,303 +1,34 @@
-const { Routes, REST, Client, AttachmentBuilder, GatewayIntentBits, Embed } = require('discord.js');
+const { Routes, REST, Client, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
 const { table, getBorderCharacters } = require('table');
-const { Bearing } = require('./commands/bearing');
-const { AccuracyPrecision } = require('./commands/accuracyprecision');
-const { FoxyMethod } = require('./commands/foxy');
-const { Latex } = require('./commands/latex');
-const { WordToChem } = require('./commands/weq')
-const { Balancer } = require('./commands/balance')
-const { Kinematics } = require('./commands/kinematics')
-const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
-const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
+const { Bearing, BearingCommand } = require('./commands/bearing');
+const { AccuracyPrecision, AccuracyPrecisionCommand } = require('./commands/accuracyprecision');
+const { FoxyMethod, FoxyMethodCommand } = require('./commands/foxy');
+const { Latex, LatexCommand } = require('./commands/latex');
+const { WordToChem, WordToChemCommand } = require('./commands/weq')
+const { Balancer, BalancerCommand } = require('./commands/balance')
+const { Kinematics, KinematicsCommand } = require('./commands/kinematics')
+const { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } = require('./commands/stoichiometry')
+const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } = require('./commands/projectilemotion')
 const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
 require('dotenv').config();
 
 // List of all commands
-const ListOfCommands = [{
-    name: 'bearing',
-    description: 'Gives ACTUAL DIRECTION and COMPLEMENTARY DIRECTION based on bearing angle',
-    options: [{
-        name: 'angle',
-        description: 'The known bearing angle',
-        type: 4, // integer
-        required: true
-    }]
-}, {
-    name: 'acpc',
-    description: 'Calculates the passed values based on the actual value if ACCURATE or PRECISE',
-    options: [{
-        name: 'list-of-values',
-        description: 'The known list of values (decimal/number)',
-        type: 3, // string
-        required: true
-    }, {
-        name: 'actual-value',
-        description: 'The actual value (decimal/number)',
-        type: 10, // double
-        required: true
-    }]
-}, {
-    name: 'foxy',
-    description: 'Solves for the RESULTANT VECTOR and EQUILIBRIUM VECTOR',
-    options: [{
-        name: 'v1',
-        description: 'The first vector e.g format (35N 30 W of N)',
-        type: 3, // string
-        required: true
-    }, {
-        name: 'v2',
-        description: 'The second vector e.g format (10N 20 Degrees West of South)',
-        type: 3, // string
-        required: true
-    }, {
-        name: 'v3',
-        description: 'The third vector',
-        type: 3, // string
-    }, {
-        name: 'v4',
-        description: 'The fourth vector',
-        type: 3, // string
-    }, {
-        name: 'v5',
-        description: 'The fifth vector',
-        type: 3, // string
-    }]
-}, {
-    name: 'latex',
-    description: 'Write and output an equation into fancy LaTex',
-    options: [{
-        name: 'command',
-        description: 'Write LaTex commands like \\pi, \\rightarrow, \\neq, etc...',
-        type: 3, // string
-        required: true
-    }]
-}, {
-    name: 'kinematics',
-    description: 'Tries to solve distance/time/velocity (initial or final)/acceleration',
-    options: [{
-        name: 'known-values',
-        description: 'Can be a, vf, vi, t, or d (separate by a comma or spaces) e.g (vf = 2km/s t=2s)',
-        type: 3, // string
-        required: true
-    }, {
-        name: 'solve-for',
-        description: 'Can only be a, vf, vi, t, or d',
-        type: 3, // string
-        required: true
-    }]
-}, {
-    name: 'weq',
-    description: 'Converts a chemical word equation to its formula form',
-    options: [{
-        name: 'word-equation',
-        description: 'The word equation string e.g (Glucose + oxygen = carbon dioxide + Water)',
-        type: 3,
-        required: true
-    }]
-}, { 
-    name: 'balance',
-    description: 'Balances a chemical equation',
-    options: [{
-        name: 'equation',
-        description: 'The given chemical equation e.g (H2 + O2 = H2O)',
-        type: 3, 
-        required: true
-    }]
-}, {
-    name: 'stoichiometry',
-    description: 'Solves Mass to Mass, Mass to Volume, Volume to Volume',
-    options: [{
-        name: "equation",
-        description: "The given chemical equation e.g (Mg + O2 = MgO) make sure the spaces are equal",
-        type: 3,
-        required: true
-    }, {
-        name: "given",
-        description: "Known values e.g (25.2 g of Mg, 5ml of H2O)",
-        type: 3,
-        required: true
-    }, {
-        name: "solve-for",
-        description: "Can be mass in grams or volume in liters e.g (Mass of MgO, volume of H2O)",
-        type: 3,
-        required: true
-    }]
-},{
-    name: 'stoichiometry-percentage',
-    description: 'Solves percentage of mass-by-mass, mass-by-volume, volume-by-volume',
-    options: [{
-        name: "method",
-        description: "Specify if % by (m/m), (m/v), or (v/v)",
-        type: 3,
-        required: true,
-        choices: [{
-            name: 'Percent by Mass %(m/m)',
-            value: 'm/m',
-        }, {
-            name: 'Percent by Mass/Volume %(m/v)',
-            value: 'm/v',
-        }, {
-            name: 'Percent by Volume %(v/v)',
-            value: 'v/v'
-        }]
-    },{
-        name: "percent",
-        description: "% by m/m, m/v, or v/v e.g (14%, 49%) (optional)",
-        type: 3,
-        required: false
-    },{
-        name: "solute",
-        description: "Mass/volume of solute e.g (40g, 2.1L) (optional)",
-        type: 3,
-        required: false
-    },{
-        name: "solution",
-        description: "Mass/volume of solvent e.g (2.2kg, 590ml) (optional)",
-        type: 3,
-        required: false
-    }]
-}, {
-    name: "downward-motion",
-    description: "Solves vertically downward projectile motion problems",
-    options: [{
-        name: "round-to-sigfig",
-        description: "Round to how many sig figs?",
-        type: 4,
-        required: true
-    },{
-        name: "initial-velocity",
-        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false,
-    },{
-        name: "final-velocity",
-        description: "Final velocity of the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
-        name: "height",
-        description: "The starting height of the object e.g (55m, 21.02ft)",
-        type: 3,
-        required: false
-    }, {
-        name: "time",
-        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
-        type: 3,
-        required: false
-    }]
-}, {
-    name: "upward-motion",
-    description: "Solves vertically upward projectile motion problems",
-    options: [{
-        name: "round-to-sigfig",
-        description: "Round to how many sig figs?",
-        type: 4,
-        required: true
-    },{
-        name: "initial-velocity",
-        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false,
-    },{
-        name: "final-velocity",
-        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
-        name: "height",
-        description: "The height of the object (peak) e.g (55m, 21.02ft)",
-        type: 3,
-        required: false
-    }, {
-        name: "time",
-        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
-        type: 3,
-        required: false
-    }, {
-        name: "total-time",
-        description: "The total time where the object is in motion/in the air e.g (2.3s, 1.25s)",
-        type: 3,
-        required: false
-    }]
-}, {
-    name: "horizontal-motion",
-    description: "Solves horizontal projectile motion problems",
-    options: [{
-        name: "round-to-sigfig",
-        description: "Round to how many sig figs?",
-        type: 4,
-        required: true
-    },{
-        name: "initial-velocity",
-        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false,
-    },{
-        name: "vertical-velocity",
-        description: "Vertical velocity (vy) of the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false,
-    },{
-        name: "final-velocity",
-        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
-        name: "range",
-        description: "The horizontal distance travelled by the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
-        name: "height",
-        description: "The height of the object (peak) e.g (55m, 21.02ft)",
-        type: 3,
-        required: false
-    },{
-        name: "time",
-        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
-        type: 3,
-        required: false
-    }]
-}, {
-    name: "projected-at-an-angle",
-    description: "Solves the properties of an object projected at an angle",
-    options: [{
-        name: "initial-velocity",
-        description: "Initial velocity of the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: true,
-    },{
-        name: "angle",
-        description: "Projected angle of the object, must be between 0 and 90 degrees e.g (10, 80)",
-        type: 4,
-        required: true
-    },{
-        name: "round-to-sigfig",
-        description: "Round to how many sig figs?",
-        type: 4,
-        required: true
-    },{
-        name: "final-velocity",
-        description: "Final velocity of the object/velocity striking the ground e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
-        name: "range",
-        description: "The horizontal distance travelled by the object e.g (2.00m/s, 12ft/s)",
-        type: 3,
-        required: false
-    },{
-        name: "max-height",
-        description: "The height of the object (peak) e.g (55m, 21.02ft)",
-        type: 3,
-        required: false
-    },{
-        name: "total-time",
-        description: "The time it takes for the object to reach the ground e.g (1.25s, 0.03s)",
-        type: 3,
-        required: false
-    }]
-}, ChemTableCommand];
+const ListOfCommands = [ 
+    BearingCommand, 
+    AccuracyPrecisionCommand, 
+    FoxyMethodCommand,
+    LatexCommand, 
+    KinematicsCommand,
+    WordToChemCommand, 
+    BalancerCommand, 
+    StoichiometryCommand, 
+    StoichiometryPercentageCommand, 
+    VerticallyDownwardCommand, 
+    VerticallyUpwardCommand,
+    HorizontalProjectionCommand, 
+    ProjectedAtAnAngleCommand,
+    ChemTableCommand
+];
 
 // Env variables
 const TOKEN = process.env.TOKEN;
@@ -321,23 +52,32 @@ client.on('interactionCreate', async (interaction) => {
 	if (interaction.commandName === 'bearing') {
         // Capture the argument presented by the user (the bearing angle as an integer)
         let angle = interaction.options.getInteger('angle');
-        let temp = new Bearing(angle);
-        let actualDirection = temp.actualDirection();
-        let complementaryDirection = temp.complementaryDirection(actualDirection);
-        await interaction.reply(`The actual direction is: **${actualDirection}**\nThe complementary direction is: **${complementaryDirection}**`);
+        try {
+            let temp = new Bearing(angle);
+            let actualDirection = temp.actualDirection();
+            let complementaryDirection = temp.complementaryDirection(actualDirection);
+            await interaction.reply(`The actual direction is: **${actualDirection}**\nThe complementary direction is: **${complementaryDirection}**`);
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`Can't do bearings for the given, probably fix the input?\nError Log: \`${exception}\``)
+        }
     } else if (interaction.commandName === 'acpc') {
         let values = interaction.options.getString('list-of-values');
         let actualValue = interaction.options.getNumber('actual-value');
-        let temp = new AccuracyPrecision(values, actualValue);
-        temp.main(); // Evaluate every method in the class
+        try {
+            let temp = new AccuracyPrecision(values, actualValue);
+            temp.main(); // Evaluate every method in the class
 
-        await interaction.reply(`
+            await interaction.reply(`
             Input: _${values}_ \`\`\` ${table(temp.data, { border: getBorderCharacters('ramac') })}\`\`\`
             **Actual value/Accepted value** = ${temp.actualValue}
             **Percent Error (%)** = ${temp.percentError}
             **Relative Deviation (%)** = ${temp.relativeDeviation}
-            As a result, the conclusion is **${temp.conclusion}**
-        `)
+            As a result, the conclusion is **${temp.conclusion}**`)
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`Can't do accuracy & precision for the given, probably fix the input?\nError Log: \`${exception}\``)
+        }
     } else if (interaction.commandName == 'foxy') {
         let vectors = [
             interaction.options.getString('v1'),
@@ -346,20 +86,26 @@ client.on('interactionCreate', async (interaction) => {
             interaction.options.getString('v4'),
             interaction.options.getString('v5'),
         ]
-        // Filter method removes all null entries from the array
-        let filteredVectors = vectors.filter(i => i);
-        let temp = new FoxyMethod(filteredVectors)
-        temp.main()
-        await interaction.reply(`
-            Input: _${filteredVectors.join(', ')}_ \`\`\` ${table(temp.data, { border: getBorderCharacters('ramac') })}\`\`\`
-            **θ₁** = ${temp.theta1}
-            **θ₂** = ${temp.theta2}\n
-            **RV** = ${temp.rv[0]}
-                      ${temp.rv[1]}\n
-            **RE** = ${temp.re[0]}
-                      ${temp.re[1]}
-        `)
+        try {
+            // Filter method removes all null entries from the array
+            let filteredVectors = vectors.filter(i => i);
+            let temp = new FoxyMethod(filteredVectors)
+            temp.main()
+            await interaction.reply(`
+                Input: _${filteredVectors.join(', ')}_ \`\`\` ${table(temp.data, { border: getBorderCharacters('ramac') })}\`\`\`
+                **θ₁** = ${temp.theta1}
+                **θ₂** = ${temp.theta2}\n
+                **RV** = ${temp.rv[0]}
+                          ${temp.rv[1]}\n
+                **RE** = ${temp.re[0]}
+                          ${temp.re[1]}
+            `)
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`Can't do foxy method for the given, probably fix the input?\nError Log: \`${exception}\``)
+        }
     } else if (interaction.commandName == 'latex') {
+        // No error checking for now...
         let cmd = interaction.options.getString('command');
         let temp = new Latex(cmd)
         await temp.main() // Evaluate all methods (main)
@@ -396,9 +142,9 @@ client.on('interactionCreate', async (interaction) => {
                 }], 
                 files: [attc]
             })
-
         } catch (exception) {
-            await interaction.reply(`Something went wrong (o_O) please check your input below\n\`${variables} -> solve for ${toSolveFor}\``)
+            console.error(exception)
+            await interaction.reply(`Can't do kinematics, please check your input below?\n\`${variables} -> solve for ${toSolveFor}\`\nError Log: \`${exception}\``)
         }
         
     } else if (interaction.commandName == 'weq') {
@@ -410,7 +156,8 @@ client.on('interactionCreate', async (interaction) => {
             `)
         } catch (exception) {
             // Just incase the user inputs a non-existent element in the list
-            await interaction.reply(`Error! can't convert the word equation **${wordEqForm}**, please check the elements/spelling`) 
+            console.error(exception)
+            await interaction.reply(`Can't convert the word equation **${wordEqForm}**, please check the elements/spelling\nError Log: \`${exception}\``) 
         }
     } else if (interaction.commandName == 'balance') {
         let unbalancedChemFormula = interaction.options.getString('equation');
@@ -421,9 +168,10 @@ client.on('interactionCreate', async (interaction) => {
             `)
         } catch (exception) {
             if (unbalancedChemFormula.toLowerCase() == "sir naval") {
-                await interaction.reply('https://imgflip.com/i/6xizng')
+                await interaction.reply(`**Warning!** _Input is too reactive! cannot balance!_\nhttps://imgflip.com/i/6xizng`)
             } else {
-                await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**`)
+                console.error(exception)
+                await interaction.reply(`Error! can't balance: **${unbalancedChemFormula}**, please check if its a chemical equation like **Na + Cl = NaCl**\nError Log:\`${exception}\``)
             }
         }
     } else if (interaction.commandName == 'stoichiometry') {
@@ -451,8 +199,9 @@ client.on('interactionCreate', async (interaction) => {
                 files: [attc]
             })
         } catch(exception) {
-            await interaction.reply(`Error! can't do stoichiometry for the given`)
+            // await interaction.reply(`Error! can't do stoichiometry for the given`)
             console.error(exception)
+            await interaction.reply(`Can't do stoichiometry i dunno, maybe check input?\nError Log:\`${exception}\``)
         }
     } else if (interaction.commandName == 'stoichiometry-percentage') {
         let percent = interaction.options.getString('percent')
@@ -478,8 +227,9 @@ client.on('interactionCreate', async (interaction) => {
                 files: [attc]
             })
         } catch (exception) {
-            await interaction.reply(`Error! can't do stoichiometry percentages for the given`)
+            // await interaction.reply(`Error! can't do stoichiometry percentages for the given`)
             console.error(exception)
+            await interaction.reply(`Can't do stoichiometry percentages i dunno, maybe check input?\nError Log:\`${exception}\``)
         }
     } else if (interaction.commandName == 'downward-motion') {
         let sf = interaction.options.getInteger('round-to-sigfig')
@@ -511,8 +261,9 @@ client.on('interactionCreate', async (interaction) => {
                 files: [attc1, attc2]
             })
         } catch (exception) {
-            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
+            // await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
+            await interaction.reply(`Can't do physics [vertically downward motion] i dunno, maybe check input?\nError Log:\`${exception}\``)
         }
     } else if (interaction.commandName == "upward-motion") {
         let sf = interaction.options.getInteger('round-to-sigfig')
@@ -551,8 +302,8 @@ client.on('interactionCreate', async (interaction) => {
             })
             await interaction.reply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
-            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
+            await interaction.reply(`Can't do physics [upward motion] i dunno, maybe check input?\nError Log:\`${exception}\``)
         }
     } else if (interaction.commandName == "horizontal-motion") {
         let sf = interaction.options.getInteger('round-to-sigfig')
@@ -591,8 +342,8 @@ client.on('interactionCreate', async (interaction) => {
             })
             await interaction.reply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
-            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
+            await interaction.reply(`Can't do physics [horizontal motion] i dunno, maybe check input?\nError Log:\`${exception}\``)
         }
     } else if (interaction.commandName == "projected-at-an-angle") {
         let sf = interaction.options.getInteger('round-to-sigfig')
@@ -631,8 +382,8 @@ client.on('interactionCreate', async (interaction) => {
             })
             await interaction.editReply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
-            await interaction.reply(`Error! can't do physics i dunno, maybe check input?`)
             console.error(exception)
+            await interaction.reply(`Can't do physics [projected at an angle] i dunno, maybe check input?\nError Log:\`${exception}\``)
         }
     } else if (interaction.commandName == 'chemistry-table') {
         let solution = interaction.options.getString('solution')
@@ -647,19 +398,22 @@ client.on('interactionCreate', async (interaction) => {
         let molarity = interaction.options.getString('molarity')
         let equivalentOfSolute = interaction.options.getString('equivalent-of-solute')
         let normality = interaction.options.getString('normality')       
+
         try {
             let temp = new ChemTable(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, equivalentOfSolute, normality) 
             await interaction.reply({embeds: [{
-                title: `**Solution:** ${solution}`,
-                fields: [{ 
+                fields: [{
+                    name: "**Solution:**",
+                    value: solution,
+                },{ 
                     name: "**Table Output:**", 
                     value: temp.showOutput() 
                 }]
             }]})
             // await interaction.reply(temp.showOutput())
         } catch (exception) {
-            console.log(exception)
-            await interaction.reply(`_What we know is a drop, what we don't know is an ocean_ - **Isaac Newton**`)
+            console.error(exception)
+            await interaction.reply(`Can't solve the table, please add more info or check input?\nError Log: \`${exception}\``)
         }
     }
 });

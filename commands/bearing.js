@@ -50,4 +50,15 @@ class Bearing{
     }
 }
 
-module.exports = { Bearing };
+const BearingCommand = {
+    name: 'bearing',
+    description: 'Gives ACTUAL DIRECTION and COMPLEMENTARY DIRECTION based on bearing angle',
+    options: [{
+        name: 'angle',
+        description: 'The known bearing angle',
+        type: 4, // integer
+        required: true
+    }]
+}
+
+module.exports = { Bearing, BearingCommand};

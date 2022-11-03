@@ -256,4 +256,15 @@ class WordToChem {
     }
 }
 
-module.exports = { Ions, WordToChem };
+const WordToChemCommand = {
+    name: 'weq',
+    description: 'Converts a chemical word equation to its formula form',
+    options: [{
+        name: 'word-equation',
+        description: 'The word equation string e.g (Glucose + oxygen = carbon dioxide + Water)',
+        type: 3,
+        required: true
+    }]
+} 
+
+module.exports = { Ions, WordToChem, WordToChemCommand};

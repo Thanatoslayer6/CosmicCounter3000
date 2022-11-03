@@ -87,4 +87,20 @@ class AccuracyPrecision {
     }
 }
 
-module.exports = { AccuracyPrecision }
+const AccuracyPrecisionCommand = {
+    name: 'acpc',
+    description: 'Calculates the passed values based on the actual value if ACCURATE or PRECISE',
+    options: [{
+        name: 'list-of-values',
+        description: 'The known list of values (decimal/number)',
+        type: 3, // string
+        required: true
+    }, {
+        name: 'actual-value',
+        description: 'The actual value (decimal/number)',
+        type: 10, // double
+        required: true
+    }]
+} 
+
+module.exports = { AccuracyPrecision, AccuracyPrecisionCommand }
