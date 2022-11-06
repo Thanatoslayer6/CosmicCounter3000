@@ -212,19 +212,73 @@ class ChemTable {
 
     checkGiven() {
         // Solute
-        (this.massSolute != undefined) ? this.massSolute = unit(this.massSolute, "g") : undefined;
-        (this.nSolute != undefined) ? this.nSolute = unit(this.nSolute, "mol") : undefined;
+        if (this.massSolute != undefined) {
+            try {
+                this.massSolute = unit(this.massSolute, "g")
+            } catch (e) {
+                this.massSolute = unit(this.massSolute).to('g')
+            }
+        }
+        if (this.nSolute != undefined) {
+            try {
+                this.nSolute = unit(this.nSolute, "mol")
+            } catch (e) {
+                this.nSolute = unit(this.nSolute).to('mol')
+            }
+        } 
         (this.nfSolute != undefined) ? this.nfSolute = unit(this.nfSolute) : undefined;
         // Solvent
-        (this.massSolvent != undefined) ? this.massSolvent = unit(this.massSolvent, "g") : undefined;
-        (this.nSolvent != undefined) ? this.nSolvent = unit(this.nSolvent, "mol") : undefined;
+        if (this.massSolvent != undefined) {
+            try {
+                this.massSolvent = unit(this.massSolvent, "g")
+            } catch (e) {
+                this.massSolvent = unit(this.massSolvent).to('g')
+            }
+        }
+        if (this.nSolvent != undefined) {
+            try {
+                this.nSolvent = unit(this.nSolvent, "mol");
+            } catch (e) {
+                this.nSolvent = unit(this.nSolvent).to("mol")
+            }
+        } 
         (this.nfSolvent != undefined) ? this.nfSolvent = unit(this.nfSolvent) : undefined;
         // Others
-        (this.massSolution != undefined) ? this.massSolution = unit(this.massSolution, "g") : undefined;
-        (this.molality != undefined) ? this.molality = unit(this.molality, "mol/kg") : undefined;
-        (this.molarity != undefined) ? this.molarity = unit(this.molarity, "mol/l") : undefined;
-        (this.equivalentOfSolute != undefined) ? this.equivalentOfSolute = unit(this.equivalentOfSolute, "eq") : undefined;
-        (this.normality != undefined) ? this.normality = unit(this.normality, "eq/l") : undefined;
+        if (this.massSolution != undefined) {
+            try {
+                this.massSolution = unit(this.massSolution, "g")
+            } catch (e) {
+                this.massSolution = unit(this.massSolution).to('g')
+            }
+        } 
+        if (this.molality != undefined) {
+            try {
+                this.molality = unit(this.molality, "mol/kg")
+            } catch (e) {
+                this.molality = unit(this.molality).to('mol/kg')
+            }
+        } 
+        if (this.molarity != undefined) {
+            try {
+                this.molarity = unit(this.molarity, "mol/l")
+            } catch (e) {
+                this.molarity = unit(this.molarity).to("mol/l")
+            }
+        } 
+        if (this.equivalentOfSolute != undefined) {
+            try {
+                this.equivalentOfSolute = unit(this.equivalentOfSolute, "eq")
+            } catch (e) {
+                this.equivalentOfSolute = unit(this.equivalentOfSolute).to('eq')
+            }
+        }
+        if (this.normality != undefined) {
+            try {
+                this.normality = unit(this.normality, "eq/l")
+            } catch (e) {
+                this.normality = unit(this.normality).to("eq/l")
+            }
+        } 
     }
 
     solve() {

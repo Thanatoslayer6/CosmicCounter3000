@@ -32,10 +32,10 @@ const math = require('mathjs')
 // let st = new ChemTable("LiCl", undefined, undefined, undefined, 5, undefined, undefined, undefined, 13.89, undefined)
 // let sv = new ChemTable("LiCl", undefined, undefined, 570, 5, undefined, undefined, undefined, undefined, 8.77)
 // let st = new ChemTable("H2SO4", "210g")
-let st = new ChemTable("NaCl", undefined, undefined, undefined, 20, undefined,undefined, 0.20)
-//TODO: Debug this
+// let st = new ChemTable("NaCl", undefined, undefined, undefined, 20, undefined,undefined, 0.20)
+let st = new ChemTable("NaCl", "340g", "1.5kg")
 console.log(st.showOutput())
-// console.log(sv.showOutput())
+//// console.log(sv.showOutput())
 
 // let msolute = math.unit("0.231kg")
 // let eqweight = math.unit("10g")
