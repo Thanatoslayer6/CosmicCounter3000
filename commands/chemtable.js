@@ -125,6 +125,9 @@ const formulas = {
             try {
                 return divide(nSolute, massSolution.to('l'))
             } catch (exception) {
+                // let info = convertMassOrVolumeSolution(massSolution, true)
+                // console.log(info.toString())
+                // console.log(convertMassOrVolumeSolution(massSolution, true))
                 return divide(nSolute, convertMassOrVolumeSolution(massSolution, true))
             }
           // return (nSolute) / (massSolution / 1000)
@@ -164,13 +167,19 @@ const convertMassOrVolumeSolution = (u, isKiloOrLiter) => {
         return unit(u.toNumber(actualUnit), 'kg')
     } else if (actualUnit == 'ml'){ // convert to grams
         if (isKiloOrLiter) {
-            return unit(u.toNumber(actualUnit), 'kg')
+            // Convert to grams first then kg for safety
+            let info = unit(u.toNumber(actualUnit), 'g')
+            return info.to('kg')
+            // return unit(u.toNumber(actualUnit), 'kg')
         }
         return unit(u.toNumber(actualUnit), 'g')
 
     } else if (actualUnit == 'g') { // convert to mL
         if (isKiloOrLiter) {
-            return unit(u.toNumber(actualUnit), 'l')
+            // Convert to grams first then kg for safety
+            let info = unit(u.toNumber(actualUnit), 'ml')
+            return info.to('l')
+            // return unit(u.toNumber(actualUnit), 'l')
         }
         return unit(u.toNumber(actualUnit), 'ml')
     } else if (actualUnit == 'kg') { // convert to liters
@@ -205,7 +214,7 @@ class ChemTable {
         this.equivalentOfSolute = equivalentOfSolute;
         this.checkGiven();
         this.solve()
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 5; i++) {
             this.solve();
         }
     }
@@ -308,11 +317,19 @@ class ChemTable {
         }
         // Molality
         if(this.molality == undefined){
-            this.molality = formulas.molality(this.nSolute, this.massSolvent)
+            try {
+                this.molality = (formulas.molality(this.nSolute, this.massSolvent)).to('mol/kg')
+            } catch (exception) {
+                this.molality = formulas.molality(this.nSolute, this.massSolvent)
+            }
         }
         // Molarity
         if(this.molarity == undefined){
-            this.molarity = formulas.molarity(this.nSolute, this.massSolution)
+            try {
+                this.molarity = (formulas.molarity(this.nSolute, this.massSolution)).to('mol/l')
+            } catch (exception) {
+                this.molarity = (formulas.molarity(this.nSolute, this.massSolution))
+            }
         }
         // Equivalent solutes (mass of solute / equivalent weight) this is like moles but in terms of eq
         if (this.equivalentOfSolute == undefined) {
@@ -320,7 +337,11 @@ class ChemTable {
         }
         // Normality
         if (this.normality == undefined) {
-            this.normality = formulas.normality(this.equivalentOfSolute, this.massSolution, this.molarity, this.valencyFactor)
+            try {
+                this.normality = formulas.normality(this.equivalentOfSolute, this.massSolution, this.molarity, this.valencyFactor).to('eq/l')
+            } catch (exception) {
+                this.normality = formulas.normality(this.equivalentOfSolute, this.massSolution, this.molarity, this.valencyFactor)
+            }
         }
     }
 
