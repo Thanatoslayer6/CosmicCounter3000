@@ -1,4 +1,4 @@
-const { Routes, REST, Client, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
+const { Routes, REST, Client, EmbedBuilder, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
 const { table, getBorderCharacters } = require('table');
 const { Bearing, BearingCommand } = require('./commands/bearing');
 const { AccuracyPrecision, AccuracyPrecisionCommand } = require('./commands/accuracyprecision');
@@ -10,6 +10,7 @@ const { Kinematics, KinematicsCommand } = require('./commands/kinematics')
 const { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } = require('./commands/stoichiometry')
 const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } = require('./commands/projectilemotion')
 const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
+const { InitiateAI, GenerateImage, GenerateImageCommand } = require('./commands/ai.js')
 require('dotenv').config();
 
 // List of all commands
@@ -27,14 +28,20 @@ const ListOfCommands = [
     VerticallyUpwardCommand,
     HorizontalProjectionCommand, 
     ProjectedAtAnAngleCommand,
-    ChemTableCommand
+    ChemTableCommand,
+    GenerateImageCommand,
 ];
 
 // Env variables
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
+const OPENAI_KEY = process.env.OPENAI_KEY;
 
+// OpenAI instance
+const openai = InitiateAI(OPENAI_KEY);
+
+// Discord.js (rest, client)
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 // Create a new client instance
@@ -411,6 +418,19 @@ client.on('interactionCreate', async (interaction) => {
                 }]
             }]})
             // await interaction.reply(temp.showOutput())
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`Can't solve the table, please add more info or check input?\nError Log: \`${exception}\``)
+        }
+    } else if (interaction.commandName == 'generate-image') {
+        let description = interaction.options.getString('prompt')
+        try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking       
+            let imagesArray = await GenerateImage(openai, description);
+            // Set the same url (any url works) for both embeds so that it shows the 2 pics in 1 embed post
+            let embed1 = new EmbedBuilder().setDescription(`_${description}_`).setURL('https://discordjs.org').setImage(imagesArray[0])
+            let embed2 = new EmbedBuilder().setURL('https://discordjs.org').setImage(imagesArray[1])
+            await interaction.editReply({ embeds: [embed1, embed2] })
         } catch (exception) {
             console.error(exception)
             await interaction.reply(`Can't solve the table, please add more info or check input?\nError Log: \`${exception}\``)
