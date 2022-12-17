@@ -10,7 +10,9 @@ const { Kinematics, KinematicsCommand } = require('./commands/kinematics')
 const { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } = require('./commands/stoichiometry')
 const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } = require('./commands/projectilemotion')
 const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
-const { InitiateAI, GenerateImage, GenerateImageCommand } = require('./commands/ai.js')
+// const { InitiateOpenAI, InitiateGPTchat, GenerateOpenAiImage, GenerateOpenAiImageCommand } = require('./commands/ai.js')
+// const { InitiateOpenAI, InitiateGPTchat, GenerateOpenAiImage, GenerateOpenAiImageCommand, GenerateGPTchatTextCommand, GenerateGPTchatText } = require('./commands/ai')
+const { InitiateOpenAI, InitiateChatGPT, GenerateOpenAiImage, GenerateChatGPTtextCommand, GenerateOpenAiImageCommand, GenerateChatGPTtext } = require('./commands/ai');
 require('dotenv').config();
 
 // List of all commands
@@ -29,7 +31,8 @@ const ListOfCommands = [
     HorizontalProjectionCommand, 
     ProjectedAtAnAngleCommand,
     ChemTableCommand,
-    GenerateImageCommand,
+    GenerateOpenAiImageCommand,
+    GenerateChatGPTtextCommand
 ];
 
 // Env variables
@@ -37,9 +40,13 @@ const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 const OPENAI_KEY = process.env.OPENAI_KEY;
+const OPENAI_EMAIL = process.env.OPENAI_EMAIL;
+const OPENAI_PASSWORD = process.env.OPENAI_PASSWORD;
+const BROWSER_EXECUTABLE_PATH = process.env.BROWSER_EXECUTABLE_PATH;
 
-// OpenAI instance
-const openai = InitiateAI(OPENAI_KEY);
+// OpenAI & ChatGpt instance, variables
+let openai = InitiateOpenAI(OPENAI_KEY);
+let chatgpt = null, conversation = null;
 
 // Discord.js (rest, client)
 const rest = new REST({ version: '10' }).setToken(TOKEN);
@@ -426,14 +433,29 @@ client.on('interactionCreate', async (interaction) => {
         let description = interaction.options.getString('prompt')
         try {
             await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking       
-            let imagesArray = await GenerateImage(openai, description);
+            let imagesArray = await GenerateOpenAiImage(openai, description);
             // Set the same url (any url works) for both embeds so that it shows the 2 pics in 1 embed post
             let embed1 = new EmbedBuilder().setDescription(`_${description}_`).setURL('https://discordjs.org').setImage(imagesArray[0])
             let embed2 = new EmbedBuilder().setURL('https://discordjs.org').setImage(imagesArray[1])
             await interaction.editReply({ embeds: [embed1, embed2] })
         } catch (exception) {
             console.error(exception)
-            await interaction.reply(`Can't solve the table, please add more info or check input?\nError Log: \`${exception}\``)
+            await interaction.reply(`OpenAI not working?\nError Log: \`${exception}\``)
+        }
+    } else if (interaction.commandName == 'chatgpt') {
+        let description = interaction.options.getString('prompt')
+        try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking       
+            // let response = await GenerateGPTchatText(chatgpt, description);
+            let response = await chatgpt.sendMessage(description)
+            // console.log(response)
+            // Set the same url (any url works) for both embeds so that it shows the 2 pics in 1 embed post
+            // let embed1 = new EmbedBuilder().setDescription(`_${description}_`).setURL('https://discordjs.org').setImage(imagesArray[0])
+            // let embed2 = new EmbedBuilder().setURL('https://discordjs.org').setImage(imagesArray[1])
+            await interaction.editReply(`Prompt: \`${description}\`\n\n${response}`);
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`ChatGPT not working?\nError Log: \`${exception}\``)
         }
     }
 });
@@ -444,6 +466,9 @@ client.on('interactionCreate', async (interaction) => {
         console.log('Started refreshing application (/) commands.');
 		await rest.put(Routes.applicationCommands(CLIENT_ID, GUILD_ID), { body: ListOfCommands });
 		console.log('Successfully reloaded application (/) commands.');
+        // Login to ChatGPT first, assign the global variable
+        chatgpt = await InitiateChatGPT(OPENAI_EMAIL, OPENAI_PASSWORD, BROWSER_EXECUTABLE_PATH);
+        // conversation = chatgpt.getConversation();
         // Login to Discord with your client's token
         client.login(TOKEN);
     } catch (err) {
