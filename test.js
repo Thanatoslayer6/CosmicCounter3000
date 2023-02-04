@@ -3,9 +3,10 @@
 // const { FoxyMethod } = require('./commands/foxy')
 // const { Kinematics } = require('./commands/kinematics')
 // const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle } = require('./commands/projectilemotion')
-const { ChemTable } = require('./commands/chemtable');
+// const { ChemTable } = require('./commands/chemtable');
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
+const { Electrostatics } = require('./commands/electrostatics')
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
@@ -28,23 +29,29 @@ const math = require('mathjs')
 // console.log(some)
 // let st = new ChemTable("Al2(CO3)3", "122g", "400g", undefined, undefined, undefined, undefined, undefined, undefined, undefined)
 // let st = new ChemTable("LiCl", undefined, undefined, undefined, 20, undefined, 0.20, undefined, undefined, undefined, undefined, undefined)
-let st = new ChemTable("Ba(OH)2", undefined, undefined, undefined, 5, undefined, undefined, undefined, undefined, 8.77)
+// let st = new ChemTable("Ba(OH)2", undefined, undefined, undefined, 5, undefined, undefined, undefined, undefined, 8.77)
 // let st = new ChemTable("LiCl", undefined, undefined, undefined, 5, undefined, undefined, undefined, 13.89, undefined)
 // let sv = new ChemTable("LiCl", undefined, undefined, 570, 5, undefined, undefined, undefined, undefined, 8.77)
 // let st = new ChemTable("H2SO4", "210g")
 // let st = new ChemTable("NaCl", undefined, undefined, undefined, 20, undefined,undefined, 0.20)
 // let st = new ChemTable("NaCl", "340g", "1.5kg")
-let st1 = new ChemTable("Al(OH)3", "75.0g", undefined, "1000g");
+// let st1 = new ChemTable("Al(OH)3", "75.0g", undefined, "1000g");
 // BELOW IS NOT WORKING, BUT DOESN'T ACTUALLY MAKE SENSE...
-let st2 = new ChemTable("Al(OH)3", undefined, undefined, "0.20kg", undefined, undefined, undefined, undefined, undefined, undefined, 0.01, 0.05)
-console.log(st.showOutput() +'\n\n\n')
-console.log(st1.showOutput() +'\n\n\n')
-console.log(st2.showOutput())
+// let st2 = new ChemTable("Al(OH)3", undefined, undefined, "0.20kg", undefined, undefined, undefined, undefined, undefined, undefined, 0.01, 0.05)
+// console.log(st.showOutput() +'\n\n\n')
+// console.log(st1.showOutput() +'\n\n\n')
+// console.log(st2.showOutput())
 //// console.log(sv.showOutput())
 
 // let msolute = math.unit("0.231kg")
 // let eqweight = math.unit("10g")
 // console.log((math.divide(msolute, eqweight)).valueOf())
+// let coulombs = math.unit("-5 nC")
+// console.log(coulombs.to('C').toString())
+let info = new Electrostatics("-4 nC 12nC -5.2 nC 5.23e-6C") // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
+info.totalCharge()
+info.finalChargeIdentical()
+// All works above
 
 // vi, vy, vf, t, d, r, sigfig
 // let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);
