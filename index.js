@@ -466,26 +466,7 @@ client.on('interactionCreate', async (interaction) => {
 
         try {
             let temp = new Electrostatics(charges, distance, radiusEquation) 
-            // // ELECTROSTATICS
-            // let temp1 = new Kinematics(variables, toSolveFor)
-            // // LATEX
-            // let temp2 = new Latex(temp1.equationInLatex)
-            // await temp2.main() // Evaluate all methods (main)
-            
-            // let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
-
-            // // SEND!!!!!!!!
-            // await interaction.reply({ 
-            //     embeds: [{ // Send embedded latex command
-            //         description: `**Given:** \`${temp1.knownValuesToString()}\`\n**Find:** \`${temp1.solveFor}\`\n**Answer:** \`${temp1.result}\``,
-            //         image: {
-            //             url: 'attachment://latex_eq.png'
-            //         }
-            //     }], 
-            //     files: [attc]
-            // })
-
-
+            // LATEX
             let [formula1, formula2] = [new Latex(temp.totalChargeLatex), new Latex(temp.finalChargeIdenticalLatex)];
             await formula1.main() // Evaluate all methods (main)
             await formula2.main()
@@ -494,7 +475,7 @@ client.on('interactionCreate', async (interaction) => {
             // SEND!!!!!!!!
             await interaction.reply({ 
                 embeds: [{ // Send embedded latex command
-                    description: temp.givenInfo,
+                    description: temp.info,
                     image: {
                         url: 'attachment://latex_eq1.png'
                     }

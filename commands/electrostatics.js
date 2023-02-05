@@ -1,31 +1,53 @@
 // const { sin, cos, atan, isNegative, abs, pi, sqrt, square } = require('mathjs');
-const { unit, round, Unit, add, sum, multiply, divide, subtract, isNumber } = require('mathjs')
+const { unit, round, Unit, add, sum, multiply, divide, abs, isNumber, square } = require('mathjs')
 const nerdamer = require('nerdamer/all')
 
 class Electrostatics {
     // Pass the charge of the given object/s as input as well as their distance which is optional
     // Example input for charges
     constructor(charges, distance, radiusEquation) {
-        this.givenInfo = `**Given:**\n - Charges:\n`
-        this.distance = distance;
+        this.coulombConstant = unit(9.0e9, 'N m^2 C^-2')
+        // console.log(coulombConstant.toString())
+        this.info = `\t**Given:**\n\t   - Charges:`
         let userInputCharges = charges.split(/(?<=[cC])\s*/g)
         this.parsedCharges = userInputCharges.map((input, index) => {
             let convertedToCoulombs = (unit(input).to('C'))
-            this.givenInfo +=  `\t\t\n${input} ---> ${convertedToCoulombs}` 
+            this.info += `\n\t\t${input} ---> \`${convertedToCoulombs}\`` 
             return {
                 object: index + 1,
                 givenCharge: input,
                 convertedUnitCharge: convertedToCoulombs
             }
         })
-        if (radiusEquation) {
-            this.radiusEquation = radiusEquation
-            this.parsedRadiusEquation = this._parseRadiusEquation(radiusEquation)
-        }
+        // Get total and final charges (identical radius)
         this.getTotalCharge()
         this.getFinalChargeIdentical()
-        this.getFinalChargeUnidentical()
-        console.log(this.givenInfo)
+
+        // Check if the charges are only 2 meaning there are only 2 objects, then if yes solve for Coulomb's law
+        if (distance && (userInputCharges.length == 2)) {
+            // Assign distance in meters
+            this.distance = unit(distance, 'm');
+            this.getElectricForceMagnitudeBefore()
+            this.getElectricForceMagnitudeAfter();
+        }
+        
+        // Check if user has added some radius exists 
+        if (radiusEquation) {
+            this.radiusEquation = radiusEquation
+            this.info += `\n\t   - Radius equation: \`${this.radiusEquation.toString()}\``
+            this.parsedRadiusEquation = this._parseRadiusEquation(radiusEquation)
+            // Get final charge for unequal radius
+            this.getFinalChargeUnidentical()
+
+            // Encapsulate all information
+            this.info += `\n\t**Answer:**\n\t   - Total Charge: \`${this.totalCharge.toString()}\`\n\t   - Final Charge (identical radius): \`${this.finalChargeIdentical.toString()}\`\n\t   - Final Charge (unequal radius): \`${this.finalChargeUnidentical.toString()}\``
+        } else {
+
+            // Encapsulate all information
+            this.info += `\n\t**Answer:**\n\t   - Total Charge: \`${this.totalCharge.toString()}\`\n\t   - Final Charge (identical radius): \`${this.finalChargeIdentical.toString()}\``
+        }
+
+        console.log(this.info)
     }
 
     _parseRadiusEquation(req) {
@@ -37,7 +59,6 @@ class Electrostatics {
             }
         })
         return result;
-        // temp = temp.map(i => result.set())
     }
 
     getTotalCharge() {
@@ -113,6 +134,25 @@ class Electrostatics {
         // console.log(this.finalChargeIdenticalLatex)
         // console.log(this.finalChargeIdentical.toString())
     }
+
+    getElectricForceMagnitudeBefore() {
+        // F_{e} = k\\frac{\\abs{q_{1}q_{2}}}{r^{2}}
+        this.electricForceMagnitudeBefore = (multiply(this.coulombConstant, divide(abs(multiply(this.parsedCharges[0].convertedUnitCharge, this.parsedCharges[1].convertedUnitCharge)), square(this.distance)))).to('N')
+        this.electricForceMagnitudeBeforeLatex = `F_{e} = k\\frac{\\abs{q_{1}q_{2}}}{r^{2}} \\rightarrow ${this.coulombConstant.toString()}\\frac{\\abs{${this.parsedCharges[0].convertedUnitCharge.toString()}\\times${this.parsedCharges[1].convertedUnitCharge.toString()}}}{(${this.distance.toString()})^{2}}`
+        console.log(this.electricForceMagnitudeBefore.to('N').toString())
+        console.log(this.electricForceMagnitudeBeforeLatex)
+    }
+
+    getElectricForceMagnitudeAfter() {
+        // If identical then simply substitute the final charge
+        this.electricForceMagnitudeAfter = (multiply(this.coulombConstant, divide(abs(multiply(this.finalChargeIdentical, this.finalChargeIdentical)), square(this.distance)))).to('N')
+        this.electricForceMagnitudeAfterLatex = `F_{e} = k\\frac{\\abs{q_{1}q_{2}}}{r^{2}} \\rightarrow ${this.coulombConstant.toString()}\\frac{\\abs{${this.finalChargeIdentical.toString()}\\times${this.finalChargeIdentical.toString()}}}{(${this.distance.toString()})^{2}}`
+        console.log(this.electricForceMagnitudeAfter.to('N').toString())
+        console.log(this.electricForceMagnitudeAfterLatex)
+    }
+    // TODO: 
+    // - Round to some number of significant figures???
+    // - index.js 'temp.info' output properly
 }
 
 const ElectrostaticsCommand = {

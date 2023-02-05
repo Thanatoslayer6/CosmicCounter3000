@@ -43,14 +43,17 @@ const math = require('mathjs')
 // console.log(st1.showOutput() +'\n\n\n')
 // console.log(st2.showOutput())
 //// console.log(sv.showOutput())
-
 // let msolute = math.unit("0.231kg")
 // let eqweight = math.unit("10g")
 // console.log((math.divide(msolute, eqweight)).valueOf())
 // let coulombs = math.unit("-5 nC")
 // console.log(coulombs.to('C').toString())
 //
-let info = new Electrostatics("8C 12C -5C", undefined, "ra = rb = 2rc") // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
+// new Electrostatics("8C 12C -5C", undefined, "ra = rb = 2rc") // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
+// new Electrostatics("8nC 12nC -5nC", undefined, undefined)
+// new Electrostatics("18C 2C", 2, "ra = 2rb")
+new Electrostatics("-25nC 15nC", 0.02, undefined)
+
 // let info = new Electrostatics("-4 nC 12nC -5.2 nC", undefined, undefined) // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
 // info.getTotalCharge()
 // info.getFinalChargeIdentical()
