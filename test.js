@@ -7,6 +7,7 @@
 // const { Latex } = require('./commands/latex')
 // const { Stoichiometry, StoichiometryPercentage } = require('./commands/stoichiometry')
 const { Electrostatics } = require('./commands/electrostatics')
+const nerdamer = require('nerdamer/all');
 const math = require('mathjs')
 // const { WordToChem } = require('./commands/weq')
 // const { Balancer } = require('./commands/balance')
@@ -48,10 +49,26 @@ const math = require('mathjs')
 // console.log((math.divide(msolute, eqweight)).valueOf())
 // let coulombs = math.unit("-5 nC")
 // console.log(coulombs.to('C').toString())
-let info = new Electrostatics("-4 nC 12nC -5.2 nC 5.23e-6C") // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
-info.totalCharge()
-info.finalChargeIdentical()
+//
+let info = new Electrostatics("8C 12C -5C", undefined, "ra = rb = 2rc") // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
+// let info = new Electrostatics("-4 nC 12nC -5.2 nC", undefined, undefined) // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
+// info.getTotalCharge()
+// info.getFinalChargeIdentical()
+// info.getFinalChargeUnidentical()
+
+// let a = 8
+// let b = 12
+// let c = -5
+// let stuff = nerdamer.solveEquations(["x = y = 2*z", "8/2*z = 12/2*z = -5/z", "8/x = 12/y = -5/z"])
+// let stuff = nerdamer("8/2*z = 12/2*z = -5/z", 'z') this doesn't work but what if we simplify it?
+// let stuff = nerdamer.solve("8/2z = 12/2z = -5/z", 'z')
+// console.log(nerdamer.solve("5c/3 + 5c + c = 15", 'c').toString())   
+// console.log(nerdamer.solve("2c + 2c + c = 15", 'c').toString())   
+// let stuff = nerdamer.solveEquations(["2c + 2c + c = 15")
+// console.log(stuff.toString())
 // All works above
+
+// console.log(nerdamer.solve("5a/3 + 5c + c = 15", 'c').toString())   
 
 // vi, vy, vf, t, d, r, sigfig
 // let st = new HorizontalProjection("3m/s", undefined, undefined, undefined, "50m", undefined, 2);

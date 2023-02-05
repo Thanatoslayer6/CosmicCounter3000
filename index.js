@@ -10,6 +10,7 @@ const { Kinematics, KinematicsCommand } = require('./commands/kinematics')
 const { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } = require('./commands/stoichiometry')
 const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } = require('./commands/projectilemotion')
 const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
+const { Electrostatics, ElectrostaticsCommand } = require('./commands/electrostatics')
 // const { InitiateOpenAI, InitiateGPTchat, GenerateOpenAiImage, GenerateOpenAiImageCommand } = require('./commands/ai.js')
 // const { InitiateOpenAI, InitiateGPTchat, GenerateOpenAiImage, GenerateOpenAiImageCommand, GenerateGPTchatTextCommand, GenerateGPTchatText } = require('./commands/ai')
 // const { InitiateOpenAI, InitiateChatGPT, GenerateOpenAiImage, GenerateChatGPTtextCommand, GenerateOpenAiImageCommand, GenerateChatGPTtext } = require('./commands/ai');
@@ -31,6 +32,7 @@ const ListOfCommands = [
     HorizontalProjectionCommand, 
     ProjectedAtAnAngleCommand,
     ChemTableCommand,
+    ElectrostaticsCommand,
     // GenerateOpenAiImageCommand,
     // GenerateChatGPTtextCommand
 ];
@@ -458,7 +460,57 @@ client.on('interactionCreate', async (interaction) => {
         //     await interaction.reply(`ChatGPT not working?\nError Log: \`${exception}\``)
         // }
     } else if (interaction.commandName == 'electrostatics') {
-        
+        let charges = interaction.options.getString('charges')
+        let distance = interaction.options.getString('distance')
+        let radiusEquation = interaction.options.getString('radiusEquation')
+
+        try {
+            let temp = new Electrostatics(charges, distance, radiusEquation) 
+            // // ELECTROSTATICS
+            // let temp1 = new Kinematics(variables, toSolveFor)
+            // // LATEX
+            // let temp2 = new Latex(temp1.equationInLatex)
+            // await temp2.main() // Evaluate all methods (main)
+            
+            // let attc = new AttachmentBuilder(temp2.pngBuffer, { name: `latex_eq.png` })
+
+            // // SEND!!!!!!!!
+            // await interaction.reply({ 
+            //     embeds: [{ // Send embedded latex command
+            //         description: `**Given:** \`${temp1.knownValuesToString()}\`\n**Find:** \`${temp1.solveFor}\`\n**Answer:** \`${temp1.result}\``,
+            //         image: {
+            //             url: 'attachment://latex_eq.png'
+            //         }
+            //     }], 
+            //     files: [attc]
+            // })
+
+
+            let [formula1, formula2] = [new Latex(temp.totalChargeLatex), new Latex(temp.finalChargeIdenticalLatex)];
+            await formula1.main() // Evaluate all methods (main)
+            await formula2.main()
+            let [ attc1, attc2 ] = [new AttachmentBuilder(formula1.pngBuffer, { name: `latex_eq1.png` }), new AttachmentBuilder(formula2.pngBuffer, { name: `latex_eq2.png` })]
+            
+            // SEND!!!!!!!!
+            await interaction.reply({ 
+                embeds: [{ // Send embedded latex command
+                    description: temp.givenInfo,
+                    image: {
+                        url: 'attachment://latex_eq1.png'
+                    }
+                }, {
+                    image:  {
+                        url: 'attachment://latex_eq2.png'
+                    }
+                }],
+                files: [attc1, attc2]
+            })
+
+            // await interaction.reply(temp.showOutput())
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`Can't solve electrostatics, please check input?\nError Log: \`${exception}\``)
+        }
     }
 });
 
