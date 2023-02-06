@@ -52,8 +52,8 @@ const math = require('mathjs')
 // new Electrostatics("8C 12C -5C", undefined, "ra = rb = 2rc") // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
 // new Electrostatics("8nC 12nC -5nC", undefined, undefined)
 // new Electrostatics("18C 2C", 2, "ra = 2rb")
-new Electrostatics("-25nC 15nC", 0.02, undefined)
-
+// new Electrostatics("-25nC 15nC", 0.02, undefined)
+new Electrostatics("8.0C 12.0C -5.0C", undefined, "ra = rb = 2rc")
 // let info = new Electrostatics("-4 nC 12nC -5.2 nC", undefined, undefined) // -> [ '-4 nC', '12 nC', '-5.2 nC', '5.23 uC' ]
 // info.getTotalCharge()
 // info.getFinalChargeIdentical()

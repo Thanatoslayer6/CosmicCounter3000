@@ -32,7 +32,7 @@ const ListOfCommands = [
     HorizontalProjectionCommand, 
     ProjectedAtAnAngleCommand,
     ChemTableCommand,
-    ElectrostaticsCommand,
+    ElectrostaticsCommand
     // GenerateOpenAiImageCommand,
     // GenerateChatGPTtextCommand
 ];
@@ -183,7 +183,8 @@ client.on('interactionCreate', async (interaction) => {
             The balanced chemical formula for **${unbalancedChemFormula}** is: \`\`\`${temp.equation}\`\`\`
             `)
         } catch (exception) {
-            if (unbalancedChemFormula.toLowerCase() == "sir naval") {
+            // Insert the obligatory meme hehe.... xD
+            if (unbalancedChemFormula.toLowerCase() == Buffer.from('c2lyIG5hdmFs', 'base64').toString()) {
                 await interaction.reply(`**Warning!** _Input is too reactive! cannot balance!_\nhttps://imgflip.com/i/6xizng`)
             } else {
                 console.error(exception)
@@ -431,63 +432,39 @@ client.on('interactionCreate', async (interaction) => {
             console.error(exception)
             await interaction.reply(`Can't solve the table, please add more info or check input?\nError Log: \`${exception}\``)
         }
-    } else if (interaction.commandName == 'generate-image') {
-        // let description = interaction.options.getString('prompt')
-        // try {
-        //     await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking       
-        //     let imagesArray = await GenerateOpenAiImage(openai, description);
-        //     // Set the same url (any url works) for both embeds so that it shows the 2 pics in 1 embed post
-        //     let embed1 = new EmbedBuilder().setDescription(`_${description}_`).setURL('https://discordjs.org').setImage(imagesArray[0])
-        //     let embed2 = new EmbedBuilder().setURL('https://discordjs.org').setImage(imagesArray[1])
-        //     await interaction.editReply({ embeds: [embed1, embed2] })
-        // } catch (exception) {
-        //     console.error(exception)
-        //     await interaction.reply(`OpenAI not working?\nError Log: \`${exception}\``)
-        // }
-    } else if (interaction.commandName == 'chatgpt') {
-        // let description = interaction.options.getString('prompt')
-        // try {
-        //     await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking       
-        //     // let response = await GenerateGPTchatText(chatgpt, description);
-        //     let response = await chatgpt.sendMessage(description)
-        //     // console.log(response)
-        //     // Set the same url (any url works) for both embeds so that it shows the 2 pics in 1 embed post
-        //     // let embed1 = new EmbedBuilder().setDescription(`_${description}_`).setURL('https://discordjs.org').setImage(imagesArray[0])
-        //     // let embed2 = new EmbedBuilder().setURL('https://discordjs.org').setImage(imagesArray[1])
-        //     await interaction.editReply(`Prompt: \`${description}\`\n\n${response}`);
-        // } catch (exception) {
-        //     console.error(exception)
-        //     await interaction.reply(`ChatGPT not working?\nError Log: \`${exception}\``)
-        // }
     } else if (interaction.commandName == 'electrostatics') {
         let charges = interaction.options.getString('charges')
-        let distance = interaction.options.getString('distance')
-        let radiusEquation = interaction.options.getString('radiusEquation')
+        let distance = interaction.options.getNumber('distance')
+        let radiusEquation = interaction.options.getString('radius-equation')
 
         try {
+            await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking
             let temp = new Electrostatics(charges, distance, radiusEquation) 
             // LATEX
-            let [formula1, formula2] = [new Latex(temp.totalChargeLatex), new Latex(temp.finalChargeIdenticalLatex)];
-            await formula1.main() // Evaluate all methods (main)
-            await formula2.main()
-            let [ attc1, attc2 ] = [new AttachmentBuilder(formula1.pngBuffer, { name: `latex_eq1.png` }), new AttachmentBuilder(formula2.pngBuffer, { name: `latex_eq2.png` })]
-            
-            // SEND!!!!!!!!
-            await interaction.reply({ 
-                embeds: [{ // Send embedded latex command
-                    description: temp.info,
-                    image: {
-                        url: 'attachment://latex_eq1.png'
-                    }
-                }, {
-                    image:  {
-                        url: 'attachment://latex_eq2.png'
-                    }
-                }],
-                files: [attc1, attc2]
+            let formulas = [], attc = [], properEmbeds = [];
+            for (let i = 0; i < temp.equationInLatex.length; i++) {
+                let info = new Latex(temp.equationInLatex[i]);
+                await info.main()
+                formulas.push(info.pngBuffer)
+            }
+            formulas.forEach((latexPng, index) => {
+                attc.push(new AttachmentBuilder(latexPng, { name: `latex_eq${index}.png` }))
+                if (index == 0) {
+                    properEmbeds.push({
+                        description: temp.info, 
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                } else {
+                    properEmbeds.push({
+                        image: {
+                            url: `attachment://latex_eq${index}.png`
+                        }
+                    })
+                }
             })
-
-            // await interaction.reply(temp.showOutput())
+            await interaction.editReply({ embeds: properEmbeds, files: attc })
         } catch (exception) {
             console.error(exception)
             await interaction.reply(`Can't solve electrostatics, please check input?\nError Log: \`${exception}\``)
@@ -502,7 +479,7 @@ client.on('interactionCreate', async (interaction) => {
 		await rest.put(Routes.applicationCommands(CLIENT_ID, GUILD_ID), { body: ListOfCommands });
 		console.log('Successfully reloaded application (/) commands.');
         // Login to ChatGPT first, assign the global variable
-        chatgpt = await InitiateChatGPT(OPENAI_EMAIL, OPENAI_PASSWORD, BROWSER_EXECUTABLE_PATH);
+        // chatgpt = await InitiateChatGPT(OPENAI_EMAIL, OPENAI_PASSWORD, BROWSER_EXECUTABLE_PATH);
         // conversation = chatgpt.getConversation();
         // Login to Discord with your client's token
         client.login(TOKEN);
