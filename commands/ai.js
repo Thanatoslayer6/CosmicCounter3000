@@ -1,40 +1,43 @@
 const { Configuration, OpenAIApi } = require("openai");
 
 const InitiateOpenAI = (key) => {
-    let configuration = new Configuration({
-        apiKey: key,
-    });
-    // Return new instance of OpenAI api
-    return new OpenAIApi(configuration);
+    // const configuration = new Configuration({
+    //         apiKey: key,
+    //         basePath: "https://api.pawan.krd/v1",
+        
+    // });
+
+    // // Return new instance of OpenAI api
+    // return new OpenAIApi(configuration);
 }
 
-const InitiateChatGPT = async (email, password, browserpath) => {
-    // const { ChatGPTAPI, getOpenAIAuth } = require('chatgpt');
-    // WORKING CODE BUT HEADFUL 
-    // const { ChatGPTAPI, getOpenAIAuth } = await import('chatgpt')
-    // const openAIAuth = await getOpenAIAuth({
-    //     email: email,
-    //     password: password,
-    //     executablePath: browserpath,
-    //     isGoogleLogin: true, 
-    // })
-    // const api = new ChatGPTAPI({ ...openAIAuth })
-    // await api.ensureAuth()
-    // return api;
+// const InitiateChatGPT = async (email, password, browserpath) => {
+//     // const { ChatGPTAPI, getOpenAIAuth } = require('chatgpt');
+//     // WORKING CODE BUT HEADFUL 
+//     // const { ChatGPTAPI, getOpenAIAuth } = await import('chatgpt')
+//     // const openAIAuth = await getOpenAIAuth({
+//     //     email: email,
+//     //     password: password,
+//     //     executablePath: browserpath,
+//     //     isGoogleLogin: true, 
+//     // })
+//     // const api = new ChatGPTAPI({ ...openAIAuth })
+//     // await api.ensureAuth()
+//     // return api;
 
-    // DOES NOT WORK!??!?!?
-    const { ChatGPTAPIBrowser } = await import('chatgpt');
+//     // DOES NOT WORK!??!?!?
+//     const { ChatGPTAPIBrowser } = await import('chatgpt');
 
-    const api = new ChatGPTAPIBrowser({
-        email: email,
-        password: password,
-        executablePath: browserpath,
-        // isGoogleLogin: true
-    })
-    await api.init()
-    console.log("Successfully authenticated to ChatGPT....")
-    return api;
-}
+//     const api = new ChatGPTAPIBrowser({
+//         email: email,
+//         password: password,
+//         executablePath: browserpath,
+//         // isGoogleLogin: true
+//     })
+//     await api.init()
+//     console.log("Successfully authenticated to ChatGPT....")
+//     return api;
+// }
 
 const GenerateChatGPTtext = async(ai, prompt) => {
     const response = await ai.sendMessage(prompt)

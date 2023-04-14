@@ -6,14 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "author": "Thanatoslayer6",
   "license": "ISC",
   "dependencies": {
+    "bing-chat": "^0.2.3",
     "compound-parser": "^1.0.5",
     "discord.js": "^14.4.0",
     "dotenv": "^16.0.2",
     "mathjs": "^11.2.1",
     "nerdamer": "^1.1.13",
+    "openai": "^3.2.1",
     "sharp": "^0.31.0",
     "table": "^6.8.0",
     "texsvg": "^1.5.1"
