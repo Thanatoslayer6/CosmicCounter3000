@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "type": "module",
   "author": "Thanatoslayer6",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
     "bing-chat": "^0.2.3",
     "compound-parser": "^1.0.5",
@@ -19,6 +19,6 @@
     "openai": "^3.2.1",
     "sharp": "^0.31.0",
     "table": "^6.8.0",
-    "texsvg": "^1.5.1"
+    "texsvg": "^2.0.2"
   }
 }

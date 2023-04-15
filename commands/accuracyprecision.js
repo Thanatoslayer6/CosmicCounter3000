@@ -1,4 +1,4 @@
-class AccuracyPrecision {
+export class AccuracyPrecision {
 
     constructor(listOfValues, actualValue) {
         this.listOfAdValues = [];
@@ -87,7 +87,7 @@ class AccuracyPrecision {
     }
 }
 
-const AccuracyPrecisionCommand = {
+export const AccuracyPrecisionCommand = {
     name: 'acpc',
     description: 'Calculates the passed values based on the actual value if ACCURATE or PRECISE',
     options: [{
@@ -103,4 +103,4 @@ const AccuracyPrecisionCommand = {
     }]
 } 
 
-module.exports = { AccuracyPrecision, AccuracyPrecisionCommand }
+// module.exports = { AccuracyPrecision, AccuracyPrecisionCommand }

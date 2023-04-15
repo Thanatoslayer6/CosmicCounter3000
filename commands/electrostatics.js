@@ -1,7 +1,10 @@
-const { unit, sum, multiply, divide, abs, square } = require('mathjs')
-const nerdamer = require('nerdamer/all')
+// const { unit, sum, multiply, divide, abs, square } = require('mathjs')
+// const nerdamer = require('nerdamer/all')
 
-class Electrostatics {
+import { unit, sum, multiply, divide, abs, square } from 'mathjs';
+import * as nerdamer from 'nerdamer/all.js';
+
+export class Electrostatics {
     // Pass the charge of the given object/s as input as well as their distance which is optional
     // Example input for charges
     constructor(charges, distance, radiusEquation) {
@@ -203,7 +206,7 @@ class Electrostatics {
     // - index.js 'temp.info' output properly
 }
 
-const ElectrostaticsCommand = {
+export const ElectrostaticsCommand = {
     name: "electrostatics",
     description: "Calculates total charge and final charge of the given spheres/objects",
     options: [{
@@ -224,4 +227,4 @@ const ElectrostaticsCommand = {
     }]
 } 
 
-module.exports = { Electrostatics, ElectrostaticsCommand }
+// module.exports = { Electrostatics, ElectrostaticsCommand }

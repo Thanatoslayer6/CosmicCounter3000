@@ -1,15 +1,67 @@
-const { Configuration, OpenAIApi } = require("openai");
+// const { Configuration, OpenAIApi } = require("openai");
+import { BingChat } from 'bing-chat'
 
-const InitiateOpenAI = (key) => {
-    // const configuration = new Configuration({
-    //         apiKey: key,
-    //         basePath: "https://api.pawan.krd/v1",
-        
-    // });
-
-    // // Return new instance of OpenAI api
-    // return new OpenAIApi(configuration);
+export const InitiateBingChat = (key) => {
+    const api = new BingChat({
+        cookie: key
+    })
+    return api;
 }
+
+export const GenerateBingText = async(ai, prompt) => {
+    const response = await ai.sendMessage(prompt)
+    // response is a markdown-formatted string
+    console.log(response)
+    console.log("~~~~~~~~~~~~~~~~~~~");
+    console.log(response.detail.sourceAttributions);
+    return response;
+}
+
+// TODO: Bing chat/text ai generation, comment the other methods
+// const GenerateBingImage = async (ai, description) => {
+//     let resp = await ai.createImage({
+//         prompt: description,
+//         n: 2,
+//         size: "256x256",
+//     })
+//     return [resp.data.data[0].url, resp.data.data[1].url];
+// }
+
+// const GenerateOpenAiImageCommand = {
+//     name: 'generate-image',
+//     description: 'Generate an image from OpenAI',
+//     options: [{
+//         name: 'prompt',
+//         description: 'Can be anything',
+//         type: 3,
+//         required: true
+//     }]
+// } 
+
+export const GenerateBingTextCommand = {
+    name: 'bing',
+    description: 'Ask anything from Bing AI',
+    options: [{
+        name: 'prompt',
+        description: 'Can be anything',
+        type: 3,
+        required: true
+    }]
+} 
+
+// export { InitiateBingChat, GenerateBingText, GenerateBingTextCommand }
+// module.exports = {InitiateBingChat, GenerateBingText, GenerateBingTextCommand};
+
+// const InitiateOpenAI = (key) => {
+//     // const configuration = new Configuration({
+//     //         apiKey: key,
+//     //         basePath: "https://api.pawan.krd/v1",
+        
+//     // });
+
+//     // // Return new instance of OpenAI api
+//     // return new OpenAIApi(configuration);
+// }
 
 // const InitiateChatGPT = async (email, password, browserpath) => {
 //     // const { ChatGPTAPI, getOpenAIAuth } = require('chatgpt');
@@ -39,43 +91,43 @@ const InitiateOpenAI = (key) => {
 //     return api;
 // }
 
-const GenerateChatGPTtext = async(ai, prompt) => {
-    const response = await ai.sendMessage(prompt)
-    // response is a markdown-formatted string
-    console.log(response)
-    return response;
-}
+// const GenerateChatGPTtext = async(ai, prompt) => {
+//     const response = await ai.sendMessage(prompt)
+//     // response is a markdown-formatted string
+//     console.log(response)
+//     return response;
+// }
 
-const GenerateOpenAiImage = async (ai, description) => {
-    let resp = await ai.createImage({
-        prompt: description,
-        n: 2,
-        size: "256x256",
-    })
-    return [resp.data.data[0].url, resp.data.data[1].url];
-}
+// const GenerateOpenAiImage = async (ai, description) => {
+//     let resp = await ai.createImage({
+//         prompt: description,
+//         n: 2,
+//         size: "256x256",
+//     })
+//     return [resp.data.data[0].url, resp.data.data[1].url];
+// }
 
-const GenerateOpenAiImageCommand = {
-    name: 'generate-image',
-    description: 'Generate an image from OpenAI',
-    options: [{
-        name: 'prompt',
-        description: 'Can be anything',
-        type: 3,
-        required: true
-    }]
-} 
+// const GenerateOpenAiImageCommand = {
+//     name: 'generate-image',
+//     description: 'Generate an image from OpenAI',
+//     options: [{
+//         name: 'prompt',
+//         description: 'Can be anything',
+//         type: 3,
+//         required: true
+//     }]
+// } 
 
-const GenerateChatGPTtextCommand = {
-    name: 'chatgpt',
-    description: 'Ask anything from ChatGPT',
-    options: [{
-        name: 'prompt',
-        description: 'Can be anything',
-        type: 3,
-        required: true
-    }]
-} 
+// const GenerateChatGPTtextCommand = {
+//     name: 'chatgpt',
+//     description: 'Ask anything from ChatGPT',
+//     options: [{
+//         name: 'prompt',
+//         description: 'Can be anything',
+//         type: 3,
+//         required: true
+//     }]
+// } 
 
-// module.exports = { InitiateAI, GenerateImage, GenerateImageCommand, GenerateGPTchat, InitiateGPTchat };
-module.exports = { InitiateOpenAI, InitiateChatGPT, GenerateOpenAiImage, GenerateChatGPTtextCommand, GenerateOpenAiImageCommand, GenerateChatGPTtext };
+// // module.exports = { InitiateAI, GenerateImage, GenerateImageCommand, GenerateGPTchat, InitiateGPTchat };
+// module.exports = { InitiateOpenAI, InitiateChatGPT, GenerateOpenAiImage, GenerateChatGPTtextCommand, GenerateOpenAiImageCommand, GenerateChatGPTtext };

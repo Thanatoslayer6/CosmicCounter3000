@@ -1,6 +1,7 @@
-const { gcd } = require('mathjs')
+// const { gcd } = require('mathjs')
+import { gcd } from 'mathjs';
 
-const Ions = [
+export const Ions = [
     ["Sodium", "Na", "+1" ], 
     ["Potassium", "K", "+1"],
     ["Lithium", "Li", "+1" ],
@@ -134,7 +135,7 @@ const Ions = [
     ["Decene", "C10H18", "0"],
 ];
 
-class WordToChem {
+export class WordToChem {
     constructor(stringWordEq) {
         this.stringWordEq = stringWordEq;
         this.equation = "";
@@ -256,7 +257,7 @@ class WordToChem {
     }
 }
 
-const WordToChemCommand = {
+export const WordToChemCommand = {
     name: 'weq',
     description: 'Converts a chemical word equation to its formula form',
     options: [{
@@ -267,4 +268,4 @@ const WordToChemCommand = {
     }]
 } 
 
-module.exports = { Ions, WordToChem, WordToChemCommand};
+// module.exports = { Ions, WordToChem, WordToChemCommand};

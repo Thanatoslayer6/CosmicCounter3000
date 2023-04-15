@@ -1,9 +1,10 @@
-const { unit, clone, sqrt, square, add, cos, sin, Unit, multiply, divide, subtract, max } = require('mathjs')
+// const { unit, clone, sqrt, square, add, cos, sin, Unit, multiply, divide, subtract, max } = require('mathjs')
+import { unit, clone, sqrt, square, add, cos, sin, Unit, multiply, divide, subtract, max } from 'mathjs';
 const gravity = unit("9.8m/s^2");
 
 const SigFig = (x, n) => +x.toPrecision(n);
 
-class VerticallyDownward { 
+export class VerticallyDownward { 
     // When vertically thrown downward automatically, it has vi (e.g. yoyo, bball)
     // Usually height, final velocity, and time are the only things to solve here...
     // Gravity (g) = 9.8m/s^2, 980cm/s^2, 32ft/s^2 and is positive (+)
@@ -190,7 +191,7 @@ class VerticallyDownward {
     }
 }
 
-class VerticallyUpward {
+export class VerticallyUpward {
     // Again, when the object is thrown upward it means it has an initial velocity (vi), with gravity
     // as a factor, meaning that the value of it will be negative. as a result it would mean that the 
     // object will peak when its final velocity is vf = 0. Furthermore, the object will fall due to gravity 
@@ -467,7 +468,7 @@ class VerticallyUpward {
     }
 };
 
-class HorizontalProjection {
+export class HorizontalProjection {
     // Vx = vi, Vy = gt, d = gt^2/2, R = vit
     constructor(vi, vy, vf, t, d, r, sf) {
         this.vi = { // Remember vi = vx
@@ -646,7 +647,7 @@ class HorizontalProjection {
     }
 }
 
-class ProjectedAtAnAngle {
+export class ProjectedAtAnAngle {
     constructor(vi, angle, vf, maxHeight, tT, r, sf) { // Initial velocity is required and angle
         // this.vi = { actual: unit(vi), rounded: unit(vi) }
         this.vi = unit(vi); // This is given so no need to do stuff with it
@@ -774,7 +775,7 @@ class ProjectedAtAnAngle {
     }
 }
 
-const VerticallyDownwardCommand = {
+export const VerticallyDownwardCommand = {
     name: "downward-motion",
     description: "Solves vertically downward projectile motion problems",
     options: [{
@@ -805,7 +806,7 @@ const VerticallyDownwardCommand = {
     }]
 }
 
-const VerticallyUpwardCommand ={
+export const VerticallyUpwardCommand ={
     name: "upward-motion",
     description: "Solves vertically upward projectile motion problems",
     options: [{
@@ -841,7 +842,7 @@ const VerticallyUpwardCommand ={
     }]
 }
 
-const HorizontalProjectionCommand = {
+export const HorizontalProjectionCommand = {
     name: "horizontal-motion",
     description: "Solves horizontal projectile motion problems",
     options: [{
@@ -882,7 +883,7 @@ const HorizontalProjectionCommand = {
     }]
 } 
 
-const ProjectedAtAnAngleCommand = {
+export const ProjectedAtAnAngleCommand = {
     name: "projected-at-an-angle",
     description: "Solves the properties of an object projected at an angle",
     options: [{
@@ -923,4 +924,4 @@ const ProjectedAtAnAngleCommand = {
     }]
 } 
 
-module.exports = {VerticallyUpward, VerticallyUpwardCommand, VerticallyDownward, VerticallyDownwardCommand, HorizontalProjection, HorizontalProjectionCommand, ProjectedAtAnAngle, ProjectedAtAnAngleCommand};
+// module.exports = {VerticallyUpward, VerticallyUpwardCommand, VerticallyDownward, VerticallyDownwardCommand, HorizontalProjection, HorizontalProjectionCommand, ProjectedAtAnAngle, ProjectedAtAnAngleCommand};

@@ -1,7 +1,13 @@
-const { unit, round, Unit, format, createUnit, multiply, divide, add, abs, subtract } = require('mathjs')
-const { MolarMass } = require('./stoichiometry')
-const { Ions } = require('./weq')
-const parseCompound = require('compound-parser')
+// const { unit, round, Unit, format, createUnit, multiply, divide, add, abs, subtract } = require('mathjs')
+// const { MolarMass } = require('./stoichiometry')
+// const { Ions } = require('./weq')
+// const parseCompound = require('compound-parser')
+
+
+import { unit, round, Unit, format, createUnit, multiply, divide, add, abs, subtract } from 'mathjs';
+import { MolarMass } from './stoichiometry.js';
+import { Ions } from './weq.js';
+import * as parseCompound from 'compound-parser';
 
 createUnit("equivalent", { aliases: [ 'eq', 'eqw', 'equiv' ] })
 createUnit("equivalentPerLiter", { definition: ['eq/l', 'eqw/l' ,'equiv/l'] })
@@ -188,7 +194,7 @@ const convertMassOrVolumeSolution = (u, isKiloOrLiter) => {
     return undefined;
 }
 
-class ChemTable {
+export class ChemTable {
     constructor(solution, massSolute, massSolvent, massSolution, nSolute, nSolvent, nfSolute, nfSolvent, molality, molarity, equivalentOfSolute, normality) {
         let temp = this.getMolarMassAndEquivalentWeight(solution);
         // First we figure out the molar mass of the solution
@@ -416,7 +422,7 @@ class ChemTable {
 }
 
 // let item = new ChemTable()
-const ChemTableCommand = {
+export const ChemTableCommand = {
     name: "chemistry-table",
     description: "Solves the whole chemistry table solution from mass solute/solvent up to normality",
     options: [{
@@ -471,4 +477,4 @@ const ChemTableCommand = {
     }]
 }
 
-module.exports = { ChemTable, ChemTableCommand }
+// module.exports = { ChemTable, ChemTableCommand }

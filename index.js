@@ -1,20 +1,39 @@
-const { Routes, REST, Client, EmbedBuilder, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
-const { table, getBorderCharacters } = require('table');
-const { Bearing, BearingCommand } = require('./commands/bearing');
-const { AccuracyPrecision, AccuracyPrecisionCommand } = require('./commands/accuracyprecision');
-const { FoxyMethod, FoxyMethodCommand } = require('./commands/foxy');
-const { Latex, LatexCommand } = require('./commands/latex');
-const { WordToChem, WordToChemCommand } = require('./commands/weq')
-const { Balancer, BalancerCommand } = require('./commands/balance')
-const { Kinematics, KinematicsCommand } = require('./commands/kinematics')
-const { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } = require('./commands/stoichiometry')
-const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } = require('./commands/projectilemotion')
-const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
-const { Electrostatics, ElectrostaticsCommand } = require('./commands/electrostatics')
+// const { InitiateBingChat, GenerateBingText, GenerateBingTextCommand } = require('./commands/ai')
+// const { Routes, REST, Client, EmbedBuilder, AttachmentBuilder, GatewayIntentBits } = require('discord.js');
+// const { table, getBorderCharacters } = require('table');
+// const { Bearing, BearingCommand } = require('./commands/bearing');
+// const { AccuracyPrecision, AccuracyPrecisionCommand } = require('./commands/accuracyprecision');
+// const { FoxyMethod, FoxyMethodCommand } = require('./commands/foxy');
+// const { Latex, LatexCommand } = require('./commands/latex');
+// const { WordToChem, WordToChemCommand } = require('./commands/weq')
+// const { Balancer, BalancerCommand } = require('./commands/balance')
+// const { Kinematics, KinematicsCommand } = require('./commands/kinematics')
+// const { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } = require('./commands/stoichiometry')
+// const { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } = require('./commands/projectilemotion')
+// const { ChemTable, ChemTableCommand } = require('./commands/chemtable')
+// const { Electrostatics, ElectrostaticsCommand } = require('./commands/electrostatics')
 // const { InitiateOpenAI, InitiateGPTchat, GenerateOpenAiImage, GenerateOpenAiImageCommand } = require('./commands/ai.js')
 // const { InitiateOpenAI, InitiateGPTchat, GenerateOpenAiImage, GenerateOpenAiImageCommand, GenerateGPTchatTextCommand, GenerateGPTchatText } = require('./commands/ai')
 // const { InitiateOpenAI, InitiateChatGPT, GenerateOpenAiImage, GenerateChatGPTtextCommand, GenerateOpenAiImageCommand, GenerateChatGPTtext } = require('./commands/ai');
-require('dotenv').config();
+// require('dotenv').config();
+
+// ESM
+import { Routes, REST, Client, EmbedBuilder, AttachmentBuilder, GatewayIntentBits } from 'discord.js';
+import { table, getBorderCharacters } from 'table';
+import { InitiateBingChat, GenerateBingText, GenerateBingTextCommand } from './commands/ai.js';
+import { Bearing, BearingCommand } from './commands/bearing.js';
+import { AccuracyPrecision, AccuracyPrecisionCommand } from './commands/accuracyprecision.js';
+import { FoxyMethod, FoxyMethodCommand } from './commands/foxy.js';
+import { Latex, LatexCommand } from './commands/latex.js';
+import { WordToChem, WordToChemCommand } from './commands/weq.js';
+import { Balancer, BalancerCommand } from './commands/balance.js';
+import { Kinematics, KinematicsCommand } from './commands/kinematics.js';
+import { Stoichiometry, StoichiometryPercentage, StoichiometryCommand, StoichiometryPercentageCommand } from './commands/stoichiometry.js';
+import { VerticallyDownward, VerticallyUpward, HorizontalProjection, ProjectedAtAnAngle, VerticallyDownwardCommand, VerticallyUpwardCommand, HorizontalProjectionCommand, ProjectedAtAnAngleCommand } from './commands/projectilemotion.js';
+import { ChemTable, ChemTableCommand } from './commands/chemtable.js';
+import { Electrostatics, ElectrostaticsCommand } from './commands/electrostatics.js';
+import * as dotenv from 'dotenv'
+dotenv.config();
 
 // List of all commands
 const ListOfCommands = [ 
@@ -32,16 +51,18 @@ const ListOfCommands = [
     HorizontalProjectionCommand, 
     ProjectedAtAnAngleCommand,
     ChemTableCommand,
-    ElectrostaticsCommand
+    ElectrostaticsCommand,
     // GenerateOpenAiImageCommand,
-    // GenerateChatGPTtextCommand
+    // GenerateChatGPTtextCommand,
+    GenerateBingTextCommand
 ];
 
 // Env variables
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
-const OPENAI_KEY = process.env.OPENAI_KEY;
+const BING_COOKIE = process.env.BING_COOKIE;
+// const OPENAI_KEY = process.env.OPENAI_KEY;
 // const OPENAI_EMAIL = process.env.OPENAI_EMAIL;
 // const OPENAI_PASSWORD = process.env.OPENAI_PASSWORD;
 // const BROWSER_EXECUTABLE_PATH = process.env.BROWSER_EXECUTABLE_PATH;
@@ -49,6 +70,9 @@ const OPENAI_KEY = process.env.OPENAI_KEY;
 // OpenAI & ChatGpt instance, variables
 // let openai = InitiateOpenAI(OPENAI_KEY);
 // let chatgpt = null, conversation = null;
+
+// BingChat instance variables
+let bingchat = InitiateBingChat(BING_COOKIE);
 
 // Discord.js (rest, client)
 const rest = new REST({ version: '10' }).setToken(TOKEN);
@@ -469,6 +493,62 @@ client.on('interactionCreate', async (interaction) => {
             console.error(exception)
             await interaction.reply(`Can't solve electrostatics, please check input?\nError Log: \`${exception}\``)
         }
+    } else if (interaction.commandName == 'bing') {
+        let description = interaction.options.getString('prompt')
+        try {
+            await interaction.deferReply();
+            let response = await GenerateBingText(bingchat, description);
+            // If there are sources replied by the bot
+            if (response.detail.sourceAttributions.length > 0) {
+                // Get source numbers based on their index in 'sourceAttributions' store in an array
+                let matches = (response.text).match(/\[\^(\d+)\^\]/g);
+                // Remove duplicates from array
+                let numbers = matches.map(items => parseInt(items.match(/\d+/)[0]));
+                let properNumbers = [...new Set(numbers)];
+                let sourcesAsText = properNumbers?.map(index => {
+                    let provider = response.detail.sourceAttributions[index - 1];
+                    return `\n _[${index}]_ ${provider.providerDisplayName}: <${provider.seeMoreUrl}>`;
+                })
+                // Parse the text properly
+                let parsedResponseText = (response.text).replace(/\[\^(\d+)\^\]/g, "_ [$1]_");
+                await interaction.editReply(`**Prompt**: \`${description}\`\n\n${parsedResponseText}\n\n**Sources**:\n${sourcesAsText}`);
+            } else { // If there are no sources from the bot
+                let parsedResponseText = response.text;
+                await interaction.editReply(`**Prompt**: \`${description}\`\n\n${parsedResponseText}`);
+            }
+
+            // await interaction.deferReply(); // Use this to maximize time for all computations, also shows that bot is thinking
+            // let temp = new Electrostatics(charges, distance, radiusEquation) 
+            // // LATEX
+            // let formulas = [], attc = [], properEmbeds = [];
+            // for (let i = 0; i < temp.equationInLatex.length; i++) {
+            //     let info = new Latex(temp.equationInLatex[i]);
+            //     await info.main()
+            //     formulas.push(info.pngBuffer)
+            // }
+            // formulas.forEach((latexPng, index) => {
+            //     attc.push(new AttachmentBuilder(latexPng, { name: `latex_eq${index}.png` }))
+            //     if (index == 0) {
+            //         properEmbeds.push({
+            //             description: temp.info, 
+            //             image: {
+            //                 url: `attachment://latex_eq${index}.png`
+            //             }
+            //         })
+            //     } else {
+            //         properEmbeds.push({
+            //             image: {
+            //                 url: `attachment://latex_eq${index}.png`
+            //             }
+            //         })
+            //     }
+            // })
+            // await interaction.editReply({ embeds: properEmbeds, files: attc })
+        } catch (exception) {
+            console.error(exception)
+            await interaction.reply(`Can't reply to prompt\nError Log: \`${exception}\``)
+        }
+
     }
 });
 
@@ -479,6 +559,7 @@ client.on('interactionCreate', async (interaction) => {
 		await rest.put(Routes.applicationCommands(CLIENT_ID, GUILD_ID), { body: ListOfCommands });
 		console.log('Successfully reloaded application (/) commands.');
         // Login to ChatGPT first, assign the global variable
+        // bingchat = await InitiateBingChat(BING_COOKIE);
         // chatgpt = await InitiateChatGPT(OPENAI_EMAIL, OPENAI_PASSWORD, BROWSER_EXECUTABLE_PATH);
         // conversation = chatgpt.getConversation();
         // Login to Discord with your client's token

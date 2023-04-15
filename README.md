@@ -18,6 +18,7 @@ yarn install
 TOKEN=abcdefgh
 CLIENT_ID=abcdefgh
 GUILD_ID=1abcddefgh
+BING_COOKIE=`your bing authentication cookie the '_U' field`
 ```
 
 3.) Run `index.js`

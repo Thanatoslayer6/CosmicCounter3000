@@ -1,7 +1,12 @@
 // START OF MODULE 
 // https://raw.githubusercontent.com/djanidaud/reaction-balancer/master/index.js
-const parseCompound = require("compound-parser");
-const { create, all } = require("mathjs");
+// const parseCompound = require("compound-parser");
+// const { create, all } = require("mathjs");
+
+
+import * as parseCompound from 'compound-parser';
+import { create, all } from "mathjs";
+
 const mathjs = create(all);
 mathjs.config({
   number: "Fraction",
@@ -149,7 +154,7 @@ const countAtoms = (atom) => (compound) =>
 
 // END OF MODULE
 
-class Balancer {
+export class Balancer {
     constructor(chemFormula) {
         this.equation = "";
         let reaction = this.parseChemFormulaInfo(chemFormula)  
@@ -209,7 +214,7 @@ class Balancer {
     }
 }
 
-const BalancerCommand = { 
+export const BalancerCommand = { 
     name: 'balance',
     description: 'Balances a chemical equation',
     options: [{
@@ -220,4 +225,4 @@ const BalancerCommand = {
     }]
 } 
 
-module.exports = { Balancer, BalancerCommand }
+// module.exports = { Balancer, BalancerCommand }

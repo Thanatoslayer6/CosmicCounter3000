@@ -1,6 +1,7 @@
-const { sin, cos, atan, isNegative, abs, pi, sqrt, square } = require('mathjs');
+// const { sin, cos, atan, isNegative, abs, pi, sqrt, square } = require('mathjs');
+import { sin, cos, atan, isNegative, abs, pi, sqrt, square } from 'mathjs';
 
-class FoxyMethod {
+export class FoxyMethod {
     // Pass in a string of vector array [ "30N 20 DEGREES W of N", "40N 10 D N of W" ]
     constructor(vectors) {
         // First split vectors by the comma
@@ -136,7 +137,7 @@ class FoxyMethod {
         this.finalSetup()
     }
 }
-const FoxyMethodCommand = {
+export const FoxyMethodCommand = {
     name: 'foxy',
     description: 'Solves for the RESULTANT VECTOR and EQUILIBRIUM VECTOR',
     options: [{
@@ -164,4 +165,4 @@ const FoxyMethodCommand = {
     }]
 } 
 
-module.exports = { FoxyMethod, FoxyMethodCommand }
+// module.exports = { FoxyMethod, FoxyMethodCommand }

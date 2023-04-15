@@ -1,7 +1,7 @@
-const texsvg = require('texsvg');
-const sharp = require('sharp');
+import texsvg from 'texsvg';
+import sharp from 'sharp';
 
-class Latex {
+export class Latex {
     constructor(latexString) {
         this.latexString = latexString;
         this.svgString;
@@ -74,7 +74,7 @@ class Latex {
     }
 }
 
-const LatexCommand = {
+export const LatexCommand = {
     name: 'latex',
     description: 'Write and output an equation into fancy LaTex',
     options: [{
@@ -85,4 +85,4 @@ const LatexCommand = {
     }]
 } 
 
-module.exports = { Latex, LatexCommand }
+// module.exports = { Latex, LatexCommand }

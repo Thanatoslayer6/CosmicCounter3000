@@ -1,9 +1,13 @@
 // const math = require('mathjs');
-const { Balancer } = require('./balance');
-const { unit, round, Unit, multiply, divide, subtract } = require('mathjs')
-const parseCompound = require('compound-parser');
+// const { Balancer } = require('./balance');
+// const { unit, round, Unit, multiply, divide, subtract } = require('mathjs')
+// const parseCompound = require('compound-parser');
 
-let MolarMass = [{
+import { Balancer } from './balance.js';
+import { unit, round, Unit, multiply, divide, subtract } from 'mathjs';
+import * as parseCompound from 'compound-parser';
+
+export let MolarMass = [{
       "symbol": "H",
       "mass": 1
     },
@@ -477,7 +481,7 @@ let MolarMass = [{
 }]
 
 
-class Stoichiometry {
+export class Stoichiometry {
     constructor(equation, given, solve) {
         // First get the elements of the unbalanced equation, and check if the values for 'given' and 'solve' are right
         let t1 = given.split(' of ');
@@ -670,7 +674,7 @@ class Stoichiometry {
 
 }
 
-class StoichiometryPercentage {
+export class StoichiometryPercentage {
     constructor(percent, solute, solution, method) {
         this.solvent, this.equationInLatex, this.givenInfo, this.percent, this.solute, this.solution;
         if (percent != undefined) {
@@ -835,7 +839,7 @@ class StoichiometryPercentage {
     
 }
 
-const StoichiometryCommand = {
+export const StoichiometryCommand = {
     name: 'stoichiometry',
     description: 'Solves Mass to Mass, Mass to Volume, Volume to Volume',
     options: [{
@@ -856,7 +860,7 @@ const StoichiometryCommand = {
     }]
 }
 
-const StoichiometryPercentageCommand = {
+export const StoichiometryPercentageCommand = {
     name: 'stoichiometry-percentage',
     description: 'Solves percentage of mass-by-mass, mass-by-volume, volume-by-volume',
     options: [{
@@ -892,4 +896,4 @@ const StoichiometryPercentageCommand = {
     }]
 } 
 
-module.exports = { Stoichiometry, StoichiometryCommand, StoichiometryPercentage, StoichiometryPercentageCommand, MolarMass}
+// module.exports = { Stoichiometry, StoichiometryCommand, StoichiometryPercentage, StoichiometryPercentageCommand, MolarMass}

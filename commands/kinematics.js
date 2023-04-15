@@ -1,7 +1,8 @@
-const math = require('mathjs')
+// const math = require('mathjs')
+import * as math from 'mathjs';
 let vf, vi, t, a, d; // Initialize needed global variables 
 
-class Kinematics {
+export class Kinematics {
 
     constructor(knownValues, solveFor) {
         this.knownValues = this.parseAndValidateKnownValues(knownValues) 
@@ -232,7 +233,7 @@ class Kinematics {
 
 }
 
-const KinematicsCommand = {
+export const KinematicsCommand = {
     name: 'kinematics',
     description: 'Tries to solve distance/time/velocity (initial or final)/acceleration',
     options: [{
@@ -248,4 +249,4 @@ const KinematicsCommand = {
     }]
 } 
 
-module.exports = { Kinematics, KinematicsCommand }
+// module.exports = { Kinematics, KinematicsCommand }

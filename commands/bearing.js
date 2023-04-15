@@ -1,4 +1,4 @@
-class Bearing{
+export class Bearing{
     constructor(angle) {
         this.angle = angle;
     }
@@ -50,7 +50,7 @@ class Bearing{
     }
 }
 
-const BearingCommand = {
+export const BearingCommand = {
     name: 'bearing',
     description: 'Gives ACTUAL DIRECTION and COMPLEMENTARY DIRECTION based on bearing angle',
     options: [{
@@ -61,4 +61,4 @@ const BearingCommand = {
     }]
 }
 
-module.exports = { Bearing, BearingCommand};
+// module.exports = { Bearing, BearingCommand};
